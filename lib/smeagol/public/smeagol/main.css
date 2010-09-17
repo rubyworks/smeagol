@@ -1,5 +1,10 @@
+h1 {
+	padding-bottom: 3px;
+	border-bottom: 3px solid #ccc;
+}
+
 #container {
 	margin-left:  auto;
 	margin-right: auto;
-	width: 680px;
+	width: 650px;
 }
