@@ -1,0 +1,36 @@
+#!/usr/bin/env ruby
+require 'rubygems'
+require 'bundler/setup'
+require 'optparse'
+require File.expand_path(File.dirname(__FILE__) + '/../lib/smeagol')
+
+# Parse options
+options = {}
+opts = OptionParser.new do |opts|
+  opts.banner = "usage: smeagol [OPTIONS] [PATH]\n\n"
+
+  opts.on("--port [PORT]", "Bind port (default 4567).") do |port|
+    options['port'] = port.to_i
+  end
+
+  opts.on("--version", "Display current version.") do
+    puts "Smeagol " + Smeagol::VERSION
+    exit 0
+  end
+end
+
+# Read command line options into `options` hash
+begin
+  opts.parse!
+rescue OptionParser::InvalidOption
+  puts "gollum: #{$!.message}"
+  puts "gollum: try 'gollum --help' for more information"
+  exit
+end
+
+# Set the path to the Gollum repository
+gollum_path = ARGV[0] || Dir.pwd
+
+# Run the web server
+Smeagol::App.set(:gollum_path, gollum_path)
+Smeagol::App.run!(options)

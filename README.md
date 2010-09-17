@@ -18,6 +18,9 @@ You can install Smeagol with RubyGems:
 
 	$ [sudo] gem install smeagol
 
+And then, if you want code highlighting, follow the
+[Installation Guide](http://pygments.org/docs/installation) for Pygments.
+
 Ta da. You're ready to go.
 
 

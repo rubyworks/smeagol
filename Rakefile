@@ -2,7 +2,9 @@ require 'rubygems'
 require 'bundler/setup'
 require 'rake'
 require 'rake/rdoctask'
-require 'lib/smeagol/version'
+require 'rake/testtask'
+
+require File.dirname(__FILE__) + '/lib/smeagol'
 
 #############################################################################
 #
