@@ -2,23 +2,30 @@
 require 'rubygems'
 require 'bundler/setup'
 require 'optparse'
+require 'ostruct'
 require File.expand_path(File.dirname(__FILE__) + '/../lib/smeagol')
 
 # Parse options
-options = {}
+options = OpenStruct.new
+options.port = 4567
+options.auto_update = false
 opts = OptionParser.new do |opts|
-  opts.banner = "usage: smeagol [OPTIONS] [PATH]\n\n"
+  opts.banner = 'usage: smeagol [OPTIONS] [PATH]\n\n'
 
-  opts.on("--port [PORT]", "Bind port (default 4567).") do |port|
-    options['port'] = port.to_i
+  opts.on('--port [PORT]', 'Bind port (default 4567).') do |port|
+    options.port = port.to_i
   end
 
-  opts.on("--git [GIT_BIN]", "Path to Git binary (default /usr/bin/git).") do |path|
-    options['git'] = path
+  opts.on('--git [GIT]', 'Path to Git binary.') do |path|
+    options.git = path
   end
 
-  opts.on("--version", "Display current version.") do
-    puts "Smeagol " + Smeagol::VERSION
+  opts.on('--autoupdate', 'Updates the repository on a daily basis.') do |flag|
+    options.auto_update = flag
+  end
+
+  opts.on('-v', '--version', 'Display current version.') do
+    puts "Smeagol #{Smeagol::VERSION}"
     exit 0
   end
 end
@@ -33,24 +40,36 @@ rescue OptionParser::InvalidOption
 end
 
 # Attempt to find the git binary
-if options['git'].nil?
+if options.git.nil?
   ['/usr/bin', '/usr/sbin', '/usr/local/bin', '/opt/local/bin'].each do |path|
     file = "#{path}/git"
-    options['git'] = file if File.executable?(file)
+    options.git = file if File.executable?(file)
+    break if options.git
   end
 end
 
 # Alert user that updates are unavailable if git is not found
-if options['git'].nil? || !File.executable?(options['git'])
+if options.git.nil? || !File.executable?(options.git)
   puts "warning: git executable could not be found."
 else
-  puts "git found: #{options['git']}"
+  puts "git found: #{options.git}"
 end
 
 # Set the path to the Gollum repository
 gollum_path = ARGV[0] || Dir.pwd
 
+# Run the auto update process
+if options.git && options.auto_update
+  Thread.new do
+    while true do
+      Smeagol::Updater.update(options.git, gollum_path)
+      sleep 5
+    end
+  end
+end
+
 # Run the web server
 Smeagol::App.set(:gollum_path, gollum_path)
-Smeagol::App.set(:git, options['git'])
-Smeagol::App.run!(options)
+Smeagol::App.set(:git, options.git)
+Smeagol::App.run!(:port => options.port)
+

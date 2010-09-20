@@ -21,7 +21,7 @@ module Smeagol
 
     # Update the gollum repository
     get '/update' do
-      if update()
+      if Updater.update(settings.git, settings.gollum_path)
         'ok'
       else
         'error'
@@ -45,28 +45,6 @@ module Smeagol
         file.raw_data
       end
     end
-
-
-    ##############################################################################
-    #
-    # Public methods
-    #
-    ##############################################################################
-  
-    # Updates the repository that the server is point at.
-    #
-    # Returns true if successful. Otherwise returns false.
-    def update
-      # If the git executable is available, pull from master and check status.
-      if !settings.git.nil?
-        `#{settings.git} pull origin master`
-        return $? == 0
-      # Otherwise return false.
-      else
-        return false
-      end
-    end
-
 
 
     ##############################################################################
