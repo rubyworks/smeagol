@@ -4,13 +4,29 @@ require 'mustache'
 
 module Smeagol
   class App < Sinatra::Base
+    ##############################################################################
+    #
+    # Settings
+    #
+    ##############################################################################
+
     set :public, File.dirname(__FILE__) + '/public'
     
+
     ##############################################################################
     #
     # Routes
     #
     ##############################################################################
+
+    # Update the gollum repository
+    get '/update' do
+      if update()
+        'ok'
+      else
+        'error'
+      end
+    end
 
     # All other resources go through Gollum.
     get '/*' do
@@ -29,6 +45,28 @@ module Smeagol
         file.raw_data
       end
     end
+
+
+    ##############################################################################
+    #
+    # Public methods
+    #
+    ##############################################################################
+  
+    # Updates the repository that the server is point at.
+    #
+    # Returns true if successful. Otherwise returns false.
+    def update
+      # If the git executable is available, pull from master and check status.
+      if !settings.git.nil?
+        `#{settings.git} pull origin master`
+        return $? == 0
+      # Otherwise return false.
+      else
+        return false
+      end
+    end
+
 
 
     ##############################################################################

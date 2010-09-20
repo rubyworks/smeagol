@@ -13,6 +13,10 @@ opts = OptionParser.new do |opts|
     options['port'] = port.to_i
   end
 
+  opts.on("--git [GIT_BIN]", "Path to Git binary (default /usr/bin/git).") do |path|
+    options['git'] = path
+  end
+
   opts.on("--version", "Display current version.") do
     puts "Smeagol " + Smeagol::VERSION
     exit 0
@@ -23,9 +27,24 @@ end
 begin
   opts.parse!
 rescue OptionParser::InvalidOption
-  puts "gollum: #{$!.message}"
-  puts "gollum: try 'gollum --help' for more information"
+  puts "smeagol: #{$!.message}"
+  puts "smeagol: try 'smeagol --help' for more information"
   exit
+end
+
+# Attempt to find the git binary
+if options['git'].nil?
+  ['/usr/bin', '/usr/sbin', '/usr/local/bin', '/opt/local/bin'].each do |path|
+    file = "#{path}/git"
+    options['git'] = file if File.executable?(file)
+  end
+end
+
+# Alert user that updates are unavailable if git is not found
+if options['git'].nil? || !File.executable?(options['git'])
+  puts "warning: git executable could not be found."
+else
+  puts "git found: #{options['git']}"
 end
 
 # Set the path to the Gollum repository
@@ -33,4 +52,5 @@ gollum_path = ARGV[0] || Dir.pwd
 
 # Run the web server
 Smeagol::App.set(:gollum_path, gollum_path)
+Smeagol::App.set(:git, options['git'])
 Smeagol::App.run!(options)
