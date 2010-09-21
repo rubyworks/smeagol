@@ -62,8 +62,8 @@ gollum_path = ARGV[0] || Dir.pwd
 if options.git && options.auto_update
   Thread.new do
     while true do
+      sleep 86400
       Smeagol::Updater.update(options.git, gollum_path)
-      sleep 5
     end
   end
 end

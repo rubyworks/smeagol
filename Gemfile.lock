@@ -64,6 +64,7 @@ PLATFORMS
 DEPENDENCIES
   OptionParser (~> 0.5.1)
   RedCloth
+  bundler (~> 1.0.0)
   capybara (~> 0.3.9)
   cucumber (~> 0.8.5)
   gollum (~> 1.0.1)
