@@ -1,4 +1,5 @@
 source :gemcutter
+gem 'bundler', '~> 1.0.0'
 gem 'rack', '= 1.2.0'
 gem 'gollum', '~> 1.0.1'
 gem 'sinatra', '~> 1.0'
