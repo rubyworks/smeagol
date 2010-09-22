@@ -1,3 +1,9 @@
+body {
+	font: normal normal normal 13.34px/normal helvetica, arial, sans-serif;
+	font-size: 14px;
+	line-height: 1.4em;
+}
+
 h1 {
 	padding-bottom: 3px;
 	border-bottom: 3px solid #ccc;
@@ -7,4 +13,19 @@ h1 {
 	margin-left:  auto;
 	margin-right: auto;
 	width: 650px;
+}
+
+pre {
+	background-color: ghostWhite;
+	border: 1px solid #ddd;
+	color: #444;
+	font-size: 12px;
+	line-height: 1.5em;
+	margin: 1em 0px;
+	overflow: auto;
+	padding: 0.5em;
+}
+
+pre, code {
+	font: normal normal normal 12px/normal Monaco, 'Courier New', monospace;
 }
