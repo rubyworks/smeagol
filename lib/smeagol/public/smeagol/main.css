@@ -7,14 +7,21 @@ body {
 header {
 }
 
+footer {
+	border-top: 3px solid #ccc;
+	padding-top: 1px;
+	margin-top: 1.5em;
+	margin-bottom: 2em;
+}
+
 nav {
 	border-top: 2px solid #ddd;
 	border-bottom: 2px solid #ddd;
-	margin-bottom: 0.5em;
+	margin-bottom: 1.1em;
 }
 
 nav ul {
-	padding: 2px 2px;
+	padding: 2px 2px 2px 2px;
 	margin: 3px 0px 0px;
 	white-space: nowrap;
 }
@@ -35,11 +42,6 @@ nav ul li a:hover {
 	color: black;
 }
 
-footer {
-	border-top: 3px solid #ccc;
-	padding-top: 1px;
-	margin-bottom: 0.5em;
-}
 
 .tagline {
 	font-style: italic;
@@ -57,7 +59,7 @@ h1 {
 }
 
 article h1 {
-	font-size: 175%;
+	font-size: 150%;
 }
 
 #content {
@@ -72,6 +74,7 @@ article h1 {
 }
 
 #content h2 {
+	font-size: 135%;
 	color: black;
 	border-top: 4px solid #e0e0e0;
 	margin-top: 1.5em;
@@ -79,6 +82,7 @@ article h1 {
 }
 
 #content h3 {
+	font-size: 110%;
 	margin-top: 1em;
 	font-size: 1.17em;
 }
