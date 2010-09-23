@@ -39,8 +39,9 @@ module Smeagol
       if page = wiki.page(name)
         Mustache.render(page_template, Smeagol::Views::Page.new(page))
       elsif file = wiki.file(name)
-        content_type file.mime_type
         file.raw_data
+      else
+        raise Sinatra::NotFound
       end
     end
 

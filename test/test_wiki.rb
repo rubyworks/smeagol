@@ -10,6 +10,6 @@ class WikiTestCase < MiniTest::Unit::TestCase
   end
 
   def test_settings_should_be_read_from_file
-    assert_equal 'Smeagol Wiki', @wiki.settings.title
+    assert_equal 'Smeagol', @wiki.settings.title
   end
 end

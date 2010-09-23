@@ -15,21 +15,6 @@ footer {
 	margin-bottom: 0.5em;
 }
 
-h1 {
-	font-size: 2em;
-	margin-bottom: 0.25em;
-}
-
-article h1 {
-	font-size: 175%;
-}
-
-#content h2 {
-	border-top: 4px solid #E0E0E0;
-	margin-top: 1.5em;
-	padding-top: 0.5em;
-}
-
 .tagline {
 	font-style: italic;
 }
@@ -38,6 +23,62 @@ article h1 {
 	margin-left:  auto;
 	margin-right: auto;
 	width: 650px;
+}
+
+h1 {
+	font-size: 250%;
+	margin-bottom: 0.25em;
+}
+
+article h1 {
+	font-size: 175%;
+}
+
+#content {
+	color: #333;
+}
+
+#content h1 {
+	color: black;
+	border-top: 4px solid #aaa;
+	margin-top: 1.5em;
+	padding-top: 0.5em;
+}
+
+#content h2 {
+	color: black;
+	border-top: 4px solid #e0e0e0;
+	margin-top: 1.5em;
+	padding-top: 0.5em;
+}
+
+#content h3 {
+	margin-top: 1em;
+	font-size: 1.17em;
+}
+
+#content p {
+	line-height: 1.5em;
+	margin: 1em 0px;
+}
+
+#content ol {
+	padding: 0px;
+	margin: 1em 0px 1em 2em;
+	display: block;
+	list-style-type: decimal;
+}
+
+#content ul {
+	padding: 0px;
+	margin: 1em 0px 1em 2em;
+	display: block;
+	list-style-type: disc;
+}
+
+#content li {
+	margin-bottom: 0.5em;
+	margin-top: 0.5em;
 }
 
 pre {
