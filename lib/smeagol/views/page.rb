@@ -32,17 +32,29 @@ module Smeagol
 
       # Public: The last author of this page.
       def author
-        @page.version.author.name
+        page.version.author.name
       end
 
       # Public: The last edit date of this page.
       def date
-        @page.version.authored_date.strftime("%B %d, %Y")
+        page.version.authored_date.strftime("%B %d, %Y")
       end
       
       # Public: A flag stating that this is not the home page.
       def is_not_home?
         page.title != "Home"
+      end
+      
+      # Public: The HTML menu generated from the settings.yaml file.
+      def menu_html
+        menu = @page.wiki.settings.menu
+        if !menu.nil?
+          html = "<ul>\n"
+          menu.each do |item|
+            html << "<li><a href=\"#{item.href}\">#{item.title}</a></li>\n"
+          end
+          html << "</ul>\n"
+        end
       end
 
       

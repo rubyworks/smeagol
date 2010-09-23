@@ -17,6 +17,13 @@ Feature: Page
             <header>
             <h1>Smeagol</h1>
             </header>
+            <nav>
+              <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/Test-page">Test</a></li>
+                <li><a href="/Code-page">Code</a></li>
+              </ul>
+            </nav>
       	    <article>
       	    <div id="content">
       	      <p>Welcome to the Home page!</p>

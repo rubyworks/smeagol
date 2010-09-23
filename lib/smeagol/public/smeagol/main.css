@@ -5,8 +5,34 @@ body {
 }
 
 header {
-	border-bottom: 4px solid #ccc;
+}
+
+nav {
+	border-top: 2px solid #ddd;
+	border-bottom: 2px solid #ddd;
 	margin-bottom: 0.5em;
+}
+
+nav ul {
+	padding: 2px 2px;
+	margin: 3px 0px 0px;
+	white-space: nowrap;
+}
+
+nav ul li {
+	display: inline;
+	list-style-type: none;
+	padding: 0px 35px 0px 0px;
+}
+
+nav ul li a {
+	color: #333;
+	font-weight: bold;
+	text-decoration: none;
+}
+
+nav ul li a:hover {
+	color: black;
 }
 
 footer {
