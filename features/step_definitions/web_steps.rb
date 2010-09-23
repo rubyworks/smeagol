@@ -1,7 +1,7 @@
 def get_content(body)
-  lines = body.split(/\n/)
-  puts "#{lines.length}"
-  lines.slice(10, lines.length-13).join("\n")
+  body = body.gsub(/^.+<article>\n/m, '')
+  body = body.gsub(/\n<\/article>.+$/m, '')
+  return body
 end
 
 When /^I go to "([^"]*)"$/ do |url|

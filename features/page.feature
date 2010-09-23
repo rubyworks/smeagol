@@ -7,20 +7,24 @@ Feature: Page
       <html>
         <head>
           <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-          <title>Home</title>
+          <title>Smeagol - Home</title>
           <link rel="stylesheet" href="/smeagol/main.css" type="text/css"/>
           <link rel="stylesheet" href="/smeagol/pygment.css" type="text/css"/>
         </head>
       
         <body>
           <div id="container">
-      	    <h1>Home</h1>
-      	    <div>
+            <header>
+            <h1>Smeagol</h1>
+            </header>
+      	    <article>
+      	    <div id="content">
       	      <p>Welcome to the Home page!</p>
       
               <p>Go to the <a class="internal present" href="/Test-page">Test Page</a>.</p>
               <p>Go to the <a class="internal present" href="/Code-page">Code Page</a>.</p>
       	    </div>
+      	    </article>
           </div>
         </body>
       </html>
@@ -31,7 +35,7 @@ Feature: Page
     Then I should see the following content:
       """
       <h1>Test page</h1>
-  	  <div>
+  	  <div id="content">
         <p>This is the <strong>test</strong> <em>page</em>.</p>
       
         <p>Unordered list:</p>
@@ -53,7 +57,7 @@ Feature: Page
     Then I should see the following content:
       """
       <h1>Code page</h1>
-  	  <div>
+  	  <div id="content">
   	    <p>This is Ruby code:</p>
   	  
   	    <div class="highlight"><pre><span class="k">def</span> <span class="nf">hello</span>
