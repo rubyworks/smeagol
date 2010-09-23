@@ -1,6 +1,7 @@
 require 'gollum'
 require 'sinatra'
 require 'mustache'
+require 'smeagol/views/page'
 
 module Smeagol
   class App < Sinatra::Base
@@ -33,13 +34,10 @@ module Smeagol
       name = params[:splat].first
       name = "Home" if name == ""
       
-      wiki = Gollum::Wiki.new(settings.gollum_path)
+      # Load the wiki settings
+      wiki = Smeagol::Wiki.new(settings.gollum_path)
       if page = wiki.page(name)
-        Mustache.render(page_template,
-          :page => page,
-          :title => page.title,
-          :content => page.formatted_data
-        )
+        Mustache.render(page_template, Smeagol::Views::Page.new(page))
       elsif file = wiki.file(name)
         content_type file.mime_type
         file.raw_data

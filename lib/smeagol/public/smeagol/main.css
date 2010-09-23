@@ -4,9 +4,34 @@ body {
 	line-height: 1.4em;
 }
 
+header {
+	border-bottom: 4px solid #ccc;
+	margin-bottom: 0.5em;
+}
+
+footer {
+	border-top: 3px solid #ccc;
+	padding-top: 1px;
+	margin-bottom: 0.5em;
+}
+
 h1 {
-	padding-bottom: 3px;
-	border-bottom: 3px solid #ccc;
+	font-size: 2em;
+	margin-bottom: 0.25em;
+}
+
+article h1 {
+	font-size: 175%;
+}
+
+#content h2 {
+	border-top: 4px solid #E0E0E0;
+	margin-top: 1.5em;
+	padding-top: 0.5em;
+}
+
+.tagline {
+	font-style: italic;
 }
 
 #container {
