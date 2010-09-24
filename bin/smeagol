@@ -9,6 +9,7 @@ require File.expand_path(File.dirname(__FILE__) + '/../lib/smeagol')
 options = OpenStruct.new
 options.port = 4567
 options.auto_update = false
+options.cache_enabled = true
 opts = OptionParser.new do |opts|
   opts.banner = 'usage: smeagol [OPTIONS] [PATH]\n\n'
 
@@ -22,6 +23,10 @@ opts = OptionParser.new do |opts|
 
   opts.on('--autoupdate', 'Updates the repository on a daily basis.') do |flag|
     options.auto_update = flag
+  end
+
+  opts.on('--[no-]cache', 'Enables page caching.') do |flag|
+    options.cache_enabled = flag
   end
 
   opts.on('-v', '--version', 'Display current version.') do
@@ -68,8 +73,12 @@ if options.git && options.auto_update
   end
 end
 
+# Clear the cache
+Smeagol::Cache.new(Gollum::Wiki.new(gollum_path)).clear()
+
 # Run the web server
 Smeagol::App.set(:gollum_path, gollum_path)
 Smeagol::App.set(:git, options.git)
+Smeagol::App.set(:cache_enabled, options.cache_enabled)
 Smeagol::App.run!(:port => options.port)
 

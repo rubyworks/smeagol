@@ -1,6 +1,7 @@
 require 'gollum'
 require 'sinatra'
 require 'mustache'
+require 'tmpdir'
 require 'smeagol/views/page'
 
 module Smeagol
@@ -33,13 +34,24 @@ module Smeagol
     get '/*' do
       name = params[:splat].first
       name = "Home" if name == ""
+      name = File.sanitize_path(name)
       
       # Load the wiki settings
       wiki = Smeagol::Wiki.new(settings.gollum_path)
-      if page = wiki.page(name)
-        Mustache.render(page_template, Smeagol::Views::Page.new(page))
+      cache = Smeagol::Cache.new(wiki)
+      
+      # First check the cache
+      if settings.cache_enabled && cache.cache_hit?(name)
+        cache.get_page(name)
+      # Then try to create the wiki page
+      elsif page = wiki.page(name)
+        content = Mustache.render(page_template, Smeagol::Views::Page.new(page))
+        cache.set_page(name, content) if settings.cache_enabled
+        content
+      # If it is not a wiki page then try to find the file
       elsif file = wiki.file(name)
         file.raw_data
+      # Otherwise return a 404 error
       else
         raise Sinatra::NotFound
       end
