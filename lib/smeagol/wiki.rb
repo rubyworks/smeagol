@@ -17,7 +17,7 @@ module Smeagol
     def settings
       # Cache settings if already read
       if @settings.nil?
-        file = "#{path}/settings.yaml"
+        file = "#{path}/settings.yml"
         if File.readable?(file)
           @settings = YAML::load(IO.read(file)).to_ostruct
         else

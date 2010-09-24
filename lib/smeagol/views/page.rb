@@ -45,7 +45,7 @@ module Smeagol
         page.title != "Home"
       end
       
-      # Public: The HTML menu generated from the settings.yaml file.
+      # Public: The HTML menu generated from the settings.yml file.
       def menu_html
         menu = @page.wiki.settings.menu
         if !menu.nil?
