@@ -15,6 +15,7 @@ end
 
 Smeagol::App.set :environment, :test
 Smeagol::App.set :gollum_path, ENV['SMEAGOL_TEST_WIKI_PATH']
+Smeagol::App.set :cache_enabled, false
 
 World do
   def app

@@ -6,78 +6,23 @@ require 'ostruct'
 require File.expand_path(File.dirname(__FILE__) + '/../lib/smeagol')
 
 # Parse options
-options = OpenStruct.new
-options.port = 4567
-options.auto_update = false
-options.cache_enabled = true
-opts = OptionParser.new do |opts|
-  opts.banner = 'usage: smeagol [OPTIONS] [PATH]\n\n'
-
-  opts.on('--port [PORT]', 'Bind port (default 4567).') do |port|
-    options.port = port.to_i
-  end
-
-  opts.on('--git [GIT]', 'Path to Git binary.') do |path|
-    options.git = path
-  end
-
-  opts.on('--autoupdate', 'Updates the repository on a daily basis.') do |flag|
-    options.auto_update = flag
-  end
-
-  opts.on('--[no-]cache', 'Enables page caching.') do |flag|
-    options.cache_enabled = flag
-  end
-
-  opts.on('-v', '--version', 'Display current version.') do
-    puts "Smeagol #{Smeagol::VERSION}"
-    exit 0
-  end
-end
-
-# Read command line options into `options` hash
-begin
-  opts.parse!
-rescue OptionParser::InvalidOption
-  puts "smeagol: #{$!.message}"
-  puts "smeagol: try 'smeagol --help' for more information"
-  exit
-end
-
-# Attempt to find the git binary
-if options.git.nil?
-  ['/usr/bin', '/usr/sbin', '/usr/local/bin', '/opt/local/bin'].each do |path|
-    file = "#{path}/git"
-    options.git = file if File.executable?(file)
-    break if options.git
-  end
-end
-
-# Alert user that updates are unavailable if git is not found
-if options.git.nil? || !File.executable?(options.git)
-  puts "warning: git executable could not be found."
-else
-  puts "git found: #{options.git}"
-end
-
-# Set the path to the Gollum repository
-gollum_path = ARGV[0] || Dir.pwd
+options = Smeagol::OptionParser.parse(ARGV)
 
 # Run the auto update process
 if options.git && options.auto_update
   Thread.new do
     while true do
       sleep 86400
-      Smeagol::Updater.update(options.git, gollum_path)
+      Smeagol::Updater.update(options.git, options.gollum_path)
     end
   end
 end
 
 # Clear the cache
-Smeagol::Cache.new(Gollum::Wiki.new(gollum_path)).clear()
+Smeagol::Cache.new(Gollum::Wiki.new(options.gollum_path)).clear()
 
 # Run the web server
-Smeagol::App.set(:gollum_path, gollum_path)
+Smeagol::App.set(:gollum_path, options.gollum_path)
 Smeagol::App.set(:git, options.git)
 Smeagol::App.set(:cache_enabled, options.cache_enabled)
 Smeagol::App.run!(:port => options.port)
