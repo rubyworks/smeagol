@@ -1,5 +1,4 @@
 require 'rubygems'
-require 'bundler/setup'
 require 'cucumber'
 require 'rack/test'
 
