@@ -8,7 +8,7 @@ Smeagol is a server that can run a read-only version of a
 to maintain a standalone copy of a Github wiki but you want to update it through
 the Github interface.
 
-Gollum follows the rules of [Semantic Versioning](http://semver.org/) and uses
+Smeagol follows the rules of [Semantic Versioning](http://semver.org/) and uses
 [TomDoc](http://tomdoc.org/) for inline documentation.
 
 
