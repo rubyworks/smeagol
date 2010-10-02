@@ -1,6 +1,5 @@
 #!/usr/bin/env ruby
 require 'rubygems'
-require 'bundler/setup'
 require 'optparse'
 require 'ostruct'
 require File.expand_path(File.dirname(__FILE__) + '/../lib/smeagol')
