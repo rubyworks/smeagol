@@ -1,0 +1,5 @@
+v0.3.0
+* Added multiple repository support.
+* Added `smeagold` process daemon.
+* Removed Bundler dependency.
+* Added HTML5 shiv for IE support.

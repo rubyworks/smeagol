@@ -35,13 +35,24 @@ end
 #
 #############################################################################
 
-task :release => :build do
+task :release do
+  puts ""
+  puts "Are you sure you want to relase Smeagol #{Smeagol::VERSION}?"
+  print "[y/N] "
+  exit unless STDIN.gets.index(/y/i) == 0
+  
   unless `git branch` =~ /^\* master$/
     puts "You must be on the master branch to release!"
     exit!
   end
+  
+  # Build gem and upload
   sh "gem build smeagol.gemspec"
-  sh "git commit --allow-empty -a -m 'Release #{Smeagol::VERSION}'"
+  sh "gem push smeagol-#{Smeagol::VERSION}.gem"
+  sh "rm smeagol-#{Smeagol::VERSION}.gem"
+  
+  # Commit
+  sh "git commit --allow-empty -a -m 'v#{Smeagol::VERSION}'"
   sh "git tag v#{Smeagol::VERSION}"
   sh "git push origin master"
   sh "git push origin v#{Smeagol::VERSION}"
