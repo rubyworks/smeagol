@@ -13,9 +13,10 @@ Gem::Specification.new do |s|
   s.email       = ["benbjohnson@yahoo.com"]
   s.homepage    = "http://smeagolrb.info"
   s.summary     = "A read-only server for Gollum wikis"
-  s.executables = ["smeagol"]
+  s.executables = ['smeagol', 'smeagold']
   s.default_executable = 'smeagol'
 
+  s.add_dependency('daemons', '~> 1.1.0')
   s.add_bundler_dependencies
 
   s.test_files   = Dir.glob("test/**/*")

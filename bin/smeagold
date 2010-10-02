@@ -1,0 +1,6 @@
+#!/usr/bin/env ruby
+require 'rubygems'
+require 'daemons'
+
+filename = File.expand_path('smeagol', File.dirname(__FILE__))
+Daemons.run(filename)

@@ -96,7 +96,6 @@ module Smeagol
         end
         
         config = YAML.load(IO.read(path))
-        p config
       end
 
       return config

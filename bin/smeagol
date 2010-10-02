@@ -1,9 +1,15 @@
 #!/usr/bin/env ruby
 require 'rubygems'
+require 'daemons'
 require 'bundler/setup'
 require 'optparse'
 require 'ostruct'
 require File.expand_path(File.dirname(__FILE__) + '/../lib/smeagol')
+
+# Catch signals
+Signal.trap('TERM') do
+  Process.kill('KILL', 0)
+end
 
 # Parse options
 options = Smeagol::OptionParser.parse(ARGV)
