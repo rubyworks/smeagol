@@ -57,8 +57,16 @@ module Smeagol
       # Attempt to find the git binary
       update_git_path(opts)
 
-      # Set the path to the Gollum repository if not already set
-      opts.gollum_path ||= args[0] || Dir.pwd
+      # Append repositories from the command line.
+      opts.repositories ||= []
+      if !args.first.nil?
+        opts.repositories.unshift({:path => args.first}.to_ostruct)
+      end
+      
+      # Set repository to present working directory if no paths specified.
+      if opts.repositories.empty?
+        opts.repositories = [{:path => Dir.pwd}.to_ostruct]
+      end
       
       # Merge all options
       return opts

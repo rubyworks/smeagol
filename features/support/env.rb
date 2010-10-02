@@ -1,5 +1,4 @@
 require 'rubygems'
-require 'bundler/setup'
 require 'cucumber'
 require 'rack/test'
 
@@ -14,7 +13,7 @@ if !ENV.has_key?('SMEAGOL_TEST_WIKI_PATH')
 end
 
 Smeagol::App.set :environment, :test
-Smeagol::App.set :gollum_path, ENV['SMEAGOL_TEST_WIKI_PATH']
+Smeagol::App.set :repositories, [OpenStruct.new({:path => ENV['SMEAGOL_TEST_WIKI_PATH']})]
 Smeagol::App.set :cache_enabled, false
 
 World do
