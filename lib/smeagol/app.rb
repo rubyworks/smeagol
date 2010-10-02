@@ -24,7 +24,7 @@ module Smeagol
 
     # Update the gollum repository
     get '/update' do
-      if Updater.update(settings.git, settings.gollum_path)
+      if Updater.update(settings.git, repository_path)
         'ok'
       else
         'error'
@@ -37,10 +37,10 @@ module Smeagol
       name = "Home" if name == ""
       name = name.gsub(/\/+$/, '')
       name = File.sanitize_path(name)
-      file_path = "#{settings.gollum_path}/#{name}"
+      file_path = "#{repository_path}/#{name}"
       
       # Load the wiki settings
-      wiki = Smeagol::Wiki.new(settings.gollum_path)
+      wiki = Smeagol::Wiki.new(repository_path)
       cache = Smeagol::Cache.new(wiki)
       
       # First check the cache
@@ -78,8 +78,8 @@ module Smeagol
     # repository if it exists. Otherwise, it uses the default page.mustache file
     # packaged with the Smeagol library.
     def page_template
-      if File.exists?("#{settings.gollum_path}/page.mustache")
-        IO.read("#{settings.gollum_path}/page.mustache")
+      if File.exists?("#{repository_path}/page.mustache")
+        IO.read("#{repository_path}/page.mustache")
       else
         IO.read(File.join(File.dirname(__FILE__), 'templates/page.mustache'))
       end
@@ -97,6 +97,32 @@ module Smeagol
       end
       
       return 'text/plain'
+    end
+
+    # Site information such as paths and CNAME information.
+    def sites
+      if @sites.nil?
+        @sites = []
+        settings.repository_paths.each do |path|
+          wiki = Smeagol::Wiki.new(path)
+          @sites.push({:path => path, :cname => wiki.settings.cname})
+        end
+      end
+      
+      return @sites
+    end
+
+    # Determines the repository to use based on the hostname.
+    def repository_path
+      # Match on hostname
+      sites.each do |site|
+        if !site[:cname].nil? && site[:cname].upcase == request.host.upcase
+          return site[:path]
+        end
+      end
+      
+      # If no match, use the first site as the default
+      sites.first[:path]
     end
   end
 end

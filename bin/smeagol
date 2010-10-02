@@ -13,16 +13,18 @@ if options.git && options.auto_update
   Thread.new do
     while true do
       sleep 86400
-      Smeagol::Updater.update(options.git, options.gollum_path)
+      Smeagol::Updater.update(options.git, options.repository_paths)
     end
   end
 end
 
-# Clear the cache
-Smeagol::Cache.new(Gollum::Wiki.new(options.gollum_path)).clear()
+# Clear the caches
+options.repository_paths.each do |path|
+  Smeagol::Cache.new(Gollum::Wiki.new(path)).clear()
+end
 
 # Run the web server
-Smeagol::App.set(:gollum_path, options.gollum_path)
+Smeagol::App.set(:repository_paths, options.repository_paths)
 Smeagol::App.set(:git, options.git)
 Smeagol::App.set(:cache_enabled, options.cache_enabled)
 Smeagol::App.run!(:port => options.port)
