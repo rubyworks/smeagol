@@ -58,11 +58,15 @@ module Smeagol
       update_git_path(opts)
 
       # Append repositories from the command line.
-      opts.repository_paths ||= []
-      opts.repository_paths.push(*args)
+      opts.repositories ||= []
+      if !args.first.nil?
+        opts.repositories.unshift({:path => args.first}.to_ostruct)
+      end
       
       # Set repository to present working directory if no paths specified.
-      opts.repository_paths = [Dir.pwd] if opts.repository_paths.length == 0
+      if opts.repositories.empty?
+        opts.repositories = [{:path => Dir.pwd}.to_ostruct]
+      end
       
       # Merge all options
       return opts

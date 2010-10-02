@@ -14,7 +14,7 @@ if !ENV.has_key?('SMEAGOL_TEST_WIKI_PATH')
 end
 
 Smeagol::App.set :environment, :test
-Smeagol::App.set :repository_paths, [ENV['SMEAGOL_TEST_WIKI_PATH']]
+Smeagol::App.set :repositories, [OpenStruct.new({:path => ENV['SMEAGOL_TEST_WIKI_PATH']})]
 Smeagol::App.set :cache_enabled, false
 
 World do
