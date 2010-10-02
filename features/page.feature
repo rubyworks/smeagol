@@ -10,6 +10,10 @@ Feature: Page
           <title>Smeagol - Home</title>
           <link rel="stylesheet" href="/smeagol/main.css" type="text/css"/>
           <link rel="stylesheet" href="/smeagol/pygment.css" type="text/css"/>
+
+          <!--[if lt IE 9]>
+          <script src="/smeagol/html5.js"></script>
+          <![endif]-->
         </head>
       
         <body>
