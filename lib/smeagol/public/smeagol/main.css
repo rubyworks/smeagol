@@ -93,13 +93,14 @@ article h1 {
 
 #content h3 {
 	font-size: 110%;
-	margin-top: 1em;
+	margin-top:1em;
+	margin-bottom:0.5em;
 	font-size: 1.17em;
 }
 
 #content p {
 	line-height: 1.5em;
-	margin: 1em 0px;
+	margin: 0.5em 0em 1em 0em;
 }
 
 #content ol {
