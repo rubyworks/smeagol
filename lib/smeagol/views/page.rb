@@ -40,6 +40,12 @@ module Smeagol
         page.version.authored_date.strftime("%B %d, %Y")
       end
       
+      # Public: The URL of the project source code. This is set in the settings
+      # file.
+      def source_url
+        page.wiki.settings.source_url
+      end
+
       # Public: A flag stating that this is not the home page.
       def not_home?
         page.title != "Home"
@@ -57,6 +63,19 @@ module Smeagol
         end
       end
 
+      # Public: The HTML for the GitHub ribbon, if enabled. This can be set in
+      # the settings file as `ribbon`.
+      def ribbon_html
+        if !source_url.nil? && !page.wiki.settings.ribbon.nil?
+          name, pos = *page.wiki.settings.ribbon.split(' ')
+          pos ||= 'right'
+          
+          html =  "<a href=\"#{source_url}\">"
+          html << "<img style=\"position:absolute; top:0; #{pos}:0; border:0;\" src=\"#{ribbon_url(name, pos)}\" alt=\"Fork me on GitHub\"/>"
+          html << "</a>"
+        end
+      end
+
       
       ##########################################################################
       #
@@ -68,6 +87,16 @@ module Smeagol
       
       # The Gollum::Page that this view represents.
       attr_reader :page
+      
+      # Generates the correct ribbon url
+      def ribbon_url(name, pos)
+        hexcolors = {'red' => 'aa0000', 'green' => '007200', 'darkblue' => '121621', 'orange' => 'ff7600', 'gray' => '6d6d6d', 'white' => 'ffffff'}
+        if hexcolor = hexcolors[name]
+          "http://s3.amazonaws.com/github/ribbons/forkme_#{pos}_#{name}_#{hexcolor}.png"
+        else
+          name
+        end
+      end
     end
   end
 end
