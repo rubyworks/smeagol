@@ -25,7 +25,7 @@ module Smeagol
           options['config_path'] = path
         end
         
-        parser.on('--autoupdate', 'Updates the repository on a daily basis.') do |flag|
+        parser.on('--auto-update', 'Updates the repository on a daily basis.') do |flag|
           options['auto_update'] = flag
         end
 

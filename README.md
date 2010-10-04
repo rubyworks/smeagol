@@ -44,7 +44,7 @@ There are two ways to update the repository through Smeagol:
 1. Manual Update
 
 To setup Smeagol to automatically update your repository in fixed intervals,
-simply pass the `--autoupdate` option in the command line and Smeagol will
+simply pass the `--auto-update` option in the command line and Smeagol will
 automatically perform a `git pull origin master` on your repository once per
 day.
 
