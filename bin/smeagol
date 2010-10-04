@@ -26,7 +26,8 @@ if options.git && options.auto_update
     while true do
       sleep 86400
       options.repositories.each do |repository|
-        Smeagol::Updater.update(options.git, repository.path)
+        wiki = Smeagol::Wiki.new(repository.path)
+        wiki.update(options.git)
       end
     end
   end

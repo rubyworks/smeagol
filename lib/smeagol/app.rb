@@ -24,7 +24,8 @@ module Smeagol
 
     # Update the gollum repository
     get '/update' do
-      if Updater.update(settings.git, repository)
+      wiki = Smeagol::Wiki.new(repository.path)
+      if wiki.update(settings.git)
         'ok'
       else
         'error'
