@@ -41,7 +41,7 @@ module Smeagol
       end
       
       # Public: A flag stating that this is not the home page.
-      def is_not_home?
+      def not_home?
         page.title != "Home"
       end
       

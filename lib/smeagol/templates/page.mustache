@@ -22,19 +22,19 @@
 		</nav>
 		
 		<article>
-			{{#is_not_home?}}
+			{{#not_home?}}
 			<h1>{{page_title}}</h1>
-			{{/is_not_home?}}
+			{{/not_home?}}
     		<div id="content">
 {{{content}}}
 			</div>
 		</article>
 
-		{{#is_not_home?}}
+		{{#not_home?}}
 		<footer>
 			<small>Last edited by <b>{{author}}</b> on {{date}}.</small>
 		</footer>
-		{{/is_not_home?}}
+		{{/not_home?}}
     </div>
   </body>
 </html>
