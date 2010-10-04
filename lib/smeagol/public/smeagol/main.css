@@ -122,16 +122,20 @@ article h1 {
 }
 
 pre {
-	background-color: ghostWhite;
-	border: 1px solid #ddd;
-	color: #444;
-	font-size: 12px;
 	line-height: 1.5em;
 	margin: 1em 0px;
 	overflow: auto;
 	padding: 0.5em;
 }
 
+code {
+	padding: 0px 0.2em;
+}
+
 pre, code {
+	background-color: ghostWhite;
+	border: 1px solid #ddd;
+	color: #444;
+	font-size: 12px;
 	font: normal normal normal 12px/normal Monaco, 'Courier New', monospace;
 }
