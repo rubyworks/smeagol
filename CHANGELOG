@@ -1,3 +1,13 @@
+v0.4.0
+* Added secret update key.
+* Added GitHub ribbon support.
+* Added footer to home page.
+* Changed `is_not_home?` to `not_home?` on Mustache page view.
+* Renamed `--autoupdate` CLI option to `--auto-update`.
+* Moved update functionality into Smeagol::Wiki.
+* CSS Fixes: code & H3
+
+
 v0.3.0
 * Added multiple repository support.
 * Added `smeagold` process daemon.
