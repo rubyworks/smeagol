@@ -7,6 +7,7 @@ module Smeagol
     # Returns an OpenStruct of the options.
     def self.parse(args)
       # Set parse options
+      secret = nil
       options = {}
       parser = ::OptionParser.new do |parser|
         parser.banner = 'usage: smeagol [OPTIONS] [PATH]\n\n'
@@ -31,6 +32,10 @@ module Smeagol
 
         parser.on('--[no-]cache', 'Enables page caching.') do |flag|
           options['cache_enabled'] = flag
+        end
+
+        parser.on('--secret [KEY]', 'Specifies the secret key used to update.') do |str|
+          secret = str
         end
 
         parser.on('-v', '--version', 'Display current version.') do
@@ -67,6 +72,9 @@ module Smeagol
       if opts.repositories.empty?
         opts.repositories = [{:path => Dir.pwd}.to_ostruct]
       end
+      
+      # Set secret on default repository if passed in.
+      opts.repositories.first.secret = secret unless secret.nil?
       
       # Merge all options
       return opts
