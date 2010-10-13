@@ -6,8 +6,9 @@ module Smeagol
       # wiki - The wiki that this view represents.
       #
       # Returns a new view object.
-      def initialize(wiki)
-        @wiki = wiki
+      def initialize(wiki, version='master')
+        @wiki    = wiki
+        @version = version || 'master'
       end
       
       # Public: The title of the wiki. This is set in the settings file.
@@ -32,7 +33,12 @@ module Smeagol
         if !menu.nil?
           html = "<ul>\n"
           menu.each do |item|
-            html << "<li><a href=\"#{item.href}\">#{item.title}</a></li>\n"
+            if version != 'master' && item.href.index('/') == 0
+              prefix = "/#{version}"
+            else
+              prefix = ""
+            end
+            html << "<li><a href=\"#{prefix}#{item.href}\">#{item.title}</a></li>\n"
           end
           html << "</ul>\n"
         end
@@ -60,8 +66,11 @@ module Smeagol
       
       protected
       
-      # The Gollum::Page that this view represents.
+      # The Gollum::Wiki that this view represents.
       attr_reader :wiki
+      
+      # The tagged version that is being viewed.
+      attr_reader :version
       
 
       private

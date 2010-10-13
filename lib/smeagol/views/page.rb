@@ -3,11 +3,12 @@ module Smeagol
     class Page < Base
       # Initializes a new page template data object.
       #
-      # page - The individual wiki page that this view represents.
+      # page    - The individual wiki page that this view represents.
+      # version - The tagged version of the page.
       #
       # Returns a new page object.
-      def initialize(page)
-        super(page.wiki)
+      def initialize(page, version='master')
+        super(page.wiki, version)
         @page = page
       end
       

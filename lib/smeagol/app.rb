@@ -83,7 +83,7 @@ module Smeagol
         cache.get_page(name, version)
       # Then try to create the wiki page
       elsif page = wiki.page(name, version)
-        content = Mustache.render(get_template('page'), Smeagol::Views::Page.new(page))
+        content = Mustache.render(get_template('page'), Smeagol::Views::Page.new(page, tag_name))
         cache.set_page(name, page.version.id, content) if settings.cache_enabled
         content
       # If it is a directory, redirect to the index page
