@@ -3,7 +3,9 @@ require 'rack/file'
 require 'sinatra'
 require 'mustache'
 require 'tmpdir'
+require 'smeagol/views/base'
 require 'smeagol/views/page'
+require 'smeagol/views/versions'
 
 module Smeagol
   class App < Sinatra::Base
@@ -41,9 +43,32 @@ module Smeagol
       end
     end
 
+    # Lists the tagged versions of the repo.
+    get '/versions' do
+      wiki = Smeagol::Wiki.new(repository.path)
+      Mustache.render(get_template('versions'), Smeagol::Views::Versions.new(wiki))
+    end
+
+
     # All other resources go through Gollum.
     get '/*' do
-      name = params[:splat].first
+      splat = params[:splat].first
+
+      # If the path starts with a version identifier, use it.
+      version = 'master'
+      tag_name = nil
+      if splat.index(/^v\d/)
+        repo = Grit::Repo.new(repository.path)
+        tag_name = splat.split('/').first
+        repo.tags.each do |tag|
+          if tag.name == tag_name
+            version = tag.commit.id
+            splat = splat.split('/')[1..-1].join('/')
+          end
+        end
+      end
+      
+      name = splat
       name = "Home" if name == ""
       name = name.gsub(/\/+$/, '')
       name = File.sanitize_path(name)
@@ -54,18 +79,20 @@ module Smeagol
       cache = Smeagol::Cache.new(wiki)
       
       # First check the cache
-      if settings.cache_enabled && cache.cache_hit?(name)
-        cache.get_page(name)
+      if settings.cache_enabled && cache.cache_hit?(name, version)
+        cache.get_page(name, version)
       # Then try to create the wiki page
-      elsif page = wiki.page(name)
-        content = Mustache.render(page_template, Smeagol::Views::Page.new(page))
-        cache.set_page(name, content) if settings.cache_enabled
+      elsif page = wiki.page(name, version)
+        content = Mustache.render(get_template('page'), Smeagol::Views::Page.new(page))
+        cache.set_page(name, page.version.id, content) if settings.cache_enabled
         content
       # If it is a directory, redirect to the index page
       elsif File.directory?(file_path)
-        redirect "/#{name}/index.html"
+        url = "/#{name}/index.html"
+        url = "/#{tag_name}#{url}" unless tag_name.nil?
+        redirect url
       # If it is not a wiki page then try to find the file
-      elsif file = wiki.file(name)
+      elsif file = wiki.file(name, version)
         content_type get_mime_type(name)
         file.raw_data
       # Otherwise return a 404 error
@@ -84,14 +111,16 @@ module Smeagol
     private
     # The Mustache template to use for page rendering.
     #
+    # name - The name of the template to use.
+    #
     # Returns the content of the page.mustache file in the root of the Gollum
     # repository if it exists. Otherwise, it uses the default page.mustache file
     # packaged with the Smeagol library.
-    def page_template
-      if File.exists?("#{repository.path}/page.mustache")
-        IO.read("#{repository.path}/page.mustache")
+    def get_template(name)
+      if File.exists?("#{repository.path}/#{name}.mustache")
+        IO.read("#{repository.path}/#{name}.mustache")
       else
-        IO.read(File.join(File.dirname(__FILE__), 'templates/page.mustache'))
+        IO.read(File.join(File.dirname(__FILE__), "templates/#{name}.mustache"))
       end
     end
 

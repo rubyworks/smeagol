@@ -36,6 +36,9 @@ Feature: Page
               <p>Go to the <a class="internal present" href="/Code-page">Code Page</a>.</p>
       	    </div>
       	    </article>
+            <footer>
+              <small>Last edited by <b>Ben Johnson</b> on September 24, 2010.</small>
+            </footer>
           </div>
         </body>
       </html>

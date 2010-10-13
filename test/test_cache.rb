@@ -9,7 +9,7 @@ class CacheTestCase < MiniTest::Unit::TestCase
   end
 
   def test_should_show_cache_hit
-    @cache.set_page('Home', 'abc')
+    @cache.set_page('Home', 'master', 'abc')
     assert @cache.cache_hit?('Home')
   end
   
@@ -22,12 +22,12 @@ class CacheTestCase < MiniTest::Unit::TestCase
   end
 
   def test_should_cache_page
-    @cache.set_page('Home', 'abc')
+    @cache.set_page('Home', 'master', 'abc')
     assert_equal 'abc', @cache.get_page('Home')
   end
 
   def test_should_remove_cache
-    @cache.set_page('Home', 'abc')
+    @cache.set_page('Home', 'master', 'abc')
     @cache.remove_page('Home')
     assert !@cache.cache_hit?('Home')
   end
