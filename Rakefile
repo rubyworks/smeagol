@@ -37,8 +37,7 @@ end
 
 task :release do
   puts ""
-  puts "Are you sure you want to relase Smeagol #{Smeagol::VERSION}?"
-  print "[y/N] "
+  print "Are you sure you want to relase Smeagol #{Smeagol::VERSION}? [y/N] "
   exit unless STDIN.gets.index(/y/i) == 0
   
   unless `git branch` =~ /^\* master$/
