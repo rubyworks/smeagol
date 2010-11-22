@@ -27,6 +27,11 @@ module Smeagol
         wiki.settings.source_url
       end
 
+      # Public: The Google Analytics tracking id from the settings file.
+      def tracking_id
+        wiki.settings.tracking_id
+      end
+
       # Public: The HTML menu generated from the settings.yml file.
       def menu_html
         menu = wiki.settings.menu
@@ -57,7 +62,7 @@ module Smeagol
         end
       end
 
-      
+
       ##########################################################################
       #
       # Internal Methods
