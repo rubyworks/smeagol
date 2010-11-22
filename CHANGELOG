@@ -1,3 +1,19 @@
+v0.5.2
+* Added Google Analytics support
+
+v0.5.1
+* Fixed menu bug.
+
+v0.5.0
+* Added versioning using git tags
+
+v0.4.2
+* Added CSS styles
+* Added CSS reset
+
+v0.4.1
+* Missing require bug fixed.
+
 v0.4.0
 * Added secret update key.
 * Added GitHub ribbon support.
