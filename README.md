@@ -60,3 +60,7 @@ or fix a bug. There are a couple things I ask:
 
 1. You must have tests for all code you check in.
 1. Create an appropriately named topic branch that contains your change.
+
+Also, to run the Cucumber tests in Smeagol, you must first install `rdiscount`:
+
+	$ gem install rdiscount
