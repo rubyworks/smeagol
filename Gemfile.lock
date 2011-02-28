@@ -1,11 +1,11 @@
 PATH
   remote: .
   specs:
-    smeagol (0.5.3)
+    smeagol (0.5.4)
       OptionParser (~> 0.5.1)
       daemons (~> 1.1.0)
       gollum (~> 1.1.1)
-      rack (= 1.2.0)
+      rack (~> 1.2.0)
       sinatra (~> 1.0)
 
 GEM
