@@ -50,6 +50,10 @@ Feature: Page
       	    </article>
             <footer>
               <small>Last edited by <b>Ben Johnson</b> on September 24, 2010.</small>
+              <small style="float:right;">
+                This site is a <a href="https://github.com/blog/699-making-github-more-open-git-backed-wikis">GitHub Wiki</a>
+                mirror powered by <a href="http://smeagolrb.info">Smeagol</a>.
+              </small>
             </footer>
           </div>
         </body>
