@@ -205,3 +205,30 @@ pre > code {
 small {
 	font-size: 80%;
 }
+
+span.frame{
+    display:block;
+    overflow:hidden;
+}
+
+span.frame > span{
+    border: 1px solid #ddd;
+    display: block;
+    overflow: hidden;
+    float: left;
+    margin: 13px 0 0;
+    padding: 7px;
+    width:auto;
+}
+
+span.frame span img{
+    display: block;
+    float: left;
+}
+
+span.frame span span{
+    clear: both;
+    color: #333;
+    display: block;
+    padding:5px 0 0;
+}
