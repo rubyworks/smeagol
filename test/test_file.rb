@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/helper'
+require 'helper'
 
 class FileTestCase < MiniTest::Unit::TestCase
   def test_sanitize_should_remove_parent_refs
