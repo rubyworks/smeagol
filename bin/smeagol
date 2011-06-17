@@ -42,5 +42,6 @@ end
 Smeagol::App.set(:repositories, options.repositories)
 Smeagol::App.set(:git, options.git)
 Smeagol::App.set(:cache_enabled, options.cache_enabled)
+Smeagol::App.set(:mount_path, options.mount_path)
 Smeagol::App.run!(:port => options.port)
 

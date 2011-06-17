@@ -75,7 +75,7 @@ module Smeagol
       file_path = "#{repository.path}/#{name}"
       
       # Load the wiki settings
-      wiki = Smeagol::Wiki.new(repository.path)
+      wiki = Smeagol::Wiki.new(repository.path, {:base_path => mount_path})
       cache = Smeagol::Cache.new(wiki)
       
       # First check the cache
@@ -150,6 +150,13 @@ module Smeagol
       
       # If no match, use the first repository as the default
       settings.repositories.first
+    end
+
+    # Determines the mounted path to prefix to internal links.
+    def mount_path
+      p = settings.mount_path
+      p += '/' unless p.end_with?('/')
+      p
     end
   end
 end
