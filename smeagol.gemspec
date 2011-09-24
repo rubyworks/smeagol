@@ -12,7 +12,7 @@ Gem::Specification.new do |s|
   s.email       = ["benbjohnson@yahoo.com"]
   s.homepage    = "http://smeagolrb.info"
   s.summary     = "A read-only server for Gollum wikis"
-  s.executables = ['smeagol', 'smeagold']
+  s.executables = ['smeagol', 'smeagold', 'smeagol-static']
   s.default_executable = 'smeagol'
 
   s.add_dependency('rack', '~> 1.2.0')
