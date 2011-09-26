@@ -40,14 +40,14 @@ Feature: Page
                 <li><a href="/Code-page">Code</a></li>
               </ul>
             </nav>
-      	    <article>
-      	    <div id="content">
-      	      <p>Welcome to the Home page!</p>
+            <article>
+            <div id="content">
+              <p>Welcome to the Home page!</p>
       
               <p>Go to the <a class="internal present" href="/Test-page">Test Page</a>.</p>
               <p>Go to the <a class="internal present" href="/Code-page">Code Page</a>.</p>
-      	    </div>
-      	    </article>
+            </div>
+            </article>
             <footer>
               <small>Last edited by <b>Ben Johnson</b> on September 24, 2010.</small>
               <small style="float:right;">
@@ -65,7 +65,7 @@ Feature: Page
     Then I should see the following content:
       """
       <h1>Test page</h1>
-  	  <div id="content">
+      <div id="content">
         <p>This is the <strong>test</strong> <em>page</em>.</p>
       
         <p>Unordered list:</p>
@@ -87,13 +87,13 @@ Feature: Page
     Then I should see the following content:
       """
       <h1>Code page</h1>
-  	  <div id="content">
-  	    <p>This is Ruby code:</p>
-  	  
-  	    <div class="highlight"><pre><span class="k">def</span> <span class="nf">hello</span>
-  	      <span class="nb">puts</span> <span class="s2">"Hello, World!"</span>
-  	    <span class="k">end</span>
-  	    </pre>
-  	    </div>
+      <div id="content">
+        <p>This is Ruby code:</p>
+      
+        <div class="highlight"><pre><span class="k">def</span> <span class="nf">hello</span>
+          <span class="nb">puts</span> <span class="s2">"Hello, World!"</span>
+        <span class="k">end</span>
+        </pre>
+        </div>
       </div>
       """
