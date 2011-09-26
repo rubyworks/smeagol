@@ -15,7 +15,7 @@ class Static
     if File.exists?("#{@wiki.path}/page.mustache")
       IO.read("#{@wiki.path}/page.mustache")
     else
-      IO.read(File.join(File.dirname(__FILE__), "templates/#{name}.mustache"))
+      IO.read(File.join(File.dirname(__FILE__), "../lib/smeagol/templates/page.mustache"))
     end
   end
 
