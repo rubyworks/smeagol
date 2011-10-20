@@ -1,11 +1,13 @@
 require 'gollum'
 require 'mustache'
 require 'tmpdir'
+require 'sinatra'
+require 'rack/file'
 require 'smeagol/views/base'
 require 'smeagol/views/page'
 require 'smeagol/views/versions'
 
-module Smeagol
+module Smeagol < Sinatra::Base
   class App
     ##############################################################################
     #
