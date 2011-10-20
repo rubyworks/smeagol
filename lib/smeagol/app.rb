@@ -7,7 +7,7 @@ require 'smeagol/views/base'
 require 'smeagol/views/page'
 require 'smeagol/views/versions'
 
-module Smeagol
+module Smeagol 
   class App < Sinatra::Base
     ##############################################################################
     #
