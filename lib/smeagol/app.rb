@@ -49,7 +49,6 @@ module Smeagol
       Mustache.render(get_template('versions'), Smeagol::Views::Versions.new(wiki))
     end
 
-
     # All other resources go through Gollum.
     get '/*' do
       splat = params[:splat].first
