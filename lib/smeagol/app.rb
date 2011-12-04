@@ -15,7 +15,7 @@ module Smeagol
     #
     ##############################################################################
 
-    set :public, File.dirname(__FILE__) + '/public'
+    set :public_folder, File.dirname(__FILE__) + '/public'
     
 
     ##############################################################################
@@ -130,7 +130,7 @@ module Smeagol
     # Returns the mime type for a file.
     def get_mime_type(file)
       if !file.nil?
-        extension = file.slice(file.rindex('.')..-1) if file.rindex('.')
+        extension = File.extname(file)
         return Rack::Mime::MIME_TYPES[extension] || 'text/plain'
       end
       
