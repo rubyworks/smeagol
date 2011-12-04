@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/helper'
+require 'helper'
 
 class WikiTestCase < MiniTest::Unit::TestCase
   def setup
