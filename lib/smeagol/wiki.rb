@@ -4,6 +4,11 @@ require 'yaml'
 
 module Smeagol
   class Wiki < Gollum::Wiki
+
+    self.default_ref = 'master'
+    self.default_committer_name  = 'Anonymous'
+    self.default_committer_email = 'anon@anon.com'
+
     # Public: Updates the wiki repository.
     # 
     # git  - The path to the git binary.

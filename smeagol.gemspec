@@ -16,7 +16,7 @@ Gem::Specification.new do |s|
   s.default_executable = 'smeagol'
 
   s.add_dependency('rack', '~> 1.2')
-  s.add_dependency('gollum', '~> 1.1')
+  s.add_dependency('gollum', '~> 1.3')
   s.add_dependency('sinatra', '~> 1.0')
   s.add_dependency('OptionParser', '~> 0.5')
   s.add_dependency('daemons', '~> 1.1')

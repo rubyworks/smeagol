@@ -48,6 +48,7 @@ module Smeagol
       
       # The Gollum::Page that this view represents.
       attr_reader :page
+
     end
   end
 end
