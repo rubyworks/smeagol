@@ -37,5 +37,7 @@ if not options.key?(:build_dir)
   options[:build_dir] = options[:repo] + "/build"
 end
 
-static = Smeagol::Static.new(Smeagol::Wiki.new(options[:repo]))
+wiki   = Smeagol::Wiki.new(options[:repo])
+static = Smeagol::Static.new(wiki)
 static.build(options[:build_dir])
+

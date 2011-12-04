@@ -54,7 +54,11 @@ module Smeagol
       end
     end
 
+    #
     def build_blob(blob)
+      return if blob.name == 'settings.yml'
+      return if File.extname(blob.name) == '.mustache'
+
       if name = @wiki.page_class.valid_page_name?(blob.name)
         page = @wiki.page(name)
 
