@@ -3,7 +3,7 @@ require 'rubygems'
 require 'daemons'
 require 'optparse'
 require 'ostruct'
-require File.expand_path(File.dirname(__FILE__) + '/../lib/smeagol')
+require 'smeagol'
 
 # Catch signals
 Signal.trap('TERM') do
