@@ -15,20 +15,20 @@ Gem::Specification.new do |s|
   s.executables = ['smeagol', 'smeagold', 'smeagol-static']
   s.default_executable = 'smeagol'
 
-  s.add_dependency('rack', '~> 1.2.0')
-  s.add_dependency('gollum', '~> 1.1.1')
+  s.add_dependency('rack', '~> 1.2')
+  s.add_dependency('gollum', '~> 1.1')
   s.add_dependency('sinatra', '~> 1.0')
-  s.add_dependency('OptionParser', '~> 0.5.1')
-  s.add_dependency('daemons', '~> 1.1.0')
+  s.add_dependency('OptionParser', '~> 0.5')
+  s.add_dependency('daemons', '~> 1.1')
 
-  s.add_development_dependency('rake', '~> 0.8.3')
-  s.add_development_dependency('minitest', '~> 1.7.0')
-  s.add_development_dependency('mocha', '~> 0.9.8')
-  s.add_development_dependency('cucumber', '~> 0.8.5')
-  s.add_development_dependency('rspec', '~> 1.3.0')
-  s.add_development_dependency('capybara', '~> 0.3.9')
+  s.add_development_dependency('rake')
+  s.add_development_dependency('minitest')
+  s.add_development_dependency('mocha')
+  s.add_development_dependency('cucumber')
+  s.add_development_dependency('rspec')
+  s.add_development_dependency('capybara')
 
   s.test_files   = Dir.glob("test/**/*")
-  s.files        = Dir.glob("lib/**/*") + %w(README.md)
+  s.files        = Dir.glob("lib/**/*") + Dir.glob("bin/**/*") + %w(README.md)
   s.require_path = 'lib'
 end
