@@ -62,6 +62,11 @@ module Smeagol
         end
       end
 
+      # Public: The string base path to prefix internal links.
+      def base_path
+        wiki.base_path
+      end
+
 
       ##########################################################################
       #

@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/helper'
+require 'helper'
 
 class HashTestCase < MiniTest::Unit::TestCase
   def test_create_ostruct_root_copy

@@ -95,6 +95,7 @@ module Smeagol
       options['port'] = 4567
       options['auto_update'] = false
       options['cache_enabled'] = true
+      options['mount_path'] = ''
       options
     end
     
