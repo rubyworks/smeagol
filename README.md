@@ -16,12 +16,12 @@ Smeagol follows the rules of [Semantic Versioning](http://semver.org/) and uses
 
 You can install Smeagol with RubyGems:
 
-	$ [sudo] gem install smeagol
+    $ [sudo] gem install smeagol
 
 And then, if you want code highlighting, follow the
 [Installation Guide](http://pygments.org/docs/installation) for Pygments.
 
-Ta da. You're ready to go.
+Ta da! You're ready to go.
 
 
 ## RUNNING
@@ -29,11 +29,46 @@ Ta da. You're ready to go.
 To run smeagol, simply change directories to your Gollum repository and run the
 `smeagol` executable from the command line:
 
-	$ cd /path/to/repo
-	$ smeagol
+    $ cd /path/to/repo
+    $ smeagol
 
 This will run a web server at `http://localhost:4567`. You can change the port
 by setting the `--port` or `-p` option on the command line.
+
+
+## SETTINGS
+
+For optimal performance add a `settings.yml` file to the wiki repo. (You can 
+just check this file in an push it to the server. It will not effect you Gollum
+wiki in any way.) An example `settings.yml` file:
+
+    ---
+    url: http://trans.github.com
+    source_url: http://github.com/trans
+    title: 7R4N5.C0D3
+    author: trans
+    description:
+      Trans Programming Blog
+
+    menu:
+    - title: I BLOG
+      href: /
+    - title: I MAKE
+      href: /I-MAKE
+    - title: I USE
+      href: /I-USE
+    - title: I READ
+      href: /I-READ
+
+
+## BUILDING
+
+Smeagol also can generate a static site. To do this provide a site destination
+directory via the `-b`/`--build` option.
+
+    $ smeagol -b /path/to/site /path/to/repo
+
+If `/path/to/repo` is not given, the current working directory is assumed.
 
 
 ## UPDATING
@@ -53,6 +88,13 @@ To perform a manual update, simply go to the URL,
 URL to your appropriate hostname and port.
 
 
+## CUSTOMIZING
+
+In you wiki's repo add a file called `page.mustache`. Using Mustache templating
+use this file to create a custom page layout for your site. To learn more
+about the varaibles available for use in this template see the [Smeagol Wiki](http://github.com/rubyworks/smeagol/wiki).
+
+
 ## CONTRIBUTE
 
 Have a great idea for Smeagol? Awesome. Fork the repository and add a feature
@@ -63,7 +105,7 @@ or fix a bug. There are a couple things I ask:
 
 Also, to run the Cucumber tests in Smeagol, you must first install `rdiscount`:
 
-	$ gem install rdiscount
+    $ gem install rdiscount
 
 
 ## COPYRIGHTS
