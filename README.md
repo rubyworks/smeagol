@@ -1,4 +1,4 @@
-smeagol -- A Read-Only Gollum Server
+Smeagol - A Read-Only Gollum Server
 =============================================
 
 ## DESCRIPTION
@@ -64,3 +64,11 @@ or fix a bug. There are a couple things I ask:
 Also, to run the Cucumber tests in Smeagol, you must first install `rdiscount`:
 
 	$ gem install rdiscount
+
+
+## COPYRIGHTS
+
+Copyright 2009 Ben Johnson, Rubyworks
+
+Smeagol is distributed under the terms of the BSD-2-Clause license.
+
