@@ -1,0 +1,13 @@
+---
+- rack 1.2~
+- gollum 1.3~
+- sinatra 1.0~
+- OptionParser 0.5~
+- daemons 1.1~
+- rake     (development)
+- minitest (development test)
+- mocha    (development test)
+- cucumber (development test)
+- rspec    (development test)
+- capybara (development test)
+
