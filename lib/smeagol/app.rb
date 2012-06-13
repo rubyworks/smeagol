@@ -66,7 +66,7 @@ module Smeagol
           end
         end
       end
-      
+
       name = splat
       name = "Home" if name == ""
       name = name.gsub(/\/+$/, '')
@@ -153,9 +153,9 @@ module Smeagol
 
     # Determines the mounted path to prefix to internal links.
     def mount_path
-      p = settings.mount_path
-      p += '/' unless p.end_with?('/')
-      p
+      path = settings.mount_path
+      path += '/' unless path.end_with?('/')
+      path
     end
   end
 end

@@ -1,47 +1,13 @@
 #!/usr/bin/env ruby
-require 'rubygems'
-require 'daemons'
-require 'optparse'
-require 'ostruct'
-require 'smeagol'
 
-# Catch signals
-Signal.trap('TERM') do
-  Process.kill('KILL', 0)
+if ARGV.include?('-b') || ARGV.include?('--build')
+  #if defined?(Daemons)
+  #  raise 'cannot daemonize a static build'
+  #end
+  require 'smeagol/generator'
+  Smeagol.generate(ARGV)
+else
+  require 'smeagol/server'
+  Smeagol.serve(ARGV)
 end
-
-# Parse options
-options = Smeagol::OptionParser.parse(ARGV)
-
-# Show repositories being served
-$stderr.puts "\n  Now serving:"
-options.repositories.each do |repository|
-  $stderr.puts "  #{repository.path} (#{repository.cname})"
-end
-$stderr.puts "\n"
-
-# Run the auto update process
-if options.git && options.auto_update
-  Thread.new do
-    while true do
-      sleep 86400
-      options.repositories.each do |repository|
-        wiki = Smeagol::Wiki.new(repository.path)
-        wiki.update(options.git)
-      end
-    end
-  end
-end
-
-# Clear the caches
-options.repositories.each do |repository|
-  Smeagol::Cache.new(Gollum::Wiki.new(repository.path)).clear()
-end
-
-# Run the web server
-Smeagol::App.set(:repositories, options.repositories)
-Smeagol::App.set(:git, options.git)
-Smeagol::App.set(:cache_enabled, options.cache_enabled)
-Smeagol::App.set(:mount_path, options.mount_path)
-Smeagol::App.run!(:port => options.port)
 

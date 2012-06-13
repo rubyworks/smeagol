@@ -5,9 +5,12 @@ require 'yaml'
 module Smeagol
   class Wiki < Gollum::Wiki
 
+    # TODO: Report issue that Gollum should set these in some other way so that a subclass
+    # doesn't have to do it again.
     self.default_ref = 'master'
     self.default_committer_name  = 'Anonymous'
     self.default_committer_email = 'anon@anon.com'
+    self.default_ws_subs = ['_','-']
 
     # Public: Updates the wiki repository.
     # 

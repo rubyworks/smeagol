@@ -1,6 +1,13 @@
 #!/usr/bin/env ruby
-require 'rubygems'
+
+# TODO: Aren't the separate tools for daemonizing a process?
+#       Do we really need to provide our own?
+#
+# TODO: If we do need this consider using the simpler Dente gem
+#       instead.
+
 require 'daemons'
 
 filename = File.expand_path('smeagol', File.dirname(__FILE__))
 Daemons.run(filename)
+
