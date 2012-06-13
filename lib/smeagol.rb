@@ -1,7 +1,6 @@
 #$:.unshift(File.dirname(__FILE__))
 
-require 'smeagol/core_ext/file'
-
+require 'smeagol/core_ext'
 require 'smeagol/app'
 require 'smeagol/cache'
 require 'smeagol/hash'
