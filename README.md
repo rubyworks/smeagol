@@ -51,14 +51,12 @@ wiki in any way.) An example `settings.yml` file:
       Trans Programming Blog
 
     menu:
-    - title: I BLOG
-      href: /
-    - title: I MAKE
-      href: /I-MAKE
-    - title: I USE
-      href: /I-USE
-    - title: I READ
-      href: /I-READ
+    - title: Homepage
+      href: "/"
+    - title: RSS Feed
+      href: "/rss.xml"
+    - title: Projects
+      href: "http://github.com/trans"
 
 
 ## BUILDING
