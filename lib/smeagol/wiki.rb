@@ -27,7 +27,7 @@ module Smeagol
         
         # Write update to log if something happened
         if output.index('Already up-to-date').nil?
-          $stderr.puts "==Repository updated at #{Time.new()} : #{path}=="
+          $stderr.puts "== Repository updated at #{Time.new()} : #{path} =="
         end
     
         return $? == 0
@@ -37,27 +37,22 @@ module Smeagol
       end
     end
 
-    ##############################################################################
     #
-    # Settings
-    #
-    ##############################################################################
-
     # The Smeagol wiki settings. These can be found in the smeagol.yaml file at
     # the root of the repository.
     #
-    # Returns an OpenStruct of settings.
+    # Cache settings if already read.
+    #
+    # Returns a Settings object.
+    #
     def settings
-      # Cache settings if already read
-      if @settings.nil?
-        file = "#{path}/settings.yml"
-        if File.readable?(file)
-          @settings = YAML::load(IO.read(file)).to_ostruct
+      @settings ||= (
+        if Settings.readable?
+          Settings.load
         else
-          @settings = OpenStruct.new
+          Settings.new
         end
-      end
-      return @settings
+      )
     end
   end
 end

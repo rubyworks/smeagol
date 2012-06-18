@@ -4,13 +4,58 @@ require 'smeagol/rss'
 module Smeagol
 
   class Static
+
     #
     def initialize(wiki)
       @wiki = wiki
-      @rss  = RSS.new(@wiki)
 
+      @pages     = {}
       @directory = []
     end
+
+    #
+    def build(directory)
+      puts "Building #{directory} ..."
+
+      @dir = directory
+
+      directory_push(directory)
+      build_tree(@wiki.repo.tree)
+      directory_pop
+    end
+
+    #
+    def save
+      #fileutils.mkdir(@dir) unless File.exist?(@dir)
+
+      save_smeagol
+
+      @pages.each do |href, page|
+        file = File.join(@dir, href)
+        dir_name = File.dirname(file)
+        fileutils.mkdir_p(dir_name) unless File.directory?(dir_name)
+
+        case page
+        when Smeagol::Views::Page
+          puts "write #{file}"
+          File.open(file, 'w') do |f|
+            html = Mustache.render(template, page)
+            #html = index_directory_hrefs(html)
+            f.write(html)
+          end
+        else  # blob
+          #file_name = "#{current_directory}/#{blob.name}"
+          puts "write #{file}"
+          File.open(file, 'w') do |f|
+            f.write(page.data)
+          end
+        end
+      end
+
+      save_rss
+    end
+
+  private
 
     #
     def template
@@ -41,17 +86,19 @@ module Smeagol
         @directory << "#{current_directory}/#{dir}"
       end
 
-      if not File.directory?(current_directory)
-        fileutils.mkdir(current_directory) unless File.directory?(current_directory)
-      end
+      #if not File.directory?(current_directory)
+      #  fileutils.mkdir(current_directory) unless File.directory?(current_directory)
+      #end
     end
 
     # Copy smeagol's default public files to static site.
     # These files are put in a separate `smeagol` directory
     # to avoid name clashes with wiki files.
-    def build_smeagol
-      dir = File.dirname(__FILE__) + '/public/smeagol'
-      fileutils.cp_r(dir, current_directory)
+    def save_smeagol
+      src = File.dirname(__FILE__) + '/public/smeagol'
+      #dst = File.join(@dir, 'smeagol')  # TODO: move to assets/smeagol ?
+      fileutils.mkdir_p(@dir) unless File.directory?(@dir)
+      fileutils.cp_r(src, @dir) 
     end
 
     #
@@ -69,54 +116,31 @@ module Smeagol
 
     #
     def build_blob(blob)
-      return if blob.name == 'settings.yml'  # TODO: probably should change this to `smeagol.yml`.
+      return if blob.name == 'settings.yml'  # TODO: change this to `smeagol.yml`?
       return if File.extname(blob.name) == '.mustache'
 
       if name = @wiki.page_class.valid_page_name?(blob.name)
         page = @wiki.page(name)
+        view = Smeagol::Views::Page.new(page)
 
         if name != 'Home'
           directory_push(name)
         end
 
-        href = "#{current_directory}/index.html"
+        @pages[view.static_href] = view
 
-        puts "write #{href}"
-
-        File.open(href, 'w') do |f|
-          view = Smeagol::Views::Page.new(page)
-          html = Mustache.render(template, view)
-          html = index_directory_hrefs(html)
-          f.write(html)
-        end
-
-        @rss.add(name, href, page)
+        #@rss.add(name, view)  # TODO: remove
 
         if name != 'Home'
           directory_pop
         end
       else
-        file_name = "#{current_directory}/#{blob.name}"
-        dir_name  = File.dirname(file_name)
-        fileutils.mkdir_p(dir_name) unless File.directory?(dir_name)
-
-        puts "write #{file_name}"
-        File.open(file_name, 'w') do |f|
-          f.write(blob.data)
-        end
+        # TODO: why can't we get the path from the blob?
+        href = File.join(current_directory, blob.name).sub(@dir, '')
+        @pages[href] = blob
       end
     end
 
-    #
-    def build(directory)
-      puts "Building #{directory} ..."
-
-      directory_push(directory)
-      build_smeagol
-      build_tree(@wiki.repo.tree)
-      build_rss
-      directory_pop
-    end
 
     # TODO: slug support
     def slug(page,blob)
@@ -132,30 +156,45 @@ module Smeagol
       slug
     end
 
+=begin
     #
-    def fileutils
-      FileUtils::Verbose
-    end
-
+    # For static sites we cannot depend on the web server to default a link
+    # to a directory to the index.html file within it. So we need to append
+    # index.html to any href links for which we have wiki pages.
+    # This is not a prefect solution, but there may not be a better one.
     #
     def index_directory_hrefs(html)
       html.gsub(/href=\"(.*)\"/) do |match|
-        if File.directory?(File.join(current_directory, $1))
-          "href=\"#{$1}/index.html\""
+        link = "#{$1}/index.html"
+        if @pages[link] #if File.directory?(File.join(current_directory, $1))
+          "href=\"#{link}\""
         else
           match  # no change
         end
       end
     end
+=end
 
-    def build_rss
-      rss_file = File.join(current_directory, 'rss.xml')
+    #
+    # Generate RSS feed from post pages and save.
+    #
+    def save_rss
+      rss = RSS.new(@wiki, @pages)
+
+      rss_file = File.join(@dir, 'rss.xml')
 
       puts "write #{rss_file}"
 
       File.open(rss_file, 'w') do |f|
-        f.write(@rss.to_s)
+        f.write(rss.to_s)
       end
+    end
+
+    #
+    # Access to FileUtils.
+    #
+    def fileutils
+      FileUtils::Verbose
     end
   end
 

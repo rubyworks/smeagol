@@ -53,6 +53,10 @@ module Smeagol
         exit
       end
 
+
+
+
+
       # Load config
       config_path = options['config_path'] || '/etc/smeagol/config.yml'
       config = load_config(config_path)

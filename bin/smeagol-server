@@ -1,7 +1,5 @@
 #!/usr/bin/env ruby
 
-#puts "Command `smeagold' is deprecated, use `smeagol-server' instead."
-
 # TODO: Aren't the separate tools for daemonizing a process?
 #       Do we really need to provide our own?
 #
@@ -9,6 +7,8 @@
 #       instead.
 
 require 'daemons'
+
 filename = File.expand_path('smeagol-run', File.dirname(__FILE__))
+
 Daemons.run(filename)
 

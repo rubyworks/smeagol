@@ -1,13 +1,29 @@
 #!/usr/bin/env ruby
 
-if ARGV.include?('-b') || ARGV.include?('--build')
-  #if defined?(Daemons)
-  #  raise 'cannot daemonize a static build'
-  #end
-  require 'smeagol/generator'
-  Smeagol.generate(ARGV)
-else
-  require 'smeagol/server'
-  Smeagol.serve(ARGV)
+commands = [
+ %w{server start},
+ %w{server stop},
+ %w{server restart},
+ %w{server status},
+ %w{static build},
+ %w{static preview},
+ %w{static sync},
+ %w{init},
+ %w{run}
+]
+
+commands.each do |command|
+  if ARGV[0,command.size] == command
+    status = system('smeagol-' + command.join('-'), *ARGV[command.size..-1])
+    exit status
+  end
 end
+
+puts "usage: smeagol [COMMAND] [OPTIONS]"
+puts
+puts "COMMANDS:"
+commands.each do |command|
+  puts "  %s" % command.join(' ')
+end
+puts
 

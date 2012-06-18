@@ -38,12 +38,13 @@ module Smeagol
         if !menu.nil?
           html = "<ul>\n"
           menu.each do |item|
+            title, href = item['title'], item['href']
             if version != 'master' && item.href.index('/') == 0
               prefix = "/#{version}"
             else
               prefix = ""
             end
-            html << "<li><a href=\"#{prefix}#{item.href}\">#{item.title}</a></li>\n"
+            html << "<li><a href=\"#{prefix}#{href}\">#{title}</a></li>\n"
           end
           html << "</ul>\n"
         end

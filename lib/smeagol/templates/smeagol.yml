@@ -1,0 +1,77 @@
+---
+# Site URL.
+# e.g. `http://trans.github.com`
+
+url: {{ url }}
+
+# Gollum wiki url.
+# e.g. `git@github.com:trans/trans.github.com.wiki.git`
+
+remote_wiki: {{ remote_wiki }}
+
+# Site's git url.
+# e.g. `git@github.com:trans/trans.github.com.git`
+
+remote_site: {{ remote_site }}
+
+# Github project site, if applicable.
+# e.g. `http://github.com/trans`
+
+source_url: {{ source_url }}
+
+# Title of site.
+
+title: My Site
+
+# Single line description of site.
+
+tagline: Welcome to My Site
+
+# Detailed description of site.
+
+description:
+  This is my awesome site.
+
+# Primary author/maintainer of site.
+
+author: {{ author }}
+
+# Menu that can be used in site template.
+#
+# e.g.
+#
+#   menu:
+#   - title: Blog
+#     href: /
+#   - title: Projects
+#     href: /Projects/
+#   - title: Tools
+#     href: /Tools/
+#   - title: Reads
+#     href: /Reads/
+#
+menu: ~
+
+# Where to sync site. (For static builds only.)
+# Default value is `_site`.
+
+site_dir: _site
+
+# Where to build static files. (For static builds only.)
+# Default valeu is `_build`.
+
+build_dir: _build
+
+# Google analytics tracking id. Could be used for other such
+# services if custom template is used.
+
+tracking_id: ~
+
+# Include a GitHub "Fork Me" ribbon in corner of page. Entry 
+# should give color and position separated by a space.
+# The resulting ribbon will have a link to `source_url`.
+#
+# NOTE: Will be renamed to `github_forkme` or something like that.
+
+ribbon: red right
+
