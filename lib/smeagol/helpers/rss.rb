@@ -8,9 +8,9 @@ module Smeagol
     #
     # Initialize a new Smeagol::RSS instance.
     #
-    def initialize(wiki, pages)
+    def initialize(wiki, pages=nil)
       @wiki  = wiki
-      @pages = pages
+      @pages = pages || view_pages
     end
 
     #
@@ -19,7 +19,7 @@ module Smeagol
     #
     def items
       list = []
-      @pages.each do |href, page|
+      @pages.each do |page|
         next unless Smeagol::Views::Page === page
         list << page if page.post_date
       end
@@ -74,6 +74,14 @@ module Smeagol
     #
     def to_s
       rss.to_s
+    end
+
+    #
+    def view_pages
+      @view_pages ||= \
+        @wiki.pages.map do |page|
+          Smeagol::Views::Page.new(page)
+        end
     end
   end
 end

@@ -16,10 +16,16 @@ module Smeagol
       def page_title
         page.title
       end
-      
+
       # Public: The HTML formatted content of the page.
       def content
         page.formatted_data
+      end
+
+      #
+      def summary
+        i = content.index('</p>')
+        i ? content[0..i+3] : content  # any other way if no i, 5 line limit?
       end
 
       # Public: The last author of this page.
@@ -41,7 +47,7 @@ module Smeagol
       def name
         page.name
       end
-      
+
       # Public: A flag stating that this is not the home page.
       def not_home?
         page.title != "Home"
@@ -54,9 +60,9 @@ module Smeagol
         dir  = File.dirname(page.path)
         name = page.filename_stripped
         if dir != '.'
-          File.join(dir, name, 'index.html')
+          File.join(dir, page.filename_stripped, 'index.html')
         else
-          if name == 'Home'
+          if name == (@wiki.settings.index || 'Home')
             'index.html'
           else
             File.join(page.filename_stripped, 'index.html')
@@ -72,13 +78,12 @@ module Smeagol
         end
       end
 
-      ##########################################################################
       #
-      # Internal Methods
-      #
-      ##########################################################################
+      def post?
+        post_date
+      end
       
-      private
+      #private
       
       # The Gollum::Page that this view represents.
       attr_reader :page

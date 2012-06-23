@@ -3,7 +3,7 @@ module Smeagol
   #
   class Settings
 
-    SETTINGS_FILE = "smeagol.yml"
+    SETTINGS_FILE = "_smeagol/settings.yml"
 
     #
     def self.exist?(dir=Dir.pwd)
@@ -23,8 +23,10 @@ module Smeagol
 
     #
     def initialize(settings={})
-      @site_dir  = '_site'
-      @build_dir = '_build'
+      @site_dir  = '_smeagol/site'
+      @build_dir = '_smeagol/build'
+      @index     = 'Home'
+      @rss       = false
 
       settings.each do |k,v|
         __send__("#{k}=", v)
@@ -59,7 +61,24 @@ module Smeagol
     # Primary author/maintainer of site.
     attr_accessor :author
 
+    # Where to sync site. (For static builds only.)
+    # Default value is `_smeagol/site`.
+    attr_accessor :site_dir
+
+    # Where to build static files. (For static builds only.)
+    # Default value is `_smeagol/build`.
+    attr_accessor :build_dir
+
+    # Page to use as site index.
+    attr_accessor :index
+
+    # Boolean flag to produce an rss.xml feed file for blog posts.
+    attr_accessor :rss
+
     # Menu that can be used in site template.
+    #
+    # Note this will probably be deprecated as it is easy
+    # enough to add a menu to your site's custom page template.
     #
     # Examples
     #
@@ -75,16 +94,11 @@ module Smeagol
     #
     attr_accessor :menu
 
-    # Where to sync site. (For static builds only.)
-    # Default valeu is `_build`.
-    attr_accessor :site_dir
-
-    # Where to build static files. (For static builds only.)
-    # Default valeu is `_site`.
-    attr_accessor :build_dir
-
     # Google analytics tracking id. Could be used for other such
     # services if custom template is used.
+    #
+    # Note this will probably be deprecates because you can add
+    # the code snippet easily enough to your custom page template.
     attr_accessor :tracking_id
 
     # Include a GitHub "Fork Me" ribbon in corner of page. Entry 
@@ -97,6 +111,8 @@ module Smeagol
     #
     #   ribbon: red right
     #
+    # Note this might be deprecated as one can add it by
+    # hand to custom page template.
     attr_accessor :ribbon
 
   end

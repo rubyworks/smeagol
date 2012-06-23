@@ -20,8 +20,41 @@ module Smeagol
     #
     # Run Smeagol server.
     #
-    def run(argv)
-      parser.banner = "usage: smeagol-server-run [OPTIONS] [PATH]\n\n"
+    def serve(argv)
+      if argv.delete('-S') || argv.delete('--static')
+        serve_static(argv)
+      else
+        serve_dynamic(argv)
+      end
+    end
+
+    #
+    # Serve static build.
+    #
+    # TODO: Build if not alread built.
+    # TODO: build_dir option ?
+    #
+    def serve_static(argv)
+      #parser.banner = "usage: smeagol-static-preview [OPTIONS]"
+
+      #parser.on('-b', '--build-dir [DIRECTORY]') do |dir|
+      #  options[:build_dir] = dir
+      #end
+
+      @options = ::Rack::Server::Options.new.parse!(argv)
+
+      Console.preview(options)
+    end
+ 
+    #
+    #
+    #
+    def serve_dynamic(argv)
+      parser.banner = "usage: smeagol [OPTIONS] [PATH]\n\n"
+
+      parser.on('-S', '--static', 'Preview static build.') do
+        options['static'] = true
+      end
 
       parser.on('--port [PORT]', 'Bind port (default 4567).') do |port|
         options['port'] = port.to_i
@@ -76,7 +109,7 @@ module Smeagol
       # set secret on default repository if passed in.
       options[:repositories].first[:secret] = options[:secret] if options[:secret]
 
-      Console.server_run(options.to_ostruct)
+      Console.serve(options.to_ostruct)
     end
 
     #
@@ -127,35 +160,20 @@ module Smeagol
     #
     #
     #
-    def static_build(argv)
+    def build(argv)
       parser.banner = "usage: smeagol-static-build [OPTIONS]"
 
       parser.on('-b', '--build-dir [DIRECTORY]') do |dir|
         options[:build_dir] = dir
       end
 
-      Console.static_build(*parse(argv))
+      Console.build(*parse(argv))
     end
 
-    #
-    #
-    #
-    def static_preview(argv)
-      #parser.banner = "usage: smeagol-static-preview [OPTIONS]"
-
-      #parser.on('-b', '--build-dir [DIRECTORY]') do |dir|
-      #  options[:build_dir] = dir
-      #end
-
-      @options = ::Rack::Server::Options.new.parse!(argv)
-
-      Console.static_preview(options)
-    end
- 
     #
     # Use rsync to update the site directory from the build directory.
     #
-    def static_sync(argv)
+    def sync(argv)
       parser.banner = "usage: smeagol-static-sync [OPTIONS]"
 
       parser.on('-b', '--build-dir [DIRECTORY]') do |dir|
@@ -166,7 +184,7 @@ module Smeagol
         options[:site_dir] = dir
       end
 
-      Console.static_build(*parse(argv))
+      Console.sync(*parse(argv))
     end
 
   private

@@ -1,29 +1,42 @@
 #!/usr/bin/env ruby
 
-commands = [
- %w{server start},
- %w{server stop},
- %w{server restart},
- %w{server status},
- %w{static build},
- %w{static preview},
- %w{static sync},
- %w{init},
- %w{run}
-]
+def self.main(argv)
+  commands = %w{init build sync help server}
+  command = commands.include?(argv.first) ? argv.shift : 'server'
 
-commands.each do |command|
-  if ARGV[0,command.size] == command
-    status = system('smeagol-' + command.join('-'), *ARGV[command.size..-1])
-    exit status
+  case command
+  when 'init'
+    require 'smeagol'
+    Smeagol::CLI.init(argv)
+  when 'build'
+    require 'smeagol'
+    Smeagol::CLI.build(argv)
+  when 'sync'
+    require 'smeagol'
+    Smeagol::CLI.sync(argv)
+  when 'help'
+    puts "usage: smeagol [COMMAND] [OPTIONS]"
+    puts
+    puts "COMMANDS:"
+    commands.each do |c|
+      puts "  #{c}"
+    end
+    puts
+    puts "Default command if none given is `server'."
+  when 'server'
+    if ARGV.include?('-d')
+      ARGV.delete('-d')
+      require 'daemons'
+      Daemons.run_proc(File.basename(__FILE__)) do
+        require 'smeagol'
+        Smeagol::CLI.serve(argv)
+      end
+    else
+      require 'smeagol'
+      Smeagol::CLI.serve(argv)
+    end
   end
 end
 
-puts "usage: smeagol [COMMAND] [OPTIONS]"
-puts
-puts "COMMANDS:"
-commands.each do |command|
-  puts "  %s" % command.join(' ')
-end
-puts
+main(ARGV)
 

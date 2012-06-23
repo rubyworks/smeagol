@@ -1,73 +1,147 @@
 require 'mustache'
-require 'smeagol/rss'
+require 'json'
+require 'smeagol/helpers/rss'
 
 module Smeagol
+  module Static
+    class Generator
 
-  class Static
+      #
+      def initialize(wiki)
+        @wiki = wiki
 
-    #
-    def initialize(wiki)
-      @wiki = wiki
+        #@pages     = {}
+        #@directory = []
+      end
 
-      @pages     = {}
-      @directory = []
-    end
+      #
+      def build(directory)
+        puts "Building #{directory} ..."
 
-    #
-    def build(directory)
-      puts "Building #{directory} ..."
+        @dir = directory
 
-      @dir = directory
+        #directory_push(directory)
+        #build_tree(@wiki.repo.tree)
+        #directory_pop
 
-      directory_push(directory)
-      build_tree(@wiki.repo.tree)
-      directory_pop
-    end
+        save
+      end
 
-    #
-    def save
-      #fileutils.mkdir(@dir) unless File.exist?(@dir)
+      #
+      def save
+        #fileutils.mkdir(@dir) unless File.exist?(@dir)
+        save_smeagol
 
-      save_smeagol
-
-      @pages.each do |href, page|
-        file = File.join(@dir, href)
-        dir_name = File.dirname(file)
-        fileutils.mkdir_p(dir_name) unless File.directory?(dir_name)
-
-        case page
-        when Smeagol::Views::Page
-          puts "write #{file}"
-          File.open(file, 'w') do |f|
-            html = Mustache.render(template, page)
-            #html = index_directory_hrefs(html)
+        view_pages.each do |page|
+          href = page.static_href
+          path = File.join(@dir, href)
+          mkdir_p(File.dirname(path))
+          puts "write #{path}"
+          File.open(path, 'w') do |f|
+            html = Mustache.render(template(page), page)  # page.gollum_page)
             f.write(html)
           end
-        else  # blob
-          #file_name = "#{current_directory}/#{blob.name}"
-          puts "write #{file}"
-          File.open(file, 'w') do |f|
-            f.write(page.data)
+        end
+
+        @wiki.files.each do |file|
+          next if file == 'smeagol.yml'
+          href = file.path #static_href
+          path = File.join(@dir, href)
+          mkdir_p(File.dirname(path))
+          puts "write #{path}"
+          File.open(path, 'w') do |f|
+            f.write(file.raw_data)
           end
+        end
+
+        save_rss if @wiki.settings.rss
+
+        save_toc
+      end
+
+    private
+
+      #
+      def view_pages
+        @view_pages ||= \
+          @wiki.pages.map do |page|
+            Smeagol::Views::Page.new(page)
+          end
+      end
+
+      # Copy smeagol's default public files to static site.
+      # These files are put in a separate `smeagol` directory
+      # to avoid name clashes with wiki files.
+      def save_smeagol
+        src = File.dirname(__FILE__) + '/../public/assets'
+        #dst = File.join(@dir, 'smeagol')  # TODO: move to assets/smeagol ?
+        fileutils.mkdir_p(@dir) unless File.directory?(@dir)
+        fileutils.cp_r(src, @dir) 
+      end
+
+      #
+      def save_toc
+        file = File.join(@dir, 'toc.json')
+        File.open(file, 'w') do |f|
+          f << toc_json.to_json
         end
       end
 
-      save_rss
-    end
-
-  private
-
-    #
-    def template
-      @template ||= (
-        if File.exists?("#{@wiki.path}/page.mustache")
-          IO.read("#{@wiki.path}/page.mustache")
+      #
+      def template(page)
+        if page.post?
+          post_template
         else
-          IO.read(File.join(File.dirname(__FILE__), "templates/page.mustache"))
+          page_template
         end
-      )
-    end
+      end
 
+      #
+      def page_template
+        @page_template ||= (
+          local_template(:page) || default_template(:page)
+        )
+      end
+
+      #
+      def post_template
+        @post_template ||= (
+          local_template(:post) || local_template(:page) || default_template(:post)
+        )
+      end
+
+      #
+      def local_template(type)
+        file = "#{@wiki.path}/_smeagol/layouts/#{type}.mustache"
+        if File.exists?(file)
+          IO.read(file)
+        else
+          nil
+        end
+      end
+
+      #
+      def default_template(type)
+        IO.read(File.join(File.dirname(__FILE__), "../templates/layouts/#{type}.mustache"))
+      end
+
+      #
+      def toc_json
+        json = {}
+        view_pages.each do |page|
+          data = {}
+          data['title']   = page.page_title
+          data['name']    = page.name
+          data['href']    = page.static_href
+          data['date']    = page.post_date if page.post_date
+          data['author']  = page.author
+          data['summary'] = page.summary
+          json[page.name] = data
+        end
+        json
+      end
+
+=begin
     #
     def current_directory
       @directory.last
@@ -90,17 +164,9 @@ module Smeagol
       #  fileutils.mkdir(current_directory) unless File.directory?(current_directory)
       #end
     end
+=end
 
-    # Copy smeagol's default public files to static site.
-    # These files are put in a separate `smeagol` directory
-    # to avoid name clashes with wiki files.
-    def save_smeagol
-      src = File.dirname(__FILE__) + '/public/smeagol'
-      #dst = File.join(@dir, 'smeagol')  # TODO: move to assets/smeagol ?
-      fileutils.mkdir_p(@dir) unless File.directory?(@dir)
-      fileutils.cp_r(src, @dir) 
-    end
-
+=begin
     #
     def build_tree(tree)
       tree.contents.each do |item|
@@ -111,6 +177,24 @@ module Smeagol
         else
           build_blob(item)
         end
+      end
+    end
+=end
+
+=begin
+    #
+    def build_tree
+      @wiki.pages().each do |page|
+        #next if ::File.extname(page.filename) == '.yml'
+        #next if ::File.extname(page.filename) == '.mustache'
+        view_page = Smeagol::Views::Page.new(page)
+        @pages[view_page.static_href] = view_page
+      end
+      @wiki.files().each do |file|
+        #next if ::File.extname(file.filename) == '.yml'
+        #next if ::File.extname(file.filename) == '.mustache'
+        #view_page = Smeagol::Views::Page.new(page)
+        @pages[view_page.static_href] = file
       end
     end
 
@@ -140,21 +224,26 @@ module Smeagol
         @pages[href] = blob
       end
     end
+=end
 
+      # TODO: slug support
+      def slug(page,blob)
+        date = page.version.authored_date
+        name = blob.name[name.index(/[A-Za-z]/)..-1]
 
-    # TODO: slug support
-    def slug(page,blob)
-      date = page.version.authored_date
-      name = blob.name[name.index(/[A-Za-z]/)..-1]
-
-      if slug = @wiki.settings.slug
-        slug = date.strftime(slug)
-        slug = slug.sub(':name', name)
-      else
-        slug = name
+        if slug = @wiki.settings.slug
+          slug = date.strftime(slug)
+          slug = slug.sub(':name', name)
+        else
+          slug = name
+        end
+        slug
       end
-      slug
-    end
+
+      #
+      def mkdir_p(dir_name)
+        fileutils.mkdir_p(dir_name) unless File.directory?(dir_name)
+      end
 
 =begin
     #
@@ -175,27 +264,28 @@ module Smeagol
     end
 =end
 
-    #
-    # Generate RSS feed from post pages and save.
-    #
-    def save_rss
-      rss = RSS.new(@wiki, @pages)
+      #
+      # Generate RSS feed from post pages and save.
+      #
+      def save_rss
+        rss = RSS.new(@wiki, view_pages)
 
-      rss_file = File.join(@dir, 'rss.xml')
+        rss_file = File.join(@dir, 'rss.xml')
 
-      puts "write #{rss_file}"
+        puts "write #{rss_file}"
 
-      File.open(rss_file, 'w') do |f|
-        f.write(rss.to_s)
+        File.open(rss_file, 'w') do |f|
+          f.write(rss.to_s)
+        end
       end
-    end
 
-    #
-    # Access to FileUtils.
-    #
-    def fileutils
-      FileUtils::Verbose
+      #
+      # Access to FileUtils.
+      #
+      def fileutils
+        FileUtils::Verbose
+      end
+
     end
   end
-
 end
