@@ -2,20 +2,30 @@ module Smeagol
 
   module Console
 
+    # Serve dynamic site.
+    #
     class Serve < Base
 
-      def initialize(options={})
-        @git           = options[:git]
-        @port          = options[:port]
-        @repositories  = options[:repositories]
-        @auto_update   = options[:auto_update]
-        @cache_enabled = options[:cache_enabled]
-        @mount_path    = options[:mount_path]
+      # Initialize new Serve console command.
+      def initialize(config={})
+        @git           = config[:git] || get_git
+        @port          = config[:port]
+        @auto_update   = config[:auto_update]
+        @cache_enabled = config[:cache_enabled]
+        @mount_path    = config[:mount_path]
+        @repositories  = config[:repositories].map{ |r| r.to_ostruct }
       end
 
-      #
-      # Run the web server.
-      #
+      # Path to git binary.
+      attr_accessor :git
+
+      # Port to use. Default is 4567.
+      attr_accessor :port
+
+      # List of repositories.
+      attr :repositories
+
+      # Run the Sinatra-based server.
       def call
         catch_signals
         show_repository
@@ -29,27 +39,26 @@ module Smeagol
         Smeagol::App.run!(:port => @port)
       end
 
+      # Setup trap signals.
       #
-      # Catch signals.
-      #
+      # Returns nothing.
       def catch_signals
         Signal.trap('TERM') do
           Process.kill('KILL', 0)
         end
       end
 
-      #
       # Show repositories being served
       #
+      # Returns nothing.
       def show_repository
         $stderr.puts "\n  Now serving:"
-        @repositories.each do |repository|
-          $stderr.puts "  #{repository[:path]} (#{repository[:cname]})"
+        repositories.each do |repository|
+          $stderr.puts "  #{repository.path} (#{repository.cname})"
         end
         $stderr.puts "\n"
       end
 
-      #
       # Run the auto update process.
       #
       def auto_update
@@ -58,7 +67,7 @@ module Smeagol
             while true do
               sleep 86400
               @repositories.each do |repository|
-                wiki = Smeagol::Wiki.new(@repository[:path])
+                wiki = Smeagol::Wiki.new(repository.path)
                 wiki.update(@git)
               end
             end
@@ -66,12 +75,12 @@ module Smeagol
         end
       end
 
-      #
       # Clear the caches.
       #
+      # Returns nothing.
       def clear_caches
         @repositories.each do |repository|
-          Smeagol::Cache.new(Gollum::Wiki.new(repository[:path])).clear()
+          Smeagol::Cache.new(Gollum::Wiki.new(repository.path)).clear()
         end
       end
 

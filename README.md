@@ -61,10 +61,10 @@ wiki in any way.) An example `settings.yml` file:
 
 ## BUILDING
 
-Smeagol also can generate a static site. To do this provide a site destination
-directory via the `-b`/`--build` option.
+Smeagol also can generate a static site. To do this provide a destination
+directory via the `build` subcommand.
 
-    $ smeagol -b /path/to/site /path/to/repo
+    $ smeagol build /path/to/site /path/to/wiki-repo
 
 If `/path/to/repo` is not given, the current working directory is assumed.
 

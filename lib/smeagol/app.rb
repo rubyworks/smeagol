@@ -1,13 +1,8 @@
-require 'gollum'
-require 'rack/file'
-require 'sinatra'
-require 'mustache'
-require 'tmpdir'
-require 'smeagol/views/base'
-require 'smeagol/views/page'
-require 'smeagol/views/versions'
-
 module Smeagol
+
+  # Sinatra based app for serving the the site directly
+  # from the Gollum wiki repo.
+  #
   class App < Sinatra::Base
 
     #  S E T T I N G S
@@ -37,7 +32,7 @@ module Smeagol
 
     # Lists the tagged versions of the repo.
     get '/versions' do
-      wiki = Smeagol::Wiki.new(repository.path)
+      wiki = Smeagol::Wiki.new(repository.path, {:base_path => mount_path})
       Mustache.render(get_template('versions'), Smeagol::Views::Versions.new(wiki))
     end
 
@@ -71,12 +66,19 @@ module Smeagol
       #
       elsif name == 'rss.xml'
         if page = wiki.page('rss.xml', version)
-          content = Mustache.render(page.text_data, wiki)  # TODO: wiki okay here?
+          content = Mustache.render(page.text_data, wiki) # TODO: wiki okay here?
         else
           rss = RSS.new(wiki, version)
           content = rss.to_s
         end
         content
+      # If it is not a wiki page then try to find the file
+      elsif file = wiki.file(name+'.mustache', version)
+        content = file.text_data
+        if wiki.settings.layouts[name]
+          $stderr.puts "Need to render layout for #{name}."
+        end
+        content = Mustache.render(file.text_data, wiki)  # TODO: wiki okay here?
       # If it is not a wiki page then try to find the file
       elsif file = wiki.file(name, version)
         content_type get_mime_type(name)
@@ -153,8 +155,8 @@ module Smeagol
           return repository
         end
       end
-      
-      # If no match, use the first repository as the default
+
+      # If no match, use the first repository as the default.
       settings.repositories.first
     end
 
@@ -166,4 +168,5 @@ module Smeagol
     end
 
   end
+
 end

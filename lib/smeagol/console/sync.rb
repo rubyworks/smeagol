@@ -10,30 +10,69 @@ module Smeagol
     #
     class Sync < Base
 
-      #
+      # Initialize new Sync console command.
       def initialize(options={})
-        @wiki_dir  = options[:wiki_dir]  || Dir.pwd
-        @build_dir = options[:build_dir] || default_build_dir
-        @site_dir  = options[:site_dir]  || default_site_dir
+        @wiki_dir  = options[:wiki_dir] || Dir.pwd
+        @site_dir  = options[:site_dir] || settings_site_dir || default_site_dir
+        @use_tmp   = options[:use_tmp]
+        @build     = options[:build]
       end
 
+      # Site directory path.
+      attr_accessor :site_dir
+
+      # Use system temporary directory build? If this option was
+      # set to perform the build then is needs to also be set to
+      # perform the sync.
+      def use_tmp?
+        @use_tmp
+      end
+
+      # Perform synchronization between build and site locations.
       #
+      # TODO: Support rsync filter.
       def call
-        build_dir = @build_dir.chomp('/')
-        site_dir  = @site_dir.chomp('/')
+        if build?
+          Console.build(:use_tmp=>use_tmp?)
+        end
+
+        build_dir = build_dir.chomp('/')
+        site_dir  = site_dir.chomp('/')
 
         system "rsync -arv --del --exclude .git* #{build_dir}/ #{site_dir}/"
       end
 
+      # Build directory.
       #
-      def default_build_dir
-        #File.join(wiki_dir, '_smeagol', settings.build_dir || 'build')
-        File.join(wiki_dir, '_smeagol', 'build')
+      # Returns String of build directory path.
+      def build_dir
+        if use_tmp?
+          File.join(Dir.tmpdir, 'smeagol', 'build')
+        else
+          File.join(wiki_dir, '_smeagol', 'build')
+        end
+      end
+
+      # Default site directory is `_smeagol/site` unless a
+      # `site_dir` entry is given in the `settings.yml` file. 
+      # In which case, if the setting is an absolute path,
+      # it will be used as give, otherwsie it will be relative
+      # to the location of the wiki.
+      #
+      # Returns String of site directory path.
+      def settings_site_dir
+        if dir = settings.site_dir
+          if dir.start_with?('/')
+            dir
+          else
+            File.join(wiki_dir, dir)
+          end
+        end
       end
 
       #
       def default_site_dir
-        File.join(wiki_dir, '_smeagol', settings.site_dir || 'site')
+        File.join(wiki_dir, '_smeagol', 'site')
       end
 
     end

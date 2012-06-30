@@ -9,6 +9,13 @@ module Smeagol
       def initialize(wiki, version='master')
         @wiki    = wiki
         @version = version || 'master'
+
+        dir = File.join(wiki.path, '_smeagol', 'layouts')
+        if File.directory?(dir)
+          self.class.template_path = dir 
+        else
+          self.class.template_path = File.join(File.dirname(__FILE__), '..', 'templates', 'layouts')
+        end
       end
       
       # Public: The title of the wiki. This is set in the settings file.
@@ -68,14 +75,21 @@ module Smeagol
         wiki.base_path
       end
 
+      # Collect list of viewable pages.
+      #
+      # TODO: exlcusion/inclusion matching might need tweaking.
+      #
+      def posts
+        @posts ||= (
+          filter(@wiki.pages){ |p| p.post? }.map do |page|
+            Smeagol::Views::Post.new(page)
+          end
+        )
+      end
 
-      ##########################################################################
-      #
-      # Internal Methods
-      #
-      ##########################################################################
+      #  P R O T E C T E D
       
-      protected
+      #protected
       
       # The Gollum::Wiki that this view represents.
       attr_reader :wiki
@@ -84,7 +98,25 @@ module Smeagol
       attr_reader :version
       
 
+      #  P R I V A T E
+
       private
+
+      #
+      def filter(paths, &selection)
+        result = []
+        paths.map do |file|
+          unless @wiki.settings.include.any?{ |x| File.fnmatch?(x, file.path) }
+            next if file.path.split('/').any? do |x|
+              x.start_with?('_') or x.start_with?('.')
+            end
+            next if @wiki.settings.exclude.any?{ |x| File.fnmatch?(x, file.path) }
+          end
+          result << file
+        end
+        result = result.select(&selection)
+        result
+      end
 
       # Generates the correct ribbon url
       def ribbon_url(name, pos)
@@ -95,6 +127,7 @@ module Smeagol
           name
         end
       end
+
     end
   end
 end

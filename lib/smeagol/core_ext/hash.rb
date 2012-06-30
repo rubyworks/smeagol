@@ -11,3 +11,4 @@ class Hash
     return struct
   end
 end
+

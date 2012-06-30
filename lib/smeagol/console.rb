@@ -25,7 +25,20 @@ module Smeagol
     # Run the web server.
     #
     def serve(options={})
-      Serve.run(options)
+      config_file = options[:config_file]
+      config = Config.load(config_file)
+      config.assign(options)
+      abort "No repositories configured." if config.repositories.empty?
+
+      # Set secret on all repositories if passed in by command line option
+      # We can only assume they are all the same, in this case.
+      #
+      # TODO: Maybe only apply if no secret is given in config file?
+      if options[:secret]
+        config.repositories.each{ |r| r['secret'] = options['secret'] }
+      end
+
+      Serve.run(config)
     end
 
     #

@@ -1,4 +1,8 @@
-#$:.unshift(File.dirname(__FILE__))
+require 'gollum'
+require 'rack/file'
+require 'sinatra'
+require 'mustache'
+require 'tmpdir'
 
 require 'smeagol/version'
 require 'smeagol/core_ext'
@@ -6,12 +10,21 @@ require 'smeagol/core_ext'
 # gollum plugins, can be removed when new version of Gollum is out.
 require 'smeagol/plugins/wiki'
 require 'smeagol/plugins/file'
+require 'smeagol/plugins/page'
 require 'smeagol/plugins/blob_entry'
 
+require 'smeagol/wiki'
 require 'smeagol/app'
 require 'smeagol/cache'
-require 'smeagol/wiki'
+require 'smeagol/config'
 require 'smeagol/settings'
+
+require 'smeagol/views/base'
+require 'smeagol/views/page'
+require 'smeagol/views/post'
+require 'smeagol/views/template'
+require 'smeagol/views/versions'
+
 require 'smeagol/static/generator'
 require 'smeagol/static/server'
 

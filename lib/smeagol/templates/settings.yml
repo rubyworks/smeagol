@@ -7,12 +7,12 @@ url: {{ url }}
 # Gollum wiki url.
 # e.g. `git@github.com:trans/trans.github.com.wiki.git`
 
-remote_wiki: {{ remote_wiki }}
+wiki_origin: {{ wiki_origin }}
 
 # Site's git url.
 # e.g. `git@github.com:trans/trans.github.com.git`
 
-remote_site: {{ remote_site }}
+site_origin: {{ site_origin }}
 
 # Github project site, if applicable.
 # e.g. `http://github.com/trans`

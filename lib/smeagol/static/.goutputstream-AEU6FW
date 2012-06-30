@@ -35,37 +35,24 @@ module Smeagol
         #fileutils.mkdir(@dir) unless File.exist?(@dir)
         save_smeagol
 
-        pages.each do |page|
+        view_pages.each do |page|
           href = page.static_href
           path = File.join(@dir, href)
           mkdir_p(File.dirname(path))
           puts "write #{path}"
           File.open(path, 'w') do |f|
-            html = Mustache.render(template(page, :page), page)  # page.gollum_page)
+            html = Mustache.render(template(page), page)  # page.gollum_page)
             f.write(html)
           end
         end
 
-        posts.each do |post|
-          href = post.static_href
+        renderables.each do |page|
+          href = page.static_href
           path = File.join(@dir, href)
           mkdir_p(File.dirname(path))
           puts "write #{path}"
           File.open(path, 'w') do |f|
-            html = Mustache.render(template(post, :post), post)  # page.gollum_page)
-            f.write(html)
-          end
-        end
-
-        renderables.each do |file|
-          href = file.static_href
-          path = File.join(@dir, href)
-          mkdir_p(File.dirname(path))
-          puts "write #{path}"
-          File.open(path, 'w') do |f|
-            html = Mustache.render(file.content, file)
-            file.content = html
-            html = Mustache.render(template(file), file)
+            html = Mustache.render(template(page), page)  # page.gollum_page)
             f.write(html)
           end
         end
@@ -90,30 +77,12 @@ module Smeagol
 
       # Collect list of viewable pages.
       #
-      def pages
-        @pages ||= (
-          filter(@wiki.pages){ |p| !p.post? }.map do |page|
+      # TODO: exlcusion/inclusion matching might need tweaking.
+      #
+      def view_pages
+        @view_pages ||= (
+          filter(@wiki.pages).map do |page|
             Smeagol::Views::Page.new(page)
-          end
-        )
-      end
-
-      # Collect list of posts.
-      #
-      def posts
-        @posts ||= (
-          filter(@wiki.pages){ |p| p.post? }.map do |page|
-            Smeagol::Views::Post.new(page)
-          end
-        )
-      end
-
-      # Collect list of non-page files to be rendered.
-      #
-      def renderables
-        @renderables ||= (
-          filter(@wiki.files){ |f| f.extname == '.mustache' }.map do |file|
-            Smeagol::Views::Template.new(file)
           end
         )
       end
@@ -122,12 +91,26 @@ module Smeagol
       #
       def assets
         @assets ||= (
-          filter(@wiki.files){ |f| f.extname != '.mustache' } 
+          filter(@wiki.files).select do |file|
+            file.extname != '.mustache' 
+          end
+        )
+      end
+
+      # Collect list of non-page files to be rendered.
+      #
+      def renderables
+        @renderables ||= (
+          filter(@wiki.files).select do |file|
+            file.extname == '.mustache' 
+          end.map do |file|
+            Smeagol::Views::Page.new(file)
+          end
         )
       end
 
       #
-      def filter(paths, &selection)
+      def filter(paths)
         result = []
         paths.map do |file|
           unless @wiki.settings.include.any?{ |x| File.fnmatch?(x, file.path) }
@@ -138,7 +121,6 @@ module Smeagol
           end
           result << file
         end
-        result = result.select(&selection) if selection
         result
       end
 
@@ -161,17 +143,14 @@ module Smeagol
       end
 
       #
-      def template(page, type=nil)
+      def template(page)
         if name = @wiki.settings.layouts[page.path]
           local_template(name) || default_template(:page)
         else
-          case type
-          when :page
-            page_template
-          when :post
+          if page.post?
             post_template
           else
-            generic_template
+            page_template
           end
         end
       end
@@ -187,13 +166,6 @@ module Smeagol
       def post_template
         @post_template ||= (
           local_template(:post) || local_template(:page) || default_template(:post)
-        )
-      end
-
-      # TODO: Use separate template than page's.
-      def generic_template
-        @generic_template ||= (
-          local_template(:page) || default_template(:page)
         )
       end
 
@@ -215,7 +187,7 @@ module Smeagol
       #
       def toc_json
         json = {}
-        pages.each do |page|
+        view_pages.each do |page|
           data = {}
           data['title']   = page.page_title
           data['name']    = page.name

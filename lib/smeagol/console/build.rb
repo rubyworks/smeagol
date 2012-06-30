@@ -6,22 +6,26 @@ module Smeagol
     #
     class Build < Base
 
-      DIRECTORY = 'build'
-
-      #
+      # Initialize new Build command.
       def initialize(options={})
-        @wiki_dir  = options[:wiki_dir]  || Dir.pwd
-        @build_dir = options[:build_dir] || default_build_dir
-        @force     = options[:force]
+        @wiki_dir = options[:wiki_dir] || Dir.pwd
+        @use_tmp  = options[:use_tmp]
       end
 
       # Directory contaning the wiki git repository.
       attr :wiki_dir
 
-      # Directory in which to save static site files.
-      attr :build_dir
-
+      # Use system temporary directory, instead of directory 
+      # local to wiki repo as build destination?
       #
+      # Returns True or False.
+      def use_tmp?
+        @use_tmp
+      end
+
+      # Invoke build procedure.
+      #
+      # Returns nothing.
       def call
         remove_build_dir
 
@@ -31,20 +35,21 @@ module Smeagol
         static.build(build_dir)
       end
 
+      # Build directory.
       #
-      def default_build_dir
-        #File.join(wiki_dir, '_smeagol', settings.build_dir)
-        File.join(wiki_dir, '_smeagol', DIRECTORY)
+      # Returns String of build path.
+      def build_dir
+        if use_tmp?
+          File.join(Dir.tmpdir, 'smeagol/build')
+        else
+          File.join(wiki_dir, '_smeagol/build')
+        end
       end
 
+      # Remove build directory.
       #
       def remove_build_dir
         if File.exist?(build_dir)
-          if build_dir != default_build_dir
-            unless force?
-              abort "Build directory will be deleted. Use --force to proceed."
-            end
-          end
           FileUtils.rm_r(build_dir)
         end
       end

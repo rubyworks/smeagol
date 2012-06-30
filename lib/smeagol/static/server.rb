@@ -32,7 +32,7 @@ module Smeagol
       def initialize(options={})
         @options = options
 
-        @root = settings.build_dir || '_smeagol/build'
+        @root = File.join(settings.wiki_dir, '_smeagol/build')
 
         @options[:app] = app
         @options[:pid] = "#{tmp_dir}/pids/server.pid"

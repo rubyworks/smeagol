@@ -3,9 +3,10 @@ require 'ostruct'
 require 'yaml'
 
 module Smeagol
+
   class Wiki < Gollum::Wiki
 
-    # TODO: Report issue that Gollum should set these in some other way so that a subclass
+    # TODO: Wish Gollum let is set these in some other way so that a subclass
     # doesn't have to do it again.
     self.default_ref = 'master'
     self.default_committer_name  = 'Anonymous'
@@ -37,22 +38,29 @@ module Smeagol
       end
     end
 
+    # Public: The Smeagol wiki settings. These can be found in the _smeagol/settings.yml
+    # file at the root of the repository.
+    # This method caches the settings for all subsequent calls.
     #
-    # The Smeagol wiki settings. These can be found in the smeagol.yaml file at
-    # the root of the repository.
-    #
-    # Cache settings if already read.
+    # TODO: Should settings be coming from current file or from repo version?
+    #       This can be tricky. Right now they come from current file, but
+    #       In future we probably need to split this into two config files.
+    #       One that comes from version and one that is current.
     #
     # Returns a Settings object.
-    #
     def settings
-      @settings ||= (
-        if Settings.readable?
-          Settings.load
-        else
-          Settings.new
-        end
-      )
+      @settings ||= Settings.load(path)
     end
+
+    # Public: Get a list of plugin files.
+    #
+    # Returns Array of plugin files.
+    #def plugins
+    #  files.map do |f|
+    #    File.fnmatch?('_smeagol/plugins/*.rb', f.path)
+    #  end
+    #end
+
   end
+
 end

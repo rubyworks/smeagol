@@ -1,28 +1,25 @@
 module Smeagol
   module Views
-    class Page < Base
-      # Initializes a new page template data object.
+    class Post < Page
+      # Initializes a new post template data object.
       #
-      # page    - The individual wiki page that this view represents.
+      # post    - The individual wiki file that this view represents.
       # version - The tagged version of the page.
       #
-      # Returns a new page object.
-      def initialize(page, version='master')
-        super(page.wiki, version)
-        @page = page
+      # Returns a new post object.
+      def initialize(post, version='master')
+        super(post, version)
+        @post = post
       end
 
       # Public: The title of the page.
       def title
-        page.title
+        post.title
       end
-
-      # TODO: temporary alias
-      alias_method :page_title, :title
 
       # Public: The HTML formatted content of the page.
       def content
-        page.formatted_data
+        post.formatted_data
       end
 
       #
@@ -95,27 +92,23 @@ module Smeagol
       # If the name of the page begins with a date, then it is the "post date"
       # and is taken to be a blog entry, rather then an ordinary static page.
       def post_date
+p filename
+puts
         if md = /^(\d\d\d\d-\d\d-\d\d)/.match(filename)
           md[1]
         end
       end
 
       #
-      def post?
-        post_date
-      end
+      #def post?
+      #  post_date
+      #end
       
       #private
-      
-      # The Gollum::Page that this view represents.
-      attr_reader :page
 
-      #
-      def layout
-        @layout ||= (
-          local_template(:page) || default_template(:post)
-        )
-      end
+      # The Gollum::Page that this view represents.
+      # This is the same as `#page`.
+      attr_reader :post
 
     end
 

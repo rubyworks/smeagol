@@ -62,8 +62,8 @@ module Smeagol
       #
       def settings
         Settings.new(
-          :remote_wiki => wiki_url,
-          :remote_site => wiki_url.sub('.wiki', '')
+          :wiki_origin => wiki_url,
+          :site_origin => wiki_url.sub('.wiki', '')
         )
       end
 

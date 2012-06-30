@@ -15,15 +15,30 @@ module Gollum
       self
     end
 
+    #
+    attr_reader :wiki
+
     # Public: The current version of the page.
     #
     # Returns the Grit::Commit.
-    attr_reader :version
+    attr_accessor :version
 
-    # Set the Grit::Commit version of the page.
+    # Recent addition to Gollum.
+    alias filename name unless method_defined?(:filename)
+
+    # Public: The title will be constructed from the
+    # filename by stripping the extension and replacing any dashes with
+    # spaces.
     #
-    # Returns nothing.
-    attr_writer :version
+    # Returns the fully sanitized String title.
+    def title
+      Sanitize.clean(name).strip
+    end
+
+    #
+    def extname
+      ::File.extname(path)
+    end
 
   end
 end

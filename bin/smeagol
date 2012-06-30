@@ -1,19 +1,10 @@
 #!/usr/bin/env ruby
 
 def self.main(argv)
-  commands = %w{init build sync help server}
+  commands = %w{help init build sync preview server serve}
   command = commands.include?(argv.first) ? argv.shift : 'server'
 
   case command
-  when 'init'
-    require 'smeagol'
-    Smeagol::CLI.init(argv)
-  when 'build'
-    require 'smeagol'
-    Smeagol::CLI.build(argv)
-  when 'sync'
-    require 'smeagol'
-    Smeagol::CLI.sync(argv)
   when 'help'
     puts "usage: smeagol [COMMAND] [OPTIONS]"
     puts
@@ -23,7 +14,20 @@ def self.main(argv)
     end
     puts
     puts "Default command if none given is `server'."
-  when 'server'
+  when 'init'
+    require 'smeagol'
+    Smeagol::CLI.init(argv)
+  when 'build'
+    require 'smeagol'
+    Smeagol::CLI.build(argv)
+  when 'sync'
+    require 'smeagol'
+    Smeagol::CLI.sync(argv)
+  when 'preview'
+    require 'smeagol'
+    Smeagol::CLI.preview(argv)   
+  when 'server', 'serve'
+    # TODO: make daemon the default (once it actually works)?
     if ARGV.include?('-d')
       ARGV.delete('-d')
       require 'daemons'
