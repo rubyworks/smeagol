@@ -8,7 +8,8 @@ module Smeagol
 
       #
       def initialize(wiki)
-        @wiki = wiki
+        @wiki       = wiki
+        @controller = Controller.new(wiki)
 
         #@pages     = {}
         #@directory = []
@@ -18,15 +19,15 @@ module Smeagol
       attr_reader :wiki
 
       #
+      attr_reader :controller
+
+      #
       def build(directory)
-        puts "Building #{directory} ..."
-
+        #puts "Building #{directory} ..."
         @dir = directory
-
         #directory_push(directory)
         #build_tree(@wiki.repo.tree)
         #directory_pop
-
         save
       end
 
@@ -36,49 +37,30 @@ module Smeagol
         save_smeagol
 
         pages.each do |page|
-          href = page.static_href
-          path = File.join(@dir, href)
-          mkdir_p(File.dirname(path))
-          puts "write #{path}"
-          File.open(path, 'w') do |f|
-            html = Mustache.render(template(page, :page), page)  # page.gollum_page)
-            f.write(html)
-          end
+          #html = Mustache.render(template(page, :page), page)  # page.gollum_page)
+          view, content = controller.render_page(page)
+          path = File.join(@dir, view.href)
+          write(path, content)
         end
 
         posts.each do |post|
-          href = post.static_href
-          path = File.join(@dir, href)
-          mkdir_p(File.dirname(path))
-          puts "write #{path}"
-          File.open(path, 'w') do |f|
-            html = Mustache.render(template(post, :post), post)  # page.gollum_page)
-            f.write(html)
-          end
+          #html = Mustache.render(template(post, :post), post)  # page.gollum_page)
+          view, content = controller.render_post(post)
+          path = File.join(@dir, view.href)
+          write(path, content)         
         end
 
-        renderables.each do |file|
-          href = file.static_href
-          path = File.join(@dir, href)
-          mkdir_p(File.dirname(path))
-          puts "write #{path}"
-          File.open(path, 'w') do |f|
-            html = Mustache.render(file.content, file)
-            file.content = html
-            html = Mustache.render(template(file), file)
-            f.write(html)
-          end
+        files.each do |file|
+          view, content = controller.render_file(file)
+          path = File.join(@dir, view.href)
+          write(path, content)
         end
 
         assets.each do |file|
           #next if file == 'smeagol.yml'
-          href = file.path #static_href
-          path = File.join(@dir, href)
-          mkdir_p(File.dirname(path))
-          puts "write #{path}"
-          File.open(path, 'w') do |f|
-            f.write(file.raw_data)
-          end
+          content = file.raw_data
+          path    = File.join(@dir, file.path)
+          write(path, content)
         end
 
         save_rss if @wiki.settings.rss
@@ -88,13 +70,22 @@ module Smeagol
 
     private
 
+      #
+      def write(path, content)
+        mkdir_p(File.dirname(path))
+        puts "write: #{path}"  # log instead?
+        File.open(path, 'w') do |f|
+          f.write(content)
+        end
+      end
+
       # Collect list of viewable pages.
       #
       def pages
         @pages ||= (
-          filter(@wiki.pages){ |p| !p.post? }.map do |page|
-            Smeagol::Views::Page.new(page)
-          end
+          filter(@wiki.pages){ |p| !p.post? } #.map do |page|
+            #Smeagol::Views::Page.new(page)
+          #end
         )
       end
 
@@ -102,19 +93,19 @@ module Smeagol
       #
       def posts
         @posts ||= (
-          filter(@wiki.pages){ |p| p.post? }.map do |page|
-            Smeagol::Views::Post.new(page)
-          end
+          filter(@wiki.pages){ |p| p.post? } #.map do |page|
+          #  Smeagol::Views::Post.new(page)
+          #end
         )
       end
 
       # Collect list of non-page files to be rendered.
       #
-      def renderables
-        @renderables ||= (
-          filter(@wiki.files){ |f| f.extname == '.mustache' }.map do |file|
-            Smeagol::Views::Template.new(file)
-          end
+      def files
+        @files ||= (
+          filter(@wiki.files){ |f| f.extname == '.mustache' } #.map do |file|
+          #  Smeagol::Views::Template.new(file)
+          #end
         )
       end
 
@@ -154,9 +145,10 @@ module Smeagol
 
       #
       def save_toc
+        toc  = TOC.new(@wiki)
         file = File.join(@dir, 'toc.json')
         File.open(file, 'w') do |f|
-          f << toc_json.to_json
+          f << toc.to_s
         end
       end
 
@@ -214,18 +206,23 @@ module Smeagol
 
       #
       def toc_json
-        json = {}
-        pages.each do |page|
-          data = {}
-          data['title']   = page.page_title
-          data['name']    = page.name
-          data['href']    = page.static_href
-          data['date']    = page.post_date if page.post_date
-          data['author']  = page.author
-          data['summary'] = page.summary
-          json[page.name] = data
+      end
+
+      # Internal: Static URL for href.
+      def static_href(page)
+        dir  = File.dirname(page.path)
+        name = slug(page.filename_stripped)
+        ext  = File.extname(page.path)
+
+        if dir != '.'
+          File.join(dir, name, 'index.html')
+        else
+          if name == wiki.settings.index #|| 'Home'
+            'index.html'
+          else
+            File.join(name, 'index.html')
+          end
         end
-        json
       end
 
 =begin

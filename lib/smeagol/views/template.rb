@@ -62,7 +62,7 @@ module Smeagol
       end
 
       # Public: static href, used when generating static site.
-      def static_href
+      def href
         dir  = File.dirname(file.path)
         ext  = File.extname(file.path)
 

@@ -26,6 +26,9 @@ require 'smeagol/views/post'
 require 'smeagol/views/template'
 require 'smeagol/views/versions'
 
+require 'smeagol/helpers/rss'
+require 'smeagol/helpers/toc'
+
 require 'smeagol/static/generator'
 require 'smeagol/static/server'
 

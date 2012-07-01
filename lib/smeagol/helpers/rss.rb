@@ -8,23 +8,24 @@ module Smeagol
     #
     # Initialize a new Smeagol::RSS instance.
     #
-    def initialize(wiki, pages=nil)
-      @wiki  = wiki
-      @pages = pages || view_pages
+    def initialize(wiki, options={})
+      @wiki    = wiki
+      @version = options[:version] || 'master'
+      @posts   = options[:posts]
     end
 
-    #
-    # Collect the items to include in the RSS from the pages.
-    # Only pages with post_dates are included.
-    #
-    def items
-      list = []
-      @pages.each do |page|
-        next unless Smeagol::Views::Page === page
-        list << page if page.post_date
-      end
-      list
-    end
+    ##
+    ## Collect the items to include in the RSS from the pages.
+    ## Only pages with post_dates are included.
+    ##
+    #def items
+    #  list = []
+    #  @pages.each do |page|
+    #    next unless Smeagol::Views::Page === page
+    #    list << page if page.post_date
+    #  end
+    #  list
+    #end
 
     #
     # Build the RSS instance and cache the result.
@@ -49,9 +50,11 @@ module Smeagol
         maker.channel.updated      = Time.now.to_s
         maker.items.do_sort        = true
 
-        items.each do |page|
-          #name = page.name
-          html = page.content
+        posts.each do |post|
+          html = post.content
+          date = Time.parse(post.post_date)
+
+          next if date > Time.now unless @wiki.settings.future
 
           if i = html.index('</p>')
             text = html[0..i+4]
@@ -60,9 +63,9 @@ module Smeagol
           end
 
           maker.items.new_item do |item|
-            item.title = page.page_title
-            item.link  = File.join(@wiki.settings.url, page.static_href)  # TODO: this will be different for non-static site
-            item.date  = Time.parse(page.post_date)
+            item.title = post.title
+            item.link  = File.join(@wiki.settings.url, post.href)
+            item.date  = date
             item.description = text
           end
         end
@@ -77,11 +80,15 @@ module Smeagol
     end
 
     #
-    def view_pages
-      @view_pages ||= \
+    def posts
+      @posts ||= (
         @wiki.pages.map do |page|
-          Smeagol::Views::Page.new(page)
-        end
+          next unless page.post?
+          Smeagol::Views::Post.new(page)
+        end.compact
+      )
     end
+
   end
+
 end

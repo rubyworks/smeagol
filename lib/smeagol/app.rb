@@ -48,14 +48,18 @@ module Smeagol
       wiki  = Smeagol::Wiki.new(repository.path, {:base_path => mount_path})
       cache = Smeagol::Cache.new(wiki)
 
-      controller = Controller.new(wiki, settings)
+      controller = Controller.new(wiki) # settings)
 
       # First check the cache
       if settings.cache_enabled && cache.cache_hit?(name, version)
         cache.get_page(name, version)
       # Then try to create the wiki page
       elsif page = wiki.page(name, version)
-        content = controller.render_page(page, version)
+        if page.post?
+          view, content = controller.render_post(page, version)
+        else
+          view, content = controller.render_page(page, version)
+        end
         #view_page = Smeagol::Views::Page.new(page, version) #tag_name)
         #template_type = view_page.post? ? 'post' : 'page'
         #content = Mustache.render(get_template(template_type), view_page)
@@ -63,7 +67,7 @@ module Smeagol
         content
       # If it is not a wiki page then try to find the file
       elsif file = wiki.file(name+'.mustache', version)
-        content = controller.render_file(file, version)
+        view, content = controller.render_file(file, version)
         #view    = Smeagol::Views::Template.new(file, version) #tag_name)
         #content = Mustache.render(file.raw_data, view)
         #layout  = wiki.settings.layouts[name]
@@ -73,17 +77,26 @@ module Smeagol
         #end
         cache.set_page(name, file.version.id, content) if settings.cache_enabled
         content
-      #
+      # Smeagol can create an RSS feed automatically.
       elsif name == 'rss.xml'
-        rss = RSS.new(wiki, version)
+        rss = RSS.new(wiki, :version=>version)
         content = rss.to_s
+        #content_type 'xml' # TODO: 
         content
-      # If it is a directory, redirect to the index page
+      # Smeagol can create a JSON-formatted table of contents.
+      elsif name == 'toc.json'
+        toc = TOC.new(wiki, :version=>version)
+        content = toc.to_s
+        #content_type 'json' # TODO: 
+        content
+      # If it is a directory, redirect to the index page.
+      # TODO: The server usually handles this automatically
+      # so do we really need this? Just in case, I guess?
       elsif File.directory?(file_path)
         url = "/#{name}/index.html"
         url = "/#{tag_name}#{url}" unless tag_name.nil?
         redirect url
-      # If it is not a wiki page then try to find the file
+      # If not anything else then it must be a raw asset file.
       elsif file = wiki.file(name, version)
         content_type get_mime_type(name)
         file.raw_data

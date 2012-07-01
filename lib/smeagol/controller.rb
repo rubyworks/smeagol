@@ -7,26 +7,29 @@ module Smeagol
     #
     # wiki - Gollum::Wiki
     #
-    def initialize(wiki, settings)
+    def initialize(wiki)
       @wiki     = wiki
-      @settings = settings
     end
 
     #
     attr :wiki
 
     #
-    attr :settings
-
-    #
-    def render_page(page, version)
-      view_page = Smeagol::Views::Page.new(page, version) #tag_name)
-      template_type = view_page.post? ? 'post' : 'page'
-      content = Mustache.render(get_template(template_type), view_page)
+    def render_page(page, version='master')
+      view    = Smeagol::Views::Page.new(page, version) #tag_name)
+      content = Mustache.render(get_template('page'), view)
+      return view, content
     end
 
     #
-    def render_file(file, version)
+    def render_post(post, version='master')
+      view    = Smeagol::Views::Post.new(post, version) #tag_name)
+      content = Mustache.render(get_template('post'), view)
+      return view, content
+    end
+
+    #
+    def render_file(file, version='master')
       view    = Smeagol::Views::Template.new(file, version) #tag_name)
       content = Mustache.render(file.raw_data, view)
       layout  = wiki.settings.layouts[file.name]
@@ -34,6 +37,7 @@ module Smeagol
         view.content = content
         content = Mustache.render(get_template(layout || :page), view)
       end
+      return view, content
     end
 
     # The Mustache template to use for page rendering.
