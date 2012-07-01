@@ -75,11 +75,13 @@ module Smeagol
 
     # Use page cache to speed up page requests.
     attr_accessor :cache
-    alias_accessor :cache_enabled, :cache
+    alias :cache_enabled  :cache
+    alias :cache_enabled= :cache=
 
     # Serve website via a given base path.
     attr_accessor :base_path
-    alias_accessor :mount_path, :base_path
+    alias :mount_path  :base_path
+    alias :mount_path= :base_path=
 
     # Wiki repository list.
     #

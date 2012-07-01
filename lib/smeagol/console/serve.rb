@@ -13,7 +13,7 @@ module Smeagol
         @auto_update   = config[:auto_update]
         @cache_enabled = config[:cache_enabled]
         @mount_path    = config[:mount_path]
-        @repositories  = config[:repositories].map{ |r| r.to_ostruct }
+        @repositories  = config[:repositories].map{ |r| OpenStruct.new(r) }
       end
 
       # Path to git binary.

@@ -5,7 +5,7 @@ require 'mustache'
 require 'tmpdir'
 
 require 'smeagol/version'
-require 'smeagol/core_ext'
+require 'smeagol/core_ext/ostruct'
 
 # gollum plugins, can be removed when new version of Gollum is out.
 require 'smeagol/plugins/wiki'

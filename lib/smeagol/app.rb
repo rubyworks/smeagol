@@ -42,7 +42,7 @@ module Smeagol
 
       name = "Home" if name == ""   # TODO wiki.settings.index instead of 'Home'
       name = name.gsub(/\/+$/, '')
-      name = File.sanitize_path(name)
+      name = sanitize_path(name)
       file_path = "#{repository.path}/#{name}"
       
       wiki  = Smeagol::Wiki.new(repository.path, {:base_path => mount_path})
@@ -74,11 +74,15 @@ module Smeagol
         content
       # If it is not a wiki page then try to find the file
       elsif file = wiki.file(name+'.mustache', version)
-        content = file.text_data
-        if wiki.settings.layouts[name]
-          $stderr.puts "Need to render layout for #{name}."
+        view    = Smeagol::Views::Template.new(file, version) #tag_name)
+        content = Mustache.render(file.raw_data, view)
+        layout  = wiki.settings.layouts[name]
+        unless wiki.settings.layouts.key?(name) && !layout
+          view.content = content
+          content = Mustache.render(get_template(layout || :page), view)
         end
-        content = Mustache.render(file.text_data, wiki)  # TODO: wiki okay here?
+        cache.set_page(name, file.version.id, content) if settings.cache_enabled
+        content
       # If it is not a wiki page then try to find the file
       elsif file = wiki.file(name, version)
         content_type get_mime_type(name)
@@ -128,7 +132,7 @@ module Smeagol
       if File.exists?("#{repository.path}/_smeagol/layouts/#{name}.mustache")
         IO.read("#{repository.path}/_smeagol/layouts/#{name}.mustache")
       else
-        IO.read(File.join(File.dirname(__FILE__), "templates/layouts/#{name}.mustache"))
+        IO.read(::File.join(::File.dirname(__FILE__), "templates/layouts/#{name}.mustache"))
       end
     end
 
@@ -139,7 +143,7 @@ module Smeagol
     # Returns the mime type for a file.
     def get_mime_type(file)
       if !file.nil?
-        extension = File.extname(file)
+        extension = ::File.extname(file)
         return Rack::Mime::MIME_TYPES[extension] || 'text/plain'
       end
       
@@ -165,6 +169,15 @@ module Smeagol
       path = settings.mount_path
       path += '/' unless path.end_with?('/')
       path
+    end
+
+    # Removes all references to parent directories (../) in a path.
+    #
+    # path - The path to sanitize.
+    #
+    # Returns a clean, pristine path.
+    def sanitize_path(path)
+      path.gsub(/\.\.(?=$|\/)/, '') unless path.nil?
     end
 
   end
