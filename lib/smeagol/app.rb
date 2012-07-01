@@ -48,41 +48,41 @@ module Smeagol
       wiki  = Smeagol::Wiki.new(repository.path, {:base_path => mount_path})
       cache = Smeagol::Cache.new(wiki)
 
+      controller = Controller.new(wiki, settings)
+
       # First check the cache
       if settings.cache_enabled && cache.cache_hit?(name, version)
         cache.get_page(name, version)
       # Then try to create the wiki page
       elsif page = wiki.page(name, version)
-        view_page = Smeagol::Views::Page.new(page, version) #tag_name)
-        template_type = view_page.post? ? 'post' : 'page'
-        content = Mustache.render(get_template(template_type), view_page)
+        content = controller.render_page(page, version)
+        #view_page = Smeagol::Views::Page.new(page, version) #tag_name)
+        #template_type = view_page.post? ? 'post' : 'page'
+        #content = Mustache.render(get_template(template_type), view_page)
         cache.set_page(name, page.version.id, content) if settings.cache_enabled
+        content
+      # If it is not a wiki page then try to find the file
+      elsif file = wiki.file(name+'.mustache', version)
+        content = controller.render_file(file, version)
+        #view    = Smeagol::Views::Template.new(file, version) #tag_name)
+        #content = Mustache.render(file.raw_data, view)
+        #layout  = wiki.settings.layouts[name]
+        #unless wiki.settings.layouts.key?(name) && !layout
+        #  view.content = content
+        #  content = Mustache.render(get_template(layout || :page), view)
+        #end
+        cache.set_page(name, file.version.id, content) if settings.cache_enabled
+        content
+      #
+      elsif name == 'rss.xml'
+        rss = RSS.new(wiki, version)
+        content = rss.to_s
         content
       # If it is a directory, redirect to the index page
       elsif File.directory?(file_path)
         url = "/#{name}/index.html"
         url = "/#{tag_name}#{url}" unless tag_name.nil?
         redirect url
-      #
-      elsif name == 'rss.xml'
-        if page = wiki.page('rss.xml', version)
-          content = Mustache.render(page.text_data, wiki) # TODO: wiki okay here?
-        else
-          rss = RSS.new(wiki, version)
-          content = rss.to_s
-        end
-        content
-      # If it is not a wiki page then try to find the file
-      elsif file = wiki.file(name+'.mustache', version)
-        view    = Smeagol::Views::Template.new(file, version) #tag_name)
-        content = Mustache.render(file.raw_data, view)
-        layout  = wiki.settings.layouts[name]
-        unless wiki.settings.layouts.key?(name) && !layout
-          view.content = content
-          content = Mustache.render(get_template(layout || :page), view)
-        end
-        cache.set_page(name, file.version.id, content) if settings.cache_enabled
-        content
       # If it is not a wiki page then try to find the file
       elsif file = wiki.file(name, version)
         content_type get_mime_type(name)

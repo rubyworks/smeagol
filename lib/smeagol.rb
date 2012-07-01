@@ -18,6 +18,7 @@ require 'smeagol/app'
 require 'smeagol/cache'
 require 'smeagol/config'
 require 'smeagol/settings'
+require 'smeagol/controller'
 
 require 'smeagol/views/base'
 require 'smeagol/views/page'

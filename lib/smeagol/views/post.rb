@@ -60,12 +60,12 @@ module Smeagol
         ext  = File.extname(page.path)
 
         if dir != '.'
-          File.join(dir, name, 'index.html')
+          File.join(dir, name) #, 'index.html')
         else
           if name == @wiki.settings.index #|| 'Home'
             'index.html'
           else
-            File.join(name, 'index.html')
+            name #File.join(name, 'index.html')
           end
         end
       end
@@ -92,8 +92,6 @@ module Smeagol
       # If the name of the page begins with a date, then it is the "post date"
       # and is taken to be a blog entry, rather then an ordinary static page.
       def post_date
-p filename
-puts
         if md = /^(\d\d\d\d-\d\d-\d\d)/.match(filename)
           md[1]
         end
