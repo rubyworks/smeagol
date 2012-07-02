@@ -60,34 +60,24 @@ module Smeagol
         else
           view, content = controller.render_page(page, version)
         end
-        #view_page = Smeagol::Views::Page.new(page, version) #tag_name)
-        #template_type = view_page.post? ? 'post' : 'page'
-        #content = Mustache.render(get_template(template_type), view_page)
         cache.set_page(name, page.version.id, content) if settings.cache_enabled
         content
       # If it is not a wiki page then try to find the file
       elsif file = wiki.file(name+'.mustache', version)
         view, content = controller.render_file(file, version)
-        #view    = Smeagol::Views::Template.new(file, version) #tag_name)
-        #content = Mustache.render(file.raw_data, view)
-        #layout  = wiki.settings.layouts[name]
-        #unless wiki.settings.layouts.key?(name) && !layout
-        #  view.content = content
-        #  content = Mustache.render(get_template(layout || :page), view)
-        #end
         cache.set_page(name, file.version.id, content) if settings.cache_enabled
         content
       # Smeagol can create an RSS feed automatically.
       elsif name == 'rss.xml'
         rss = RSS.new(wiki, :version=>version)
         content = rss.to_s
-        #content_type 'xml' # TODO: 
+        content_type 'application/rss+xml' 
         content
       # Smeagol can create a JSON-formatted table of contents.
       elsif name == 'toc.json'
         toc = TOC.new(wiki, :version=>version)
         content = toc.to_s
-        #content_type 'json' # TODO: 
+        content_type 'application/json'
         content
       # If it is a directory, redirect to the index page.
       # TODO: The server usually handles this automatically
@@ -164,6 +154,8 @@ module Smeagol
     end
 
     # Determines the repository to use based on the hostname.
+    #
+    # Returns [OpenStruct] repository.
     def repository
       # Match on hostname
       settings.repositories.each do |repository|
@@ -178,6 +170,8 @@ module Smeagol
     end
 
     # Determines the mounted path to prefix to internal links.
+    #
+    # Returns the mount path.
     def mount_path
       path = settings.mount_path
       path += '/' unless path.end_with?('/')
