@@ -4,7 +4,7 @@ module Smeagol
   #
   class Config
 
-    # Directory which contains user settings.
+    # Directory which contains user configuration.
     CONFIG_HOME = ENV['XDG_CONFIG_HOME'] || '~/.config'
 
     # Public: Load Smeagol server configuration.
@@ -92,11 +92,39 @@ module Smeagol
     #     - cname: blog.bananas.org
     #     - secret: abc123
     #
-    attr_accessor :repositories
+    attr_reader :repositories
 
+    # Set list of repositories.
     #
+    def repositories=(repos)
+      @repositories = (
+        repos.map do |repo|
+          case repo
+          when Repository then repo
+          else Repository.new(repo) 
+          end
+        end
+      )
+    end
+
+    # Ability to access config like hash.
     def [](name)
       instance_variable_get("@#{name}")
+    end
+
+    # Encapsulates a repository config entry.
+    #
+    class Repository
+      attr_accessor :path
+      attr_accessor :cname
+      attr_accessor :secret
+
+      def initialize(opts={})
+        opts = OpenStruct.new(opts)
+        @path   = opts.path
+        @cname  = opts.cname
+        @secret = opts.secret
+      end
     end
 
   end
