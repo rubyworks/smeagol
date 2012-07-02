@@ -8,32 +8,48 @@ module Smeagol
     # wiki - Gollum::Wiki
     #
     def initialize(wiki)
-      @wiki     = wiki
+      @wiki = wiki
     end
 
-    #
+    # Access to Gollum::Wiki.
     attr :wiki
 
+    # Render wiki page.
     #
+    # page    - Gollum::Page instance.
+    # version - Commit id, branch or tag.
+    #
+    # Returns [Array<Smeagol::Views::Page,String>].
     def render_page(page, version='master')
       view    = Smeagol::Views::Page.new(page, version) #tag_name)
       content = Mustache.render(get_template('page'), view)
       return view, content
     end
 
+    # Render wiki blog post.
     #
+    # post    - Gollum::Page instance.
+    # version - Commit id, branch or tag.
+    #
+    # Returns [Array<Smeagol::Views::Post,String>].
     def render_post(post, version='master')
       view    = Smeagol::Views::Post.new(post, version) #tag_name)
       content = Mustache.render(get_template('post'), view)
       return view, content
     end
 
+    # Render special file.
     #
+    # file    - Gollum::File instance.
+    # version - Commit id, branch or tag.
+    #
+    # Returns [Array<Smeagol::Views::Template,String>].
     def render_file(file, version='master')
       view    = Smeagol::Views::Template.new(file, version) #tag_name)
       content = Mustache.render(file.raw_data, view)
-      layout  = wiki.settings.layouts[file.name]
-      unless wiki.settings.layouts.key?(file.name) && !layout
+      layname = file.name.chomp('.mustache')
+      layout  = wiki.settings.layouts[layname]
+      unless wiki.settings.layouts.key?(layname) && !layout
         view.content = content
         content = Mustache.render(get_template(layout || :page), view)
       end

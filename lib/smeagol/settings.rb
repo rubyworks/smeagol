@@ -8,7 +8,11 @@ module Smeagol
     # Directory which contains user settings.
     CONFIG_HOME = ENV['XDG_CONFIG_HOME'] || '~/.config'
 
+    # Load settings.
     #
+    # wiki_dir - Local file system location of wiki repo. 
+    #
+    # Returns [Settings] instance.
     def self.load(wiki_dir=Dir.pwd)
       file = File.join(wiki_dir, '_smeagol', 'settings.yml')
       file = File.expand_path(file)
@@ -34,20 +38,23 @@ module Smeagol
       @include       = []
       @layouts       = {}
 
-      update(settings)
+      assign(settings)
     end
 
-    # TODO: temporary
+    # Deprecated: Access settings like a Hash.
     def [](key)
       __send__(key)
     end
 
-    #
-    def update(settings={})
+    # Assign settings hash via writer methods.
+    def assign(settings={})
       settings.each do |k,v|
         __send__("#{k}=", v)
       end
     end
+
+    # Deprecated: Alias ffor #assign.
+    alias update assign
 
     #
     attr_accessor :wiki_dir
@@ -97,7 +104,7 @@ module Smeagol
     attr_accessor :exclude
 
     # Include posts with future dates? By default all posts dated in the
-    # future are omitted. (TODO)
+    # future are omitted.
     attr_accessor :future
 
     # Do not load plugins. (TODO?)
@@ -164,49 +171,6 @@ module Smeagol
     #
     # TODO: Rename this field.
     attr_accessor :source_url
-
-=begin
-    # Location of cross-project configuration file.
-    #
-    # The location of this file can be adjusted via `SMEAGOL_CONFIG`
-    # environment variable.
-    #
-    # Returns String of file's path.
-    def config_file
-      file = ENV['SMEAGOL_CONFIG']
-      if file
-        puts "Cannot find configuration file: #{path}" unless File.exists?(file)
-        puts "Cannot read configuration file: #{path}" unless File.readable?(file)
-      end
-      file || File.join(home_config_dir, 'smeagol/config.yml')
-    end
-
-    # Loads cross-project configuration file.
-    #
-    # The location of this file can be adjusted via `SMEAGOL_CONFIG`
-    # environment variable.
-    #
-    # Returns Hash of options from the config file.
-    def load_config
-      config = {}
-
-      path = config_file
-
-      if File.exists?(path)
-        # Notify the user if the config file exists but is not readable.
-        unless File.readable?(path)
-          puts "Config file not readable: #{path}"
-          exit
-        end
-        
-        config = YAML.load(IO.read(path))
-      end
-
-      config = config.inject({}){ |h, (k,v)| h[k.to_sym] = v; h }
-
-      return config
-    end
-=end
 
   end
 

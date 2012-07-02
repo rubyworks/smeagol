@@ -1,12 +1,13 @@
-require 'gollum'
-require 'ostruct'
-require 'yaml'
-
 module Smeagol
 
+  # Subclass of Gollum::Wiki.
+  #
+  # TODO: Techincailly this is probably not needed. Presently it only adds
+  #       two methods, both of which can easily be placed elsewhere.
+  #
   class Wiki < Gollum::Wiki
 
-    # TODO: Wish Gollum let is set these in some other way so that a subclass
+    # TODO: Wish Gollum let us set these in some other way so that a subclass
     # doesn't have to do it again.
     self.default_ref = 'master'
     self.default_committer_name  = 'Anonymous'
@@ -46,6 +47,8 @@ module Smeagol
     #       This can be tricky. Right now they come from current file, but
     #       In future we probably need to split this into two config files.
     #       One that comes from version and one that is current.
+    #
+    # TODO: This might be better in Controller instead.
     #
     # Returns a Settings object.
     def settings

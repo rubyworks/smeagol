@@ -3,6 +3,8 @@ require 'rack/file'
 require 'sinatra'
 require 'mustache'
 require 'tmpdir'
+require 'ostruct'
+require 'yaml'
 
 require 'smeagol/version'
 require 'smeagol/core_ext/ostruct'
