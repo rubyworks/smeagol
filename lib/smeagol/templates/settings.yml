@@ -41,7 +41,7 @@ author: {{ author }}
 # e.g.
 #
 #   menu:
-#   - title: Blog
+#   - title: Home
 #     href: /
 #   - title: Projects
 #     href: /Projects/
@@ -50,17 +50,14 @@ author: {{ author }}
 #   - title: Reads
 #     href: /Reads/
 
-menu: ~
+menu:
+- title: Home
+  href: /
 
 # Where to sync site. (For static builds only.)
 # Default value is `_site`.
 
 site_dir: _site
-
-# Where to build static files. (For static builds only.)
-# Default valeu is `_build`.
-
-build_dir: _build
 
 # Google analytics tracking id. Could be used for other such
 # services if custom template is used.

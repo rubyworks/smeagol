@@ -18,9 +18,11 @@ module Smeagol
           unless @wiki_dir
             @wiki_dir = File.basename(@wiki_url).chomp('.git')
           end
+          @clone = true
         else
-          @wiki_url = wiki(@wiki_dir).repo.config['remote.origin.url']
           @wiki_dir = Dir.pwd
+          @wiki_url = wiki(@wiki_dir).repo.config['remote.origin.url']
+          @clone = false
         end
       end
 
@@ -37,7 +39,7 @@ module Smeagol
       # directory.
       #
       def call
-        if wiki_url
+        if @clone
           clone_wiki
         else
           abort_if_already_smeagol

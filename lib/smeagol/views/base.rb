@@ -25,6 +25,9 @@ module Smeagol
       # The Gollum::Page or Gollum::File that this view represents.
       attr_reader :file
 
+      # The Gollum::Wiki.
+      attr_reader :wiki
+
       # Public: The title of the wiki. This is set in the settings file.
       def wiki_title
         wiki.settings.title
