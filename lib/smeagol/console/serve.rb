@@ -8,12 +8,14 @@ module Smeagol
 
       # Initialize new Serve console command.
       def initialize(config={})
-        @git           = config[:git] || get_git
-        @port          = config[:port]
-        @auto_update   = config[:auto_update]
-        @cache_enabled = config[:cache_enabled]
-        @mount_path    = config[:mount_path]
-        @repositories  = config[:repositories].map{ |r| OpenStruct.new(r) }
+        config = Smeagol::Config.new(config) unless Smeagol::Config === config
+
+        @git           = config.git || get_git
+        @port          = config.port
+        @auto_update   = config.auto_update
+        @cache_enabled = config.cache_enabled
+        @mount_path    = config.mount_path
+        @repositories  = config.repositories
       end
 
       # Path to git binary.
@@ -52,9 +54,9 @@ module Smeagol
       #
       # Returns nothing.
       def show_repository
-        $stderr.puts "\n  Now serving:"
+        $stderr.puts "\n  Now serving on port #{@port} at /#{@base_path}:"
         repositories.each do |repository|
-          $stderr.puts "  #{repository.path} (#{repository.cname})"
+          $stderr.puts "  * #{repository.path} (#{repository.cname})"
         end
         $stderr.puts "\n"
       end

@@ -45,7 +45,7 @@ module Smeagol
       @port          = 4567
       @auto_update   = false
       @cache_enabled = true
-      @mount_path    = ''
+      @base_path     = ''
       @repositories  = []
       @git           = nil
 

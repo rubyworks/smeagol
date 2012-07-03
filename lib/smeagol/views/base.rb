@@ -1,23 +1,30 @@
 module Smeagol
+
   module Views
+
     class Base < ::Mustache
       # Initializes a new mustache view template data object.
       #
-      # wiki - The wiki that this view represents.
+      # page    - The individual wiki page that this view represents.
+      # version - The tagged version of the page.
       #
-      # Returns a new view object.
-      def initialize(wiki, version='master')
-        @wiki    = wiki
+      # Returns a new page object.
+      def initialize(file, version='master')
+        @file    = file
+        @wiki    = file.wiki
         @version = version || 'master'
 
-        dir = File.join(wiki.path, '_smeagol', 'layouts')
-        if File.directory?(dir)
+        dir = ::File.join(wiki.path, '_layouts')
+        if ::File.directory?(dir)
           self.class.template_path = dir 
         else
-          self.class.template_path = File.join(File.dirname(__FILE__), '..', 'templates', 'layouts')
+          self.class.template_path = ::File.join(::File.dirname(__FILE__), '..', 'templates', 'layouts')
         end
       end
-      
+
+      # The Gollum::Page or Gollum::File that this view represents.
+      attr_reader :file
+
       # Public: The title of the wiki. This is set in the settings file.
       def wiki_title
         wiki.settings.title
@@ -82,12 +89,24 @@ module Smeagol
       def posts
         @posts ||= (
           filter(@wiki.pages){ |p| p.post? }.map do |page|
-            Smeagol::Views::Post.new(page)
+            Smeagol::Views::Post.new(page, @version)
           end
         )
       end
 
-      #  P R O T E C T E D
+      # Get the layout template for the view.
+      def layout
+        template = nil
+        if name = wiki.settings.layouts[layout_key]
+          template = local_layout(name)
+        end
+        if !template && !custom_layout? 
+          template = standard_layout
+        end
+        template
+      end
+
+      #  P R O T E C T E D   M E T H O D S
       
       #protected
       
@@ -98,7 +117,7 @@ module Smeagol
       attr_reader :version
       
 
-      #  P R I V A T E
+      #  P R I V A T E   M E T H O D S
 
       private
 
@@ -128,6 +147,67 @@ module Smeagol
         end
       end
 
+      # TODO: slug support
+      def slug(page,blob)
+        date = page.version.authored_date
+        name = blob.name[name.index(/[A-Za-z]/)..-1]
+
+        if slug = @wiki.settings.slug
+          slug = date.strftime(slug)
+          slug = slug.sub(':name', name)
+        else
+          slug = name
+        end
+        slug
+      end
+
+      #
+      def standard_layout
+        local_layout(:page) || default_layout(:page)
+      end
+
+      #
+      def custom_layout?
+        wiki.settings.layouts.key?(layout_key)
+      end
+
+      #
+      def layout_key
+        path
+      end
+
+      # The Mustache template to use for rendering.
+      #
+      # name - The name of the template to use.
+      #
+      # Returns the content of the specified template file in the
+      # wiki repository if it exists. Otherwise, it returns `nil`.
+      def local_layout(*names)
+        names.each do |name|
+          file = "#{@wiki.path}/_layouts/#{name}.mustache"
+          if ::File.exists?(file)
+            return IO.read(file)
+          end
+        end
+        return nil
+      end
+
+      # Default template.
+      #
+      # name - The name of the template to use.
+      #
+      # Returns [String] The template included with the Smeagol package.
+      def default_layout(name)
+        IO.read(::File.join(::File.dirname(__FILE__), "../templates/layouts/#{name}.mustache"))
+      end
+
+      #
+      def post?
+        false
+      end
+
     end
+
   end
+
 end

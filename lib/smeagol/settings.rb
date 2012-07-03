@@ -14,7 +14,7 @@ module Smeagol
     #
     # Returns [Settings] instance.
     def self.load(wiki_dir=Dir.pwd)
-      file = File.join(wiki_dir, '_smeagol', 'settings.yml')
+      file = File.join(wiki_dir, '_settings.yml')
       file = File.expand_path(file)
       if File.exist?(file)
         settings = YAML.load_file(file)
@@ -30,8 +30,8 @@ module Smeagol
     #
     #
     def initialize(settings={})
-      @site_dir      = '_smeagol/site'
-      #@build_dir    = '_smeagol/build'
+      @site_dir      = '_site'
+      #@build_dir    = '_build'
       @index         = 'Home'
       @rss           = false
       @exclude       = []
@@ -82,11 +82,11 @@ module Smeagol
     attr_accessor :site_branch
 
     # Where to sync site. (For static builds only.)
-    # Default value is `_smeagol/site`.
+    # Default value is `_site`.
     attr_accessor :site_dir
 
     # Where to build static files. (For static builds only.)
-    # Default value is `_smeagol/build`.
+    # Default value is `_build`.
     #attr_accessor :build_dir
 
     # Page to use as site index. The default is `Home`. A non-wiki

@@ -8,7 +8,7 @@ module Smeagol
     extend self
 
     #
-    # Initialize a Gollum wiki for use with _smeagol.
+    # Initialize a Gollum wiki for use with smeagol.
     #
     def init(*args)
       Init.run(*args)

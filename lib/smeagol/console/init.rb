@@ -40,7 +40,8 @@ module Smeagol
           abort_if_already_smeagol
         end
 
-        copy_templates
+        copy_layouts
+
         save_gitignore
         save_settings
       end
@@ -54,8 +55,8 @@ module Smeagol
 
       #
       def abort_if_already_smeagol
-        if ::File.exist?(File.join(wiki_dir, '_smeagol'))
-          abort "Wiki is already setup for Smeagol."
+        if ::File.exist?(File.join(wiki_dir, '_layouts'))
+          abort "Looks like the wiki is already setup for Smeagol."
         end
       end
 
@@ -68,28 +69,36 @@ module Smeagol
       end
 
       #
-      def copy_templates
-        tmp_dir = File.dirname(__FILE__) + '/templates'
-        FileUtils.cp_r(tmp_dir, File.join(wiki_dir, '_smeagol'))
+      def copy_layouts
+        tmp_dir = File.dirname(__FILE__) + '/templates/layouts'
+        FileUtils.cp_r(tmp_dir, wiki_dir, '_layouts')
       end
 
       #
       def save_gitignore
-        file = File.join(wiki_dir, '_smeagol/.gitignore')
-        File.open(file, 'w') do |f|
-          f.write("build\nsite")
+        file = File.join(wiki_dir, '.gitignore')
+        if File.exist?(file)
+          File.open(file, 'a') do |f|
+            f.write("_build\n_site")
+          end
+        else
+          File.open(file, 'w') do |f|
+            f.write("_build\n_site")
+          end
         end
       end
 
       #
       def save_settings
-        file = File.join(wiki_dir, "_smeagol/settings.yml")
+        file = File.join(wiki_dir, "_settings.yml")
+        text = Mustache.render(settings_template, settings) 
         File.open(file, 'w') do |f|
-          text = Mustache.render(settings_template, settings) 
           f.write(text)
         end
       end
+
     end
 
   end
+
 end

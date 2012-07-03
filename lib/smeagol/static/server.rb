@@ -18,7 +18,7 @@ module Smeagol
     class Server
 
       # Optional Rack configuration file.
-      RACK_FILE = 'smeagol.ru'
+      RACK_FILE = '_smeagol.ru'
 
       #
       def self.run(options)
@@ -32,7 +32,7 @@ module Smeagol
       def initialize(options={})
         @options = options
 
-        @root = File.join(settings.wiki_dir, '_smeagol/build')
+        @root = File.join(settings.wiki_dir, '_build')
 
         @options[:app] = app
         @options[:pid] = "#{tmp_dir}/pids/server.pid"

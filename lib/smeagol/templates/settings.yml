@@ -49,7 +49,7 @@ author: {{ author }}
 #     href: /Tools/
 #   - title: Reads
 #     href: /Reads/
-#
+
 menu: ~
 
 # Where to sync site. (For static builds only.)

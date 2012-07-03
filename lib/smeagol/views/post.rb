@@ -1,17 +1,13 @@
 module Smeagol
-  module Views
-    class Post < Page
-      # Initializes a new post template data object.
-      #
-      # post    - The individual wiki file that this view represents.
-      # version - The tagged version of the page.
-      #
-      # Returns a new post object.
-      def initialize(post, version='master')
-        super(post, version)
-        @post = post
-      end
 
+  module Views
+
+    class Post < Page
+
+      # The Gollum::Page that this view represents.
+      # This is the same as `#page` and `#file`.
+      alias post page
+ 
       # Public: The title of the page.
       def title
         post.title
@@ -55,12 +51,12 @@ module Smeagol
 
       # Public: static href, used when generating static site.
       def href
-        dir  = File.dirname(page.path)
+        dir  = ::File.dirname(page.path)
         name = slug(page.filename_stripped)
-        ext  = File.extname(page.path)
+        ext  = ::File.extname(page.path)
 
         if dir != '.'
-          File.join(dir, name) #, 'index.html')
+          ::File.join(dir, name) #, 'index.html')
         else
           if name == @wiki.settings.index #|| 'Home'
             'index.html'
@@ -104,9 +100,10 @@ module Smeagol
       
       #private
 
-      # The Gollum::Page that this view represents.
-      # This is the same as `#page`.
-      attr_reader :post
+      #
+      def standard_layout
+        local_layout(:post, :page) || default_layout(:post)
+      end
 
     end
 

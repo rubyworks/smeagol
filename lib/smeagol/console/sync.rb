@@ -49,11 +49,11 @@ module Smeagol
         if use_tmp?
           File.join(Dir.tmpdir, 'smeagol', 'build')
         else
-          File.join(wiki_dir, '_smeagol', 'build')
+          File.join(wiki_dir, '_build')
         end
       end
 
-      # Default site directory is `_smeagol/site` unless a
+      # Default site directory is `_site` unless a
       # `site_dir` entry is given in the `settings.yml` file. 
       # In which case, if the setting is an absolute path,
       # it will be used as give, otherwsie it will be relative
@@ -72,7 +72,7 @@ module Smeagol
 
       #
       def default_site_dir
-        File.join(wiki_dir, '_smeagol', 'site')
+        File.join(wiki_dir, '_site')
       end
 
     end

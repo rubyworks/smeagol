@@ -39,7 +39,7 @@ module Smeagol
       end
     end
 
-    # Public: The Smeagol wiki settings. These can be found in the _smeagol/settings.yml
+    # Public: The Smeagol wiki settings. These can be found in the _settings.yml
     # file at the root of the repository.
     # This method caches the settings for all subsequent calls.
     #
@@ -60,7 +60,7 @@ module Smeagol
     # Returns Array of plugin files.
     #def plugins
     #  files.map do |f|
-    #    File.fnmatch?('_smeagol/plugins/*.rb', f.path)
+    #    File.fnmatch?('_plugins/*.rb', f.path)
     #  end
     #end
 

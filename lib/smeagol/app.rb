@@ -56,15 +56,15 @@ module Smeagol
       # Then try to create the wiki page
       elsif page = wiki.page(name, version)
         if page.post?
-          view, content = controller.render_post(page, version)
+          content = controller.render(page, version)
         else
-          view, content = controller.render_page(page, version)
+          content = controller.render(page, version)
         end
         cache.set_page(name, page.version.id, content) if settings.cache_enabled
         content
       # If it is not a wiki page then try to find the file
       elsif file = wiki.file(name+'.mustache', version)
-        view, content = controller.render_file(file, version)
+        content = controller.render(file, version)
         cache.set_page(name, file.version.id, content) if settings.cache_enabled
         content
       # Smeagol can create an RSS feed automatically.
@@ -132,8 +132,8 @@ module Smeagol
     # repository if it exists. Otherwise, it uses the default page.mustache file
     # packaged with the Smeagol library.
     def get_template(name)
-      if File.exists?("#{repository.path}/_smeagol/layouts/#{name}.mustache")
-        IO.read("#{repository.path}/_smeagol/layouts/#{name}.mustache")
+      if File.exists?("#{repository.path}/_layouts/#{name}.mustache")
+        IO.read("#{repository.path}/_layouts/#{name}.mustache")
       else
         IO.read(::File.join(::File.dirname(__FILE__), "templates/layouts/#{name}.mustache"))
       end

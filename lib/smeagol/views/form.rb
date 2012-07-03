@@ -1,34 +1,27 @@
 module Smeagol
+
   module Views
-    class Template < Base
-      # Initializes a new generic template data object.
-      #
-      # file    - The individual wiki file that this view represents.
-      # version - The tagged version of the file.
-      #
-      # Returns a new template object.
-      def initialize(file, version='master')
-        super(file.wiki, version)
-        @file = file
-      end
+
+    class Form < Base
+
+      # The Gollum::File that this view represents. This is
+      # the same as `#file`.
+      alias form file
 
       # Public: The title of the file.
       #def title
       #  file.title
       #end
 
-      # TODO: temporary alias
-      #alias_method :file_title, :title
-
-      # Public: The raw content of the file.
+      # Public: Rendered content of the file.
       def content
-        @content ||= file.raw_data
+        @content ||= Mustache.render(file.raw_data, self)
       end
 
       #
-      def content=(text)
-        @content = text
-      end
+      #def content=(text)
+      #  @content = text
+      #end
 
       #
       #def summary
@@ -63,11 +56,11 @@ module Smeagol
 
       # Public: static href, used when generating static site.
       def href
-        dir  = File.dirname(file.path)
-        ext  = File.extname(file.path)
+        dir  = ::File.dirname(file.path)
+        ext  = ::File.extname(file.path)
 
         if dir != '.'
-          File.join(dir, name.chomp(ext)) #file.path) 
+          ::File.join(dir, name.chomp(ext)) #file.path) 
         else
           if name == @wiki.settings.index #|| 'Home'
             'index.html'
@@ -112,10 +105,21 @@ module Smeagol
       #end
       
       #private
-      
-      # The Gollum::Page that this view represents.
-      attr_reader :file
+
+      # Drop the .mustache extension name for layout lookup.
+      def layout_key
+        file.path.chomp('.mustache')
+      end
+
+      # Get generic layout template.
+      #
+      # TODO: Use separate template than page's ?
+      def standard_layout
+        local_layout(:form, :page) || default_layout(:page)
+      end
 
     end
+
   end
+
 end

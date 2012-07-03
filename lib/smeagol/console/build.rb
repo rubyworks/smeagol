@@ -40,9 +40,9 @@ module Smeagol
       # Returns String of build path.
       def build_dir
         if use_tmp?
-          File.join(Dir.tmpdir, 'smeagol/build')
+          File.join(Dir.tmpdir, 'smeagol', 'build')
         else
-          File.join(wiki_dir, '_smeagol/build')
+          File.join(wiki_dir, '_build')
         end
       end
 
