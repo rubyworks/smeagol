@@ -1,3 +1,7 @@
+module Smeagol
+  LIBDIR = File.dirname(__FILE__) + '/smeagol'
+end
+
 require 'gollum'
 require 'rack/file'
 require 'sinatra'

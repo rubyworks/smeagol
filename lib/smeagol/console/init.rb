@@ -1,6 +1,9 @@
 module Smeagol
+
   module Console
 
+    # Setup Gollum wiki for use with Smeagol.
+    #
     class Init < Base
 
       def initialize(*args)
@@ -70,8 +73,9 @@ module Smeagol
 
       #
       def copy_layouts
-        tmp_dir = File.dirname(__FILE__) + '/templates/layouts'
-        FileUtils.cp_r(tmp_dir, wiki_dir, '_layouts')
+        src = LIBDIR + '/templates/layouts'
+        dst = ::File.join(wiki_dir, '_layouts')
+        FileUtils.cp_r(src, dst)
       end
 
       #
@@ -95,6 +99,12 @@ module Smeagol
         File.open(file, 'w') do |f|
           f.write(text)
         end
+      end
+
+      #
+      def settings_template
+        file = LIBDIR + '/templates/settings.yml'
+        IO.read(file)
       end
 
     end

@@ -1,50 +1,11 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>{{wiki_title}} - Versions</title>
-    <link rel="stylesheet" href="{{base_path}}smeagol/main.css" type="text/css"/>
-
-    <!--[if lt IE 9]>
-    <script src="{{base_path}}smeagol/html5.js"></script>
-    <![endif]-->
-
-	{{#tracking_id}}
-    <script type="text/javascript">
-      var _gaq = _gaq || [];
-      _gaq.push(['_setAccount', '{{{tracking_id}}}']);
-      _gaq.push(['_trackPageview']);
-  
-      (function() {
-        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-      })();
-    </script>
-	{{/tracking_id}}
-  </head>
-
-  <body>
-	{{{ribbon_html}}}
-	
-    <div id="container">
-		<header>
-			<h1>{{wiki_title}}</h1>
-		</header>
+{{> header}}
 		
-		<nav>
-			{{{menu_html}}}
-		</nav>
-		
-		<article>
-			<h1>Versions</h1>
-    		<div id="content">
+<article>
+<h1>Versions</h1>
+<div id="content">
 {{{content}}}
-			</div>
-		</article>
+</div>
+</article>
 
-		<footer>
-		</footer>
-    </div>
-  </body>
-</html>
+{{> footer}}
+
