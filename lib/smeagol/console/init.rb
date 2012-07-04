@@ -76,7 +76,7 @@ module Smeagol
       #
       def copy_layouts
         src = LIBDIR + '/templates/layouts'
-        dst = ::File.join(wiki_dir, '_layouts')
+        dst = ::File.join(wiki_dir, Settings::LAYOUT_DIR)
         FileUtils.cp_r(src, dst)
       end
 
@@ -85,11 +85,11 @@ module Smeagol
         file = File.join(wiki_dir, '.gitignore')
         if File.exist?(file)
           File.open(file, 'a') do |f|
-            f.write("_build\n_site")
+            f.write(".build\n.site")
           end
         else
           File.open(file, 'w') do |f|
-            f.write("_build\n_site")
+            f.write(".build\n.site")
           end
         end
       end

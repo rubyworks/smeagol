@@ -8,8 +8,8 @@ module Smeagol
 
       # Initialize new Build command.
       def initialize(options={})
-        @wiki_dir = options[:wiki_dir] || Dir.pwd
-        @use_tmp  = options[:use_tmp]
+        @wiki_dir  = options[:wiki_dir]  || Dir.pwd
+        @build_dir = options[:build_dir] || settings.build_dir
       end
 
       # Directory contaning the wiki git repository.
@@ -39,10 +39,14 @@ module Smeagol
       #
       # Returns String of build path.
       def build_dir
-        if use_tmp?
-          File.join(Dir.tmpdir, 'smeagol', 'build')
+        if settings.build_dir
+          if relative?(build_dir)
+            File.join(wiki_dir, settings.build_dir)
+          else
+            settings.build_dir
+          end
         else
-          File.join(wiki_dir, '_build')
+          File.join(Dir.tmpdir, 'smeagol', 'build')
         end
       end
 
@@ -52,6 +56,14 @@ module Smeagol
         if File.exist?(build_dir)
           FileUtils.rm_r(build_dir)
         end
+      end
+
+      #
+      def relative?(path)
+        return false if path.start_with?(::File::SEPARATOR)
+        return false if path.start_with?('/')
+        return false if path.start_with?('.')
+        return true
       end
 
     end

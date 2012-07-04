@@ -5,8 +5,21 @@ module Smeagol
   # Note not all of these settings are fully supported yet.
   class Settings
 
-    # Directory which contains user settings.
-    CONFIG_HOME = ENV['XDG_CONFIG_HOME'] || '~/.config'
+    ## Directory which contains user settings.
+    ##CONFIG_HOME = ENV['XDG_CONFIG_HOME'] || '~/.config'
+
+    # The name of the settings file.
+    # TODO: Rename to `smeagol.yml`.
+    FILE = "settings.yml"
+
+    # Default site directory.
+    SITE_DIR  = '.site'
+
+    # Default build directory.
+    BUILD_DIR = '.build'
+
+    # Default layouts directory.
+    LAYOUT_DIR = 'assets/layouts'
 
     # Load settings.
     #
@@ -30,8 +43,9 @@ module Smeagol
     #
     #
     def initialize(settings={})
-      @site_dir      = '_site'
-      #@build_dir    = '_build'
+      @site_dir      = SITE_DIR
+      @build_dir     = BUILD_DIR
+      @layout_dir    = LAYOUT_DIR
       @index         = 'Home'
       @rss           = false
       @exclude       = []
@@ -82,12 +96,16 @@ module Smeagol
     attr_accessor :site_branch
 
     # Where to sync site. (For static builds only.)
-    # Default value is `_site`.
+    # Default value is `.site`.
     attr_accessor :site_dir
 
     # Where to build static files. (For static builds only.)
-    # Default value is `_build`.
-    #attr_accessor :build_dir
+    # Default value is `.build`.
+    attr_accessor :build_dir
+
+    # Where to find layouts.
+    # Default value is `assets/layouts`.
+    attr_accessor :layout_dir
 
     # Page to use as site index. The default is `Home`. A non-wiki
     # page can be used as well, such as `index.html` (well, duh!).

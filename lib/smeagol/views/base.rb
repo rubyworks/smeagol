@@ -2,6 +2,13 @@ module Smeagol
 
   module Views
 
+    # Base class for all views.
+    #
+    # FAQ: Why aren't layouts versioned, i.e. pulled from the git repo
+    #      like pages and posts? B/c we might want to look at content
+    #      history, but that doesn't mean we want to look at it via
+    #      an old layout.
+    #
     class Base < ::Mustache
       # Initializes a new mustache view template data object.
       #
@@ -14,7 +21,8 @@ module Smeagol
         @wiki    = file.wiki
         @version = version || 'master'
 
-        dir = ::File.join(wiki.path, '_layouts')
+        # See FAQ for Views::Base class
+        dir = ::File.join(wiki.path, wiki.settings.layout_dir)
         if ::File.directory?(dir)
           self.class.template_path = dir 
         else
@@ -150,31 +158,34 @@ module Smeagol
         end
       end
 
-      # TODO: slug support
-      def slug(page,blob)
-        date = page.version.authored_date
-        name = blob.name[name.index(/[A-Za-z]/)..-1]
-
-        if slug = @wiki.settings.slug
-          slug = date.strftime(slug)
-          slug = slug.sub(':name', name)
-        else
-          slug = name
-        end
-        slug
-      end
-
+      # TODO: Actual slug support ?
+      #def slug(page,blob)
+      #  date = page.version.authored_date
+      #  name = blob.name[name.index(/[A-Za-z]/)..-1]
       #
+      #  if slug = @wiki.settings.slug
+      #    slug = date.strftime(slug)
+      #    slug = slug.sub(':name', name)
+      #  else
+      #    slug = name
+      #  end
+      #  slug
+      #end
+
+      # TODO: Simplify layout lookup code --probably shouldn't need
+      #       more than two or three methods for this. 
+
+      # Standard layout.
       def standard_layout
         local_layout(:page) || default_layout(:page)
       end
 
-      #
+      # Does the settings specify a custom layout for this view?
       def custom_layout?
         wiki.settings.layouts.key?(layout_key)
       end
 
-      #
+      # Key name for looking up layout settings.
       def layout_key
         path
       end
@@ -187,7 +198,7 @@ module Smeagol
       # wiki repository if it exists. Otherwise, it returns `nil`.
       def local_layout(*names)
         names.each do |name|
-          file = "#{@wiki.path}/_layouts/#{name}.mustache"
+          file = "#{@wiki.path}/#{@wiki.settings.layout_dir}/#{name}.mustache"
           if ::File.exists?(file)
             return IO.read(file)
           end

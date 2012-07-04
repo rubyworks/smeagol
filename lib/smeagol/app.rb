@@ -132,8 +132,8 @@ module Smeagol
     # repository if it exists. Otherwise, it uses the default page.mustache file
     # packaged with the Smeagol library.
     def get_template(name)
-      if File.exists?("#{repository.path}/_layouts/#{name}.mustache")
-        IO.read("#{repository.path}/_layouts/#{name}.mustache")
+      if File.exists?("#{repository.path}/#{layout_dir}/#{name}.mustache")
+        IO.read("#{repository.path}/#{layout_dir}/#{name}.mustache")
       else
         IO.read(::File.join(::File.dirname(__FILE__), "templates/layouts/#{name}.mustache"))
       end
@@ -185,6 +185,11 @@ module Smeagol
     # Returns a clean, pristine path.
     def sanitize_path(path)
       path.gsub(/\.\.(?=$|\/)/, '') unless path.nil?
+    end
+
+    #
+    def layout_dir
+      wiki.settings.layout_dir
     end
 
   end

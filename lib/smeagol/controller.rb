@@ -118,9 +118,15 @@ module Smeagol
       result = []
       paths.map do |file|
         unless wiki.settings.include.any?{ |x| File.fnmatch?(x, file.path) }
+          # exclude settings file
+          next if file.path == Settings::FILE
+          # exclude layouts directory (TODO: future version may allow this)
+          next if file.path == wiki.settings.layout_dir
+          # exclude any files starting with `.` or `_`
           next if file.path.split('/').any? do |x|
             x.start_with?('_') or x.start_with?('.')
           end
+          # exclude any files specifically exluded by settings
           next if wiki.settings.exclude.any?{ |x| File.fnmatch?(x, file.path) }
         end
         result << file
@@ -156,6 +162,7 @@ module Smeagol
       return content
     end
 
+=begin
     #wiki_file, version='master'
 
     # Render wiki page.
@@ -205,6 +212,7 @@ module Smeagol
       #end
       #return view, content
     end
+=end
 
 #    # The Mustache template to use for page rendering.
 #    #
@@ -214,8 +222,8 @@ module Smeagol
 #    # repository if it exists. Otherwise, it uses the default page.mustache file
 #    # packaged with the Smeagol library.
 #    def get_template(name)
-#      if File.exists?("#{wiki.path}/_layouts/#{name}.mustache")
-#        IO.read("#{wiki.path}/_layouts/#{name}.mustache")
+#      if File.exists?("#{wiki.path}/#{layout_dir}/#{name}.mustache")
+#        IO.read("#{wiki.path}/#{layout_dir}/#{name}.mustache")
 #      else
 #        IO.read(::File.join(::File.dirname(__FILE__), "templates/layouts/#{name}.mustache"))
 #      end

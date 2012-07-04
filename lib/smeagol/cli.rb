@@ -66,7 +66,7 @@ module Smeagol
       parser.banner = "usage: smeagol [OPTIONS] [PATH]\n\n"
 
       # this is a dummy option for help b/c of static preview
-      parser.on('-S', '--static', 'Preview static build.') do
+      parser.on('-s', '--static', 'Preview static build.') do
         #options[:static] = true
       end
 
@@ -155,8 +155,9 @@ module Smeagol
     def build(argv)
       parser.banner = "usage: smeagol build [OPTIONS]"
 
-      parser.on('-t', '--tmp', 'use system temporary directory') do
-        options[:use_tmp] = true
+      parser.on('-d', '--dir DIR', 'alternate build directory') do |dir|
+        dir = nil if %w{false nil ~}.include?(dir)  # TODO: better approach? 
+        options[:build_dir] = dir
       end
 
       Console.build(*parse(argv))
