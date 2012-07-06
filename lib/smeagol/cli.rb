@@ -68,15 +68,9 @@ module Smeagol
 
       parser.banner = "Usage: smeagol preview [OPTIONS]"
 
-      parser.separator ""
-      parser.separator "Smeagol options:"
-
       #parser.on('-b', '--build', 'perform build before preview') do
       #  build = true
       #end
-
-      parser.separator ""
-      parser.separator "Ruby options:"
 
       lineno = 1
       parser.on("-e", "--eval LINE", "evaluate a LINE of code") { |line|
@@ -101,9 +95,6 @@ module Smeagol
               "require the library, before executing your script") { |library|
         options[:require] = library
       }
-
-      parser.separator ""
-      parser.separator "Rack options:"
 
       parser.on("-s", "--server SERVER", "serve using SERVER (thin/puma/webrick/mongrel)") { |s|
         options[:server] = s
@@ -134,9 +125,6 @@ module Smeagol
       parser.on("-P", "--pid FILE", "file to store PID (default: rack.pid)") { |f|
         options[:pid] = ::File.expand_path(f)
       }
-
-      #parser.separator ""
-      #parser.separator "Common options:"
 
       #parser.on_tail("-h", "-?", "--help", "Show this message") do
       #  puts parser
