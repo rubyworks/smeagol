@@ -37,16 +37,6 @@ module Smeagol
         page.version.authored_date.strftime("%B %d, %Y")
       end
 
-      #
-      def filename
-        page.filename
-      end
-
-      #
-      def name
-        page.name
-      end
-
       # Public: A flag stating that this is not the home page.
       def not_home?
         page.title != "Home"
@@ -100,13 +90,8 @@ module Smeagol
       def post?
         post_date
       end
-      
-      #private
 
-      #
-      def standard_layout
-        local_layout(:page) || default_layout(:page)
-      end
+      #private
 
     end
 

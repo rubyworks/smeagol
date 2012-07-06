@@ -7,47 +7,6 @@ module Smeagol
       # The Gollum::Page that this view represents.
       # This is the same as `#page` and `#file`.
       alias post page
- 
-      # Public: The title of the page.
-      def title
-        post.title
-      end
-
-      # Public: The HTML formatted content of the page.
-      def content
-        post.formatted_data
-      end
-
-      #
-      def summary
-        i = content.index('</p>')
-        i ? content[0..i+3] : content  # any other way if no i, 5 line limit?
-      end
-
-      # Public: The last author of this page.
-      def author
-        page.version.author.name
-      end
-
-      # Public: The last edit date of this page.
-      def date
-        page.version.authored_date.strftime("%B %d, %Y")
-      end
-
-      #
-      def filename
-        page.filename
-      end
-
-      #
-      def name
-        page.name
-      end
-
-      # Public: A flag stating that this is not the home page.
-      def not_home?
-        page.title != "Home"
-      end
 
       # Public: static href, used when generating static site.
       def href
@@ -56,12 +15,12 @@ module Smeagol
         ext  = ::File.extname(page.path)
 
         if dir != '.'
-          ::File.join(dir, name) #, 'index.html')
+          ::File.join(dir, name, 'index.html')
         else
           if name == @wiki.settings.index #|| 'Home'
             'index.html'
           else
-            name #File.join(name, 'index.html')
+            ::File.join(name, 'index.html')
           end
         end
       end
@@ -83,26 +42,6 @@ module Smeagol
         else
           name
         end
-      end
-
-      # If the name of the page begins with a date, then it is the "post date"
-      # and is taken to be a blog entry, rather then an ordinary static page.
-      def post_date
-        if md = /^(\d\d\d\d-\d\d-\d\d)/.match(filename)
-          md[1]
-        end
-      end
-
-      #
-      #def post?
-      #  post_date
-      #end
-      
-      #private
-
-      #
-      def standard_layout
-        local_layout(:post, :page) || default_layout(:post)
       end
 
     end

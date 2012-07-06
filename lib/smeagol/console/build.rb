@@ -10,6 +10,7 @@ module Smeagol
       def initialize(options={})
         @wiki_dir  = options[:wiki_dir]  || Dir.pwd
         @build_dir = options[:build_dir] || settings.build_dir
+        @force     = options[:force]
       end
 
       # Directory contaning the wiki git repository.
@@ -27,10 +28,15 @@ module Smeagol
       #
       # Returns nothing.
       def call
-        remove_build_dir
-
         wiki   = Smeagol::Wiki.new(wiki_dir)
         static = Smeagol::Static::Generator.new(wiki)
+
+        if !wiki.settings.static && !@force
+          $stderr.puts "Trying to build non-static site."
+          abort "Must set static mode or use force option to proceed."
+        end
+
+        remove_build_dir
 
         static.build(build_dir)
       end
@@ -40,7 +46,7 @@ module Smeagol
       # Returns String of build path.
       def build_dir
         if settings.build_dir
-          if relative?(build_dir)
+          if relative?(settings.build_dir)
             File.join(wiki_dir, settings.build_dir)
           else
             settings.build_dir

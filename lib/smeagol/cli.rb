@@ -10,9 +10,13 @@ module Smeagol
     def init(argv)
       parser.banner = "usage: smeagol init [OPTIONS] [WIKI-URI]"
 
-      #opts.on('-b', '--build-dir [DIRECTORY]') do |dir|
+      #parser.on('-b', '--build-dir [DIRECTORY]') do |dir|
       #  options[:build_dir] = dir
       #end
+
+      parser.on('--static', 'Static mode site?') do
+        options['static'] = true
+      end
 
       parser.on('--git [GIT]', 'Path to Git binary.') do |path|
         options['git'] = path
@@ -23,56 +27,142 @@ module Smeagol
       Console.init(*parse(argv))
     end
 
-    # Run Smeagol server. If `argv` contains `-S` or `--static`,
-    # then a preview of the static files in the build directory
-    # will be served instead.
     #
-    # Returns nothing.
     def preview(argv)
-      if argv.delete('-S') || argv.delete('--static')
+      if static?(argv)
         preview_static(argv)
-      else
+      elsif dynamic?(argv)
         preview_dynamic(argv)
+      else
+        settings = Settings.load(ENV['wiki-dir'])  # pull from end of argv ?
+        if settings.static
+          preview_static(argv)         
+        else
+          preview_dynamic(argv)
+        end
       end
+    end
+
+    # Internal: Force static mode?
+    def static?(argv)
+      return true if argv.delete('--static')
+      return true if argv.delete('--no-live')
+      return true if ENV['mode'] && ENV['mode'].downcase == 'static'
+      return false
+    end
+
+    # Internal: Force dynamic mode?
+    def dynamic?(argv)
+      return true if argv.delete('--live')
+      return true if argv.delete('--no-static')
+      return true if ENV['mode'] && ENV['mode'].downcase == 'live'
+      return false
     end
 
     # Preview static build.
     #
-    #   TODO: Somehow handle options prior to racks handling.
-    #         I hope we donn't have to delegate all of thme
-    #
     #   TODO: Build if not already built.
     #
     def preview_static(argv)
-      parser = ::Rack::Server::Options.new
+      #build = false
 
-      #parser.banner = "usage: smeagol serve --static [OPTIONS]"
+      parser.banner = "Usage: smeagol preview [OPTIONS]"
+
+      parser.separator ""
+      parser.separator "Smeagol options:"
 
       #parser.on('-b', '--build', 'perform build before preview') do
-      #  options[:build] = true
+      #  build = true
       #end
 
-      @options = parser.parse!(argv)
+      parser.separator ""
+      parser.separator "Ruby options:"
 
-      Console.preview(options)
+      lineno = 1
+      parser.on("-e", "--eval LINE", "evaluate a LINE of code") { |line|
+        eval line, TOPLEVEL_BINDING, "-e", lineno
+        lineno += 1
+      }
+
+      parser.on("-d", "--debug", "set debugging flags (set $DEBUG to true)") {
+        options[:debug] = true
+      }
+
+      parser.on("-w", "--warn", "turn warnings on for your script") {
+        options[:warn] = true
+      }
+
+      parser.on("-I", "--include PATH",
+              "specify $LOAD_PATH (may be used more than once)") { |path|
+        (options[:include] ||= []).concat(path.split(":"))
+      }
+
+      parser.on("-r", "--require LIBRARY",
+              "require the library, before executing your script") { |library|
+        options[:require] = library
+      }
+
+      parser.separator ""
+      parser.separator "Rack options:"
+
+      parser.on("-s", "--server SERVER", "serve using SERVER (thin/puma/webrick/mongrel)") { |s|
+        options[:server] = s
+      }
+
+      parser.on("-o", "--host HOST", "listen on HOST (default: 0.0.0.0)") { |host|
+        options[:Host] = host
+      }
+
+      parser.on("-p", "--port PORT", "use PORT (default: 9292)") { |port|
+        options[:Port] = port
+      }
+
+      parser.on("-O", "--option NAME[=VALUE]", "pass VALUE to the server as option NAME. If no VALUE, sets it to true. Run '#{$0} -s SERVER -h' to get a list of options for SERVER") { |name|
+        name, value = name.split('=', 2)
+        value = true if value.nil?
+        options[name.to_sym] = value
+      }
+
+      parser.on("-E", "--env ENVIRONMENT", "use ENVIRONMENT for defaults (default: development)") { |e|
+        options[:environment] = e
+      }
+
+      parser.on("-D", "--daemonize", "run daemonized in the background") { |d|
+        options[:daemonize] = d ? true : false
+      }
+
+      parser.on("-P", "--pid FILE", "file to store PID (default: rack.pid)") { |f|
+        options[:pid] = ::File.expand_path(f)
+      }
+
+      #parser.separator ""
+      #parser.separator "Common options:"
+
+      #parser.on_tail("-h", "-?", "--help", "Show this message") do
+      #  puts parser
+      #  #puts handler_parser(options)
+      #  exit
+      #end
+
+      #parser.parse!(argv)
+      #rack_parser = ::Rack::Server::Options.new(options)
+      #rack_options = rack_parser.parse!(argv)
+      #@options = rack_options.merge(smeagol_options)
+
+      $stderr.puts "Starting static preview..."
+
+      Console.preview(*parse(argv))
     end
 
     #
-    # Serve Gollum wiki via Smeagol frontend.
+    # Serve present Gollum wiki via Smeagol frontend.
     #
     def preview_dynamic(argv)
-      config_file = nil
+      parser.banner = "Usage: smeagol preview [OPTIONS]\n\n"
 
-      parser.banner = "usage: smeagol [OPTIONS] [PATH]\n\n"
-
-      # this is a dummy option for help b/c of static preview
-      parser.on('-s', '--static', 'Preview static build.') do
-        #options[:static] = true
-      end
-
-      parser.on('-c', '--config [PATH]', 'Loads this config file instead of default.') do |path|
-        config_file = path
-      end
+      #parser.on('-c', '--config [PATH]', 'Loads this config file instead of default.') do |path|
+      #  options[:config_file] = path
+      #end
 
       parser.on('--port [PORT]', 'Bind port (default 4567).') do |port|
         options[:port] = port.to_i
@@ -104,6 +194,8 @@ module Smeagol
       repository[:secret] = options[:secret] if options[:secret]
 
       options[:repositories] = [repository]
+
+      $stderr.puts "Starting live preview..."
 
       Console.serve(*parse(argv))
     end
@@ -155,6 +247,10 @@ module Smeagol
     def build(argv)
       parser.banner = "usage: smeagol build [OPTIONS]"
 
+      parser.on('--force') do
+        options[:force] = true
+      end
+
       parser.on('-d', '--dir DIR', 'alternate build directory') do |dir|
         dir = nil if %w{false nil ~}.include?(dir)  # TODO: better approach? 
         options[:build_dir] = dir
@@ -169,13 +265,17 @@ module Smeagol
     def sync(argv)
       parser.banner = "usage: smeagol sync [OPTIONS]"
 
+      parser.on('--force', 'force static mode') do
+        options[:force] = true
+      end
+
       parser.on('-b', '--build', 'perform build before sync') do
         options[:build] = true
       end
 
-      parser.on('-t', '--tmp', 'use system temporary directory') do
-        options[:use_tmp] = true
-      end
+      #parser.on('-t', '--tmp', 'use system temporary directory') do
+      #  options[:use_tmp] = true
+      #end
 
       parser.on('-s', '--site-dir [DIRECTORY]', 'sync to specifed directory') do |dir|
         options[:site_dir] = dir
@@ -213,11 +313,14 @@ module Smeagol
     def parser
       @parser ||= (
         parser = ::OptionParser.new
+        parser.on_tail('--debug', 'Turn on $DEBUG mode.') do
+          $DEBUG = true
+        end
         parser.on_tail('-v', '--version', 'Display current version.') do
           puts "Smeagol #{Smeagol::VERSION}"
           exit 0
         end
-        parser.on_tail('-h', '--help', 'Display this help screen.') do
+        parser.on_tail('-h', '-?', '--help', 'Display this help screen.') do
           puts self
           exit 0
         end

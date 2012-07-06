@@ -36,9 +36,19 @@ module Smeagol
       Mustache.render(get_template('versions'), Smeagol::Views::Versions.new(wiki))
     end
 
+    # Assets are alwasy served unversioned directly from the file system
+    # and not via the git repo.
+    get '/assets/*' do
+      name = params[:splat].first
+      file_path = "#{repository.path}/assets/#{name}"
+      content   = File.read(file_path)
+      content_type get_mime_type(name)
+      content
+    end
+
     # All other resources go through Gollum.
     get '/*' do
-      name, version = parse_params(params)
+      name, version, tag_name = parse_params(params)
 
       name = "Home" if name == ""   # TODO wiki.settings.index instead of 'Home'
       name = name.gsub(/\/+$/, '')
@@ -121,7 +131,7 @@ module Smeagol
         end
       end
 
-      return name, version
+      return name, version, tag_name
     end
 
     # The Mustache template to use for page rendering.

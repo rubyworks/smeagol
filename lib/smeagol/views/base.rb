@@ -22,16 +22,26 @@ module Smeagol
         @version = version || 'master'
 
         # See FAQ for Views::Base class
-        dir = ::File.join(wiki.path, wiki.settings.layout_dir)
+        dir = ::File.join(wiki.path, wiki.settings.template_dir)
         if ::File.directory?(dir)
-          self.class.template_path = dir 
+          self.class.template_path = dir
         else
-          self.class.template_path = ::File.join(::File.dirname(__FILE__), '..', 'templates', 'layouts')
+          self.class.template_path = ::File.join(LIBDIR, 'templates')
         end
       end
 
       # The Gollum::Page or Gollum::File that this view represents.
       attr_reader :file
+
+      #
+      def filename
+        file.filename
+      end
+
+      # Page name.
+      def name
+        file.name
+      end
 
       # The Gollum::Wiki.
       attr_reader :wiki
@@ -107,14 +117,8 @@ module Smeagol
 
       # Get the layout template for the view.
       def layout
-        template = nil
-        if name = wiki.settings.layouts[layout_key]
-          template = local_layout(name)
-        end
-        if !template && !custom_layout? 
-          template = standard_layout
-        end
-        template
+        return nil if custom_layout? && !custom_layout
+        custom_layout || standard_layout || default_layout
       end
 
       #  P R O T E C T E D   M E T H O D S
@@ -172,52 +176,63 @@ module Smeagol
       #  slug
       #end
 
-      # TODO: Simplify layout lookup code --probably shouldn't need
-      #       more than two or three methods for this. 
-
-      # Standard layout.
-      def standard_layout
-        local_layout(:page) || default_layout(:page)
-      end
-
-      # Does the settings specify a custom layout for this view?
+      # Does the metadata specify a custom layout?
       def custom_layout?
-        wiki.settings.layouts.key?(layout_key)
+        metadata.key?('layout')
       end
 
-      # Key name for looking up layout settings.
-      def layout_key
-        path
+      # Value of layout metadata setting.
+      def custom_layout
+        metadata['layout']
       end
 
       # The Mustache template to use for rendering.
       #
-      # name - The name of the template to use.
-      #
       # Returns the content of the specified template file in the
       # wiki repository if it exists. Otherwise, it returns `nil`.
-      def local_layout(*names)
-        names.each do |name|
-          file = "#{@wiki.path}/#{@wiki.settings.layout_dir}/#{name}.mustache"
-          if ::File.exists?(file)
-            return IO.read(file)
-          end
+      def standard_layout
+        name   = metadata['layout'] || '_Layout.html'
+        dir    = ::File.dirname(file.path)
+        layout = nil 
+        loop do
+          f = ::File.join(dir, '_Layout.html')
+          break (layout = IO.read(f)) if ::File.exist?(f)
+          break nil if dir == wiki.path
+          dir = ::File.dirname(dir)
         end
-        return nil
+        return layout
+        #names.each do |name|
+        #  file = "#{@wiki.path}/#{@wiki.settings.layout_dir}/#{name}.mustache"
+        #  if ::File.exists?(file)
+        #    return IO.read(file)
+        #  end
+        #end
+        #nil
       end
 
       # Default template.
       #
-      # name - The name of the template to use.
-      #
       # Returns [String] The template included with the Smeagol package.
-      def default_layout(name)
-        IO.read(::File.join(::File.dirname(__FILE__), "../templates/layouts/#{name}.mustache"))
+      def default_layout
+        @default_layout ||= (
+          IO.read(LIBDIR + "/templates/layout.mustache")
+        )
       end
 
       #
       def post?
         false
+      end
+
+      #
+      def metadata
+        @metadata ||= (
+          if md = /\<\!---(.*?)--\>\s*\Z/m.match(content)
+            YAML.load(md[1])
+          else
+            {}
+          end
+        )
       end
 
     end

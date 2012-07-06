@@ -1,4 +1,10 @@
 ---
+# Default deployment mode. Do you need to deploy a static
+# site or not? This is important because it effects the 
+# default behavior of smeagol command line tools.
+
+static: false
+
 # Site URL.
 # e.g. `http://trans.github.com`
 

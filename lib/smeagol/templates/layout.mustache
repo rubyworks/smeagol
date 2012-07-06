@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>{{wiki_title}} - {{page_title}}</title>
+    <link rel="stylesheet" href="{{base_path}}assets/smeagol/main.css" type="text/css"/>
+    <link rel="stylesheet" href="{{base_path}}assets/smeagol/pygment.css" type="text/css"/>
+
+    <!--[if lt IE 9]>
+    <script src="{{base_path}}assets/smeagol/html5.js"></script>
+    <![endif]-->
+
+	{{#tracking_id}}
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', '{{{tracking_id}}}']);
+      _gaq.push(['_trackPageview']);
+  
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+	{{/tracking_id}}
+  </head>
+
+  <body>
+	{{{ribbon_html}}}
+	
+<div id="container">
+	<header>
+		<h1>{{wiki_title}}</h1>
+	</header>
+
+	<nav>
+		{{{menu_html}}}
+	</nav>
+
+<!-- CONTENT -->		
+<article>
+{{#not_home?}}
+  <h1>{{page_title}}</h1>
+{{/not_home?}}
+<div id="content">
+{{{content}}}
+</div>
+</article>
+<!-- END CONTENT -->
+
+<!-- FOOTER -->
+<footer>
+  {{#author}}
+  <small style="float:left;">Last edited by <b>{{author}}</b> on {{date}}.</small>
+  {{/author}}
+
+	<small style="float:right;">
+		This site is a <a href="https://github.com/blog/699-making-github-more-open-git-backed-wikis">GitHub Wiki</a>
+		mirror powered by <a href="http://smeagolrb.info">Smeagol</a>.
+	</small>
+</footer>
+<!-- END FOOTER -->
+
+</div>
+</body>
+</html>
+

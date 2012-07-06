@@ -18,7 +18,7 @@ module Smeagol
     class Server
 
       # Optional Rack configuration file.
-      RACK_FILE = '_smeagol.ru'
+      RACK_FILE = 'config.ru'
 
       #
       def self.run(options)
@@ -32,7 +32,7 @@ module Smeagol
       def initialize(options={})
         @options = options
 
-        @root = File.join(settings.wiki_dir, '_build')
+        @root = File.join(settings.wiki_dir, settings.build_dir || '.build')
 
         @options[:app] = app
         @options[:pid] = "#{tmp_dir}/pids/server.pid"
@@ -62,6 +62,9 @@ module Smeagol
 
       # Start the server.
       def start
+        if options[:build]
+        end
+
         Signal.trap('TERM') do
           Process.kill('KILL', 0)
         end
@@ -126,7 +129,7 @@ module Smeagol
         def call(env)
           path = Rack::Utils.unescape(env['PATH_INFO'])
           index_file = File.join(@root, path, 'index.html')
-          if File.exists?(index_file)
+          if File.exist?(index_file)
             [200, {'Content-Type' => 'text/html'}, File.new(index_file)]
           else
             @app.call(env) #Rack::Directory.new(@root).call(env)

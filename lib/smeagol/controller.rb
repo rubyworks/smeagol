@@ -71,6 +71,38 @@ module Smeagol
       @filtered_pages ||= filter(wiki.pages)
     end
 
+    # List of files in assets directory. These files
+    # are never versioned.
+    def assets
+      @assets ||= (
+        files = collect_files(wiki.path, 'assets')
+        filter(files)
+      )
+    end
+
+    #
+    #def collect_files(base, offset)
+    #  files = Dir[::File.join(base, offset, '**', '*')]
+    #  files.map{ |file| file.sub(/#{Regexp.escape(base)}[\/\#{::File::SEPARATOR}]/, '') }
+    #end
+
+    #
+    def collect_files(base, offset)
+      list = []
+      dir  = ::File.join(base, offset)
+      ::Dir.entries(dir).each do |path|
+        next if path == '.' or path == '..'
+        subdir = ::File.join(dir, path)
+        if ::File.directory?(subdir)
+          sublist = collect_files(base, File.join(offset, path))
+          list.concat(sublist)
+        else
+          list << ::File.join(offset, path)
+        end
+      end
+      list
+    end
+
 =begin
     # Collect list of pages.
     def pages
@@ -111,23 +143,24 @@ module Smeagol
     # Filter files according to settings `include` and `exclude` fields.
     # Selection block can be given to further filter the list.
     #
-    # paths - Array of paths to be filtered.
+    # files - Array of wiki files to be filtered.
     #
     # Returns [Array<String>].
-    def filter(paths, &selection)
+    def filter(files, &selection)
       result = []
-      paths.map do |file|
-        unless wiki.settings.include.any?{ |x| File.fnmatch?(x, file.path) }
+      files.map do |file|
+        path = (String === file ? file : file.path)
+        unless wiki.settings.include.any?{ |x| File.fnmatch?(x, path) }
           # exclude settings file
-          next if file.path == Settings::FILE
-          # exclude layouts directory (TODO: future version may allow this)
-          next if file.path == wiki.settings.layout_dir
+          next if path == Settings::FILE
+          # exclude template directory (TODO: future version may allow this)
+          next if path.index(wiki.settings.template_dir) == 0
           # exclude any files starting with `.` or `_`
-          next if file.path.split('/').any? do |x|
+          next if path.split('/').any? do |x|
             x.start_with?('_') or x.start_with?('.')
           end
           # exclude any files specifically exluded by settings
-          next if wiki.settings.exclude.any?{ |x| File.fnmatch?(x, file.path) }
+          next if wiki.settings.exclude.any?{ |x| File.fnmatch?(x, path) }
         end
         result << file
       end
@@ -152,7 +185,6 @@ module Smeagol
     #
     # Returns [String].
     def render_view(view)
-
       if view.layout
         content = Mustache.render(view.layout, view)
       else
@@ -161,6 +193,22 @@ module Smeagol
 
       return content
     end
+
+    ## For static sites we cannot depend on the web server to default a link
+    ## to a directory to the index.html file within it. So we need to append
+    ## index.html to any href links for which we have wiki pages.
+    ## This is not a prefect solution, but there may not be a better one.
+    ##
+    #def index_directory_hrefs(html)
+    #  html.gsub(/href=\"(.*)\"/) do |match|
+    #    link = "#{$1}/index.html"
+    #    if @pages[link] #if File.directory?(File.join(current_directory, $1))
+    #      "href=\"#{link}\""
+    #    else
+    #      match  # no change
+    #    end
+    #  end
+    # end
 
 =begin
     #wiki_file, version='master'

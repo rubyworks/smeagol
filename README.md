@@ -30,10 +30,20 @@ To run smeagol, simply change directories to your Gollum repository and run the
 `smeagol` executable from the command line:
 
     $ cd /path/to/repo
-    $ smeagol
+    $ smeagol preview
 
 This will run a web server at `http://localhost:4567`. You can change the port
 by setting the `--port` or `-p` option on the command line.
+
+
+## CUSTOMIZING
+
+Of course, you want to customize your site to suit your style. To do this you
+need setup your wiki repo with some Smeagol support files. You can use the
+`init` commnad to have Smeagol put the default files in place.
+
+  $ cd path/to/wiki
+  $ smeagol init
 
 
 ## SETTINGS
@@ -61,12 +71,16 @@ wiki in any way.) An example `settings.yml` file:
 
 ## BUILDING
 
-Smeagol also can generate a static site. To do this provide a destination
-directory via the `build` subcommand.
+Smeagol also can generate a static site. To do this use the `build` command.
 
-    $ smeagol build /path/to/site /path/to/wiki-repo
+    $ smeagol build /path/to/wiki-repo
 
 If `/path/to/repo` is not given, the current working directory is assumed.
+
+By default the build will be placed in `.build/` in the wiki repo. To use an
+alternate destination use the `-d`/`--dir` optons.
+
+    $ smeagol build -d /path/to/build-dir /path/to/wiki-repo
 
 
 ## UPDATING

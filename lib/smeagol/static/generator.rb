@@ -1,5 +1,6 @@
 module Smeagol
   module Static
+
     class Generator
 
       #
@@ -18,6 +19,11 @@ module Smeagol
       #
       def views
         controller.views
+      end
+
+      #
+      def assets
+        controller.assets
       end
 
       #
@@ -46,6 +52,12 @@ module Smeagol
           write(path, content)
         end
 
+        assets.each do |file|
+          content = ::File.read(::File.join(wiki.path, file))
+          path    = ::File.join(@dir, file)
+          write(path, content)
+        end
+
         #pages.each do |page|
         #  #html = Mustache.render(template(page, :page), page)  # page.gollum_page)
         #  view, content = controller.render_page(page)
@@ -63,13 +75,6 @@ module Smeagol
         #files.each do |file|
         #  view, content = controller.render_file(file)
         #  path = File.join(@dir, view.href)
-        #  write(path, content)
-        #end
-
-        #assets.each do |file|
-        #  #next if file == 'smeagol.yml'
-        #  content = file.raw_data
-        #  path    = File.join(@dir, file.path)
         #  write(path, content)
         #end
       end
@@ -151,9 +156,9 @@ module Smeagol
       # to avoid name clashes with wiki files.
       def save_smeagol
         src = File.dirname(__FILE__) + '/../public/assets'
-        #dst = File.join(@dir, 'smeagol')  # TODO: move to assets/smeagol ?
-        fileutils.mkdir_p(@dir) unless File.directory?(@dir)
-        fileutils.cp_r(src, @dir) 
+        dst = File.join(@dir) #, 'assets')
+        fileutils.mkdir_p(dst) unless File.directory?(dst)
+        fileutils.cp_r(src, dst) 
       end
 
       # Save tab le of contents.
@@ -169,22 +174,6 @@ module Smeagol
         file = File.join(@dir, 'rss.xml')
         write(file, rss)
       end
-
-      ## For static sites we cannot depend on the web server to default a link
-      ## to a directory to the index.html file within it. So we need to append
-      ## index.html to any href links for which we have wiki pages.
-      ## This is not a prefect solution, but there may not be a better one.
-      ##
-      #def index_directory_hrefs(html)
-      #  html.gsub(/href=\"(.*)\"/) do |match|
-      #    link = "#{$1}/index.html"
-      #    if @pages[link] #if File.directory?(File.join(current_directory, $1))
-      #      "href=\"#{link}\""
-      #    else
-      #      match  # no change
-      #    end
-      #  end
-      # end
 
       # Access to FileUtils.
       #
