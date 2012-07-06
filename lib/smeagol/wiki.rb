@@ -3,7 +3,8 @@ module Smeagol
   # Subclass of Gollum::Wiki.
   #
   # TODO: Techincailly this is probably not needed. Presently it only adds
-  #       two methods, both of which can easily be placed elsewhere.
+  #       two methods, both of which can be placed elsewhere, albeit #settings
+  #       will take some work to move.
   #
   class Wiki < Gollum::Wiki
 
@@ -14,29 +15,15 @@ module Smeagol
     self.default_committer_email = 'anon@anon.com'
     self.default_ws_subs = ['_','-']
 
+    # TODO: Change update method to raise errors if something goes wrong instead
+    #       of returning a status?     
+
     # Public: Updates the wiki repository.
-    # 
-    # git  - The path to the git binary.
     #
     # Returns true if successful. Otherwise returns false.
-    def update(git)
-      # TODO: Change this method to raise errors if something goes wrong instead
-      #       of returning a status.
-      
-      # If the git executable is available, pull from master and check status.
-      if !git.nil?
-        output = `cd #{path} && #{git} pull origin master 2>/dev/null`
-        
-        # Write update to log if something happened
-        if output.index('Already up-to-date').nil?
-          $stderr.puts "== Repository updated at #{Time.new()} : #{path} =="
-        end
-    
-        return $? == 0
-      # Otherwise return false.
-      else
-        return false
-      end
+    def update
+      output = `cd #{path} && #{git} pull origin master 2>/dev/null`
+      return $? == 0
     end
 
     # Public: The Smeagol wiki settings. These can be found in the _settings.yml
@@ -54,15 +41,6 @@ module Smeagol
     def settings
       @settings ||= Settings.load(path)
     end
-
-    # Public: Get a list of plugin files.
-    #
-    # Returns Array of plugin files.
-    #def plugins
-    #  files.map do |f|
-    #    File.fnmatch?('_plugins/*.rb', f.path)
-    #  end
-    #end
 
   end
 

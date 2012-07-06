@@ -9,7 +9,7 @@ module Smeagol
     ##CONFIG_HOME = ENV['XDG_CONFIG_HOME'] || '~/.config'
 
     # The name of the settings file.
-    # TODO: Rename to `smeagol.yml`.
+    # TODO: Rename to `smeagol.yml` ?
     FILE = "settings.yml"
 
     # Default site directory.
@@ -51,6 +51,10 @@ module Smeagol
       @rss           = false
       @exclude       = []
       @include       = []
+      @site_branch   = 'master'
+
+      # TODO: Raise error if no wiki_dir ?
+      @wiki_dir = settings[:wiki_dir]
 
       assign(settings)
     end
@@ -94,6 +98,10 @@ module Smeagol
     # Site's git repo uri.
     # e.g. `git@github.com:trans/trans.github.com.git`
     attr_accessor :site_origin
+
+    # If site is on a special branch, e.g. `gh-pages`.
+    # Default branch is `master`.
+    attr_accessor :site_branch
 
     # If your repo is using (stupid) detached branch approach,
     # then specify the branch name here. This will typically
@@ -195,6 +203,48 @@ module Smeagol
     #
     # TODO: Rename this field.
     attr_accessor :source_url
+
+    # Fully qulaified build directory.
+    #
+    # If `build_dir` is an absolute path it will returned as given, 
+    # otherwsie it will be relative to the location of the wiki.
+    #
+    # Returns String of build path.
+    def build_path(alt_dir=nil)
+      dir = alt_dir || build_dir
+      if dir
+        relative?(dir) ? ::File.join(wiki_dir, dir) : dir
+      else
+        ::File.join(Dir.tmpdir, 'smeagol', 'build')
+      end
+    end
+
+    # Fully qualitfed site directory.
+    #
+    # If `site_dir` is an absolute path it will returned as given, 
+    # otherwsie it will be relative to the location of the wiki.
+    #
+    # Returns String of site path.
+    def site_path(alt_dir=nil)
+      dir = alt_dir || site_dir
+      if dir
+        relative?(dir) ? ::File.join(wiki_dir, dir) : dir
+      else
+        ::File.join(Dir.tmpdir, 'smeagol', 'site')
+      end
+    end
+
+    #  P R I V A T E  M E T H O D S
+
+    private
+
+    #
+    def relative?(path)
+      return false if path.start_with?(::File::SEPARATOR)
+      return false if path.start_with?('/')
+      return false if path.start_with?('.')
+      return true
+    end
 
   end
 

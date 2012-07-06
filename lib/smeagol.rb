@@ -1,5 +1,31 @@
 module Smeagol
   LIBDIR = File.dirname(__FILE__) + '/smeagol'
+
+  # Locates the git binary in common places in the file system.
+  #
+  # TODO: Can we use shell.rb for this?
+  #
+  # Returns String path to git executable.
+  def self.git
+    ENV['git'] ||= (
+      git = nil
+
+      ['/usr/bin', '/usr/sbin', '/usr/local/bin', '/opt/local/bin'].each do |path|
+        file = "#{path}/git"
+        git = file if File.executable?(file)
+        break if git
+      end
+    
+      # Alert user that updates are unavailable if git is not found
+      if git.nil? || !File.executable?(git)
+        warn "warning: git executable could not be found."
+      else
+        $stderr.puts "git found: #{git}" if $DEBUG
+      end
+
+      git
+    )
+  end
 end
 
 require 'gollum'
@@ -14,10 +40,10 @@ require 'smeagol/version'
 require 'smeagol/core_ext/ostruct'
 
 # gollum plugins, can be removed when new version of Gollum is out.
-require 'smeagol/plugins/wiki'
-require 'smeagol/plugins/file'
-require 'smeagol/plugins/page'
-require 'smeagol/plugins/blob_entry'
+require 'smeagol/gollum/wiki'
+require 'smeagol/gollum/file'
+require 'smeagol/gollum/page'
+require 'smeagol/gollum/blob_entry'
 
 require 'smeagol/wiki'
 require 'smeagol/app'
@@ -45,5 +71,6 @@ require 'smeagol/console/base'
 require 'smeagol/console/init'
 require 'smeagol/console/serve'
 require 'smeagol/console/build'
+require 'smeagol/console/update'
 require 'smeagol/console/sync'
 

@@ -145,7 +145,7 @@ module Smeagol
       if File.exists?("#{repository.path}/#{layout_dir}/#{name}.mustache")
         IO.read("#{repository.path}/#{layout_dir}/#{name}.mustache")
       else
-        IO.read(::File.join(::File.dirname(__FILE__), "templates/layouts/#{name}.mustache"))
+        IO.read(::File.join(::File.dirname(__FILE__), "templates/#{name}.mustache"))
       end
     end
 

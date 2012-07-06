@@ -47,7 +47,6 @@ module Smeagol
       @cache_enabled = true
       @base_path     = ''
       @repositories  = []
-      @git           = nil
 
       assign(settings)
     end
@@ -66,12 +65,10 @@ module Smeagol
     # Port to use for server. Default is 4567.
     attr_accessor :port
 
-    # Path to git executable. This should only be needed in special
-    # circumstances.
-    attr_accessor :git
-
     # While running server, auto-update wiki every day.
     attr_accessor :auto_update
+    alias :update  :auto_update
+    alias :update= :auto_update=
 
     # Use page cache to speed up page requests.
     attr_accessor :cache
@@ -107,9 +104,14 @@ module Smeagol
       )
     end
 
-    # Ability to access config like hash.
+    # Deprecated: Ability to access config like hash.
     def [](name)
       instance_variable_get("@#{name}")
+    end
+
+    # Lookup git executable.
+    def git
+      Smeagol.git
     end
 
     # Encapsulates a repository config entry.
@@ -125,6 +127,33 @@ module Smeagol
         @cname  = opts.cname
         @secret = opts.secret
       end
+
+      # TODO: Change update method to raise errors instead of returning a status.
+
+      # Public: Updates the wiki repository.
+      # 
+      # git  - The path to the git binary.
+      #
+      # Returns true if successful. Otherwise returns false.
+      def update
+        git = Smeagol.git
+
+        # If the git executable is available, pull from master and check status.
+        if !git.nil?
+          output = `cd #{path} && #{git} pull origin master 2>/dev/null`
+
+          # Write update to log if something happened
+          if output.index('Already up-to-date').nil?
+            $stderr.puts "== Repository updated at #{Time.new()} : #{path} =="
+          end
+      
+          return $? == 0
+        # Otherwise return false.
+        else
+          return false
+        end
+      end
+
     end
 
   end

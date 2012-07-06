@@ -1,5 +1,6 @@
 module Smeagol
 
+  #
   module Views
   end
 

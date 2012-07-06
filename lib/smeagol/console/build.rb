@@ -8,68 +8,57 @@ module Smeagol
 
       # Initialize new Build command.
       def initialize(options={})
-        @wiki_dir  = options[:wiki_dir]  || Dir.pwd
-        @build_dir = options[:build_dir] || settings.build_dir
+        super(options)
+
+        @build_dir = options[:build_dir]
+        @update    = options[:update]
         @force     = options[:force]
       end
 
-      # Directory contaning the wiki git repository.
-      attr :wiki_dir
-
-      # Use system temporary directory, instead of directory 
-      # local to wiki repo as build destination?
       #
-      # Returns True or False.
-      def use_tmp?
-        @use_tmp
+      attr :build_dir
+
+      #
+      def update?
+        @update
+      end
+
+      #
+      def force?
+        @force
       end
 
       # Invoke build procedure.
       #
       # Returns nothing.
       def call
-        wiki   = Smeagol::Wiki.new(wiki_dir)
-        static = Smeagol::Static::Generator.new(wiki)
+        gen = Smeagol::Static::Generator.new(wiki)
 
-        if !wiki.settings.static && !@force
+        unless wiki.settings.static or force?
           $stderr.puts "Trying to build non-static site."
           abort "Must set static mode or use force option to proceed."
         end
 
-        remove_build_dir
+        wiki.update() if update?
 
-        static.build(build_dir)
+        remove_build
+
+        gen.build(build_path)
       end
 
-      # Build directory.
+      # Full path to build directory.
       #
       # Returns String of build path.
-      def build_dir
-        if settings.build_dir
-          if relative?(settings.build_dir)
-            File.join(wiki_dir, settings.build_dir)
-          else
-            settings.build_dir
-          end
-        else
-          File.join(Dir.tmpdir, 'smeagol', 'build')
-        end
+      def build_path
+        build_dir || settings.build_path
       end
 
       # Remove build directory.
       #
-      def remove_build_dir
-        if File.exist?(build_dir)
-          FileUtils.rm_r(build_dir)
+      def remove_build
+        if File.exist?(build_path)
+          FileUtils.rm_r(build_path)
         end
-      end
-
-      #
-      def relative?(path)
-        return false if path.start_with?(::File::SEPARATOR)
-        return false if path.start_with?('/')
-        return false if path.start_with?('.')
-        return true
       end
 
     end

@@ -49,6 +49,13 @@ module Smeagol
     end
 
     #
+    # Update/clone site repo.
+    #
+    def update(options={})
+      Update.run(options)
+    end
+
+    #
     # Preview a generated build directory. This is useful to 
     # ensure the static build when as expected.
     #

@@ -8,24 +8,24 @@ module Smeagol
 
       # Initialize new Serve console command.
       def initialize(config={})
-        config = Smeagol::Config.new(config) unless Smeagol::Config === config
+        @config = (
+          if Smeagol::Config === config
+            config
+          else
+            Smeagol::Config.new(config)
+          end
+        )
 
-        @git           = config.git || get_git
-        @port          = config.port
-        @auto_update   = config.auto_update
-        @cache_enabled = config.cache_enabled
-        @mount_path    = config.mount_path
-        @repositories  = config.repositories
+        #@port          = config.port
+        #@auto_update   = config.auto_update
+        #@cache_enabled = config.cache_enabled
+        #@mount_path    = config.mount_path
+        #@repositories  = config.repositories
+        #@git           = Smeagol.git
       end
 
-      # Path to git binary.
-      attr_accessor :git
-
-      # Port to use. Default is 4567.
-      attr_accessor :port
-
-      # List of repositories.
-      attr :repositories
+      # Returns Smeagol::Config instance.
+      attr :config
 
       # Run the Sinatra-based server.
       def call
@@ -34,11 +34,11 @@ module Smeagol
         auto_update
         clear_caches
 
-        Smeagol::App.set(:repositories, @repositories)
-        Smeagol::App.set(:git, @git)
-        Smeagol::App.set(:cache_enabled, @cache_enabled)
-        Smeagol::App.set(:mount_path, @mount_path)
-        Smeagol::App.run!(:port => @port)
+        Smeagol::App.set(:git, config.git)
+        Smeagol::App.set(:repositories, config.repositories)
+        Smeagol::App.set(:cache_enabled, config.cache_enabled)
+        Smeagol::App.set(:mount_path, config.mount_path)
+        Smeagol::App.run!(:port => config.port)
       end
 
       # Setup trap signals.
@@ -55,7 +55,7 @@ module Smeagol
       # Returns nothing.
       def show_repository
         $stderr.puts "\n  Now serving on port #{@port} at /#{@base_path}:"
-        repositories.each do |repository|
+        config.repositories.each do |repository|
           $stderr.puts "  * #{repository.path} (#{repository.cname})"
         end
         $stderr.puts "\n"
@@ -64,13 +64,13 @@ module Smeagol
       # Run the auto update process.
       #
       def auto_update
-        if @git && @auto_update
+        if config.auto_update
           Thread.new do
             while true do
               sleep 86400
-              @repositories.each do |repository|
-                wiki = Smeagol::Wiki.new(repository.path)
-                wiki.update(@git)
+              config.repositories.each do |repository|
+                #wiki = Smeagol::Wiki.new(repository.path)
+                repository.update #(wiki, config.git)
               end
             end
           end
@@ -81,7 +81,7 @@ module Smeagol
       #
       # Returns nothing.
       def clear_caches
-        @repositories.each do |repository|
+        config.repositories.each do |repository|
           Smeagol::Cache.new(Gollum::Wiki.new(repository.path)).clear()
         end
       end

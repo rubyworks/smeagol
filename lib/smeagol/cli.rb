@@ -247,8 +247,12 @@ module Smeagol
     def build(argv)
       parser.banner = "usage: smeagol build [OPTIONS]"
 
-      parser.on('--force') do
+      parser.on('--force', 'force static mode') do
         options[:force] = true
+      end
+
+      parser.on('-u', '--update', 'update wiki repo before build') do
+        options[:update] = true
       end
 
       parser.on('-d', '--dir DIR', 'alternate build directory') do |dir|
@@ -257,6 +261,24 @@ module Smeagol
       end
 
       Console.build(*parse(argv))
+    end
+
+    # Update/clone site repo.
+    #
+    # Returns nothing.
+    def update(argv)
+      parser.banner = "Usage: smeagol update [OPTIONS]"
+
+      #parser.on('--force', 'force even if not static mode') do
+      #  options[:force] = true
+      #end
+
+      parser.on('-d', '--dir DIR', 'alternate site directory') do |dir|
+        dir = nil if %w{false nil ~}.include?(dir)  # TODO: better approach? 
+        options[:site_dir] = dir
+      end
+
+      Console.update(*parse(argv))
     end
 
     # Use rsync to update the site directory from the build directory.
@@ -273,12 +295,16 @@ module Smeagol
         options[:build] = true
       end
 
-      #parser.on('-t', '--tmp', 'use system temporary directory') do
-      #  options[:use_tmp] = true
-      #end
+      parser.on('--build-dir [DIRECTORY]', 'use alternate build directory') do
+        options[:build_dir] = dir
+      end
 
       parser.on('-s', '--site-dir [DIRECTORY]', 'sync to specifed directory') do |dir|
         options[:site_dir] = dir
+      end
+
+      parser.on('-u', '--update', 'Update site repo before sync, will clone if not present.') do
+        options[:update] = true
       end
 
       Console.sync(*parse(argv))

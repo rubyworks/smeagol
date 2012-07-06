@@ -210,6 +210,15 @@ module Smeagol
     #  end
     # end
 
+    # Public: Get a list of plugin files.
+    #
+    # Returns Array of plugin files.
+    #def plugins
+    #  files.map do |f|
+    #    File.fnmatch?('_plugins/*.rb', f.path)
+    #  end
+    #end
+
 =begin
     #wiki_file, version='master'
 
