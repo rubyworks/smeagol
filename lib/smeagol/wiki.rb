@@ -21,10 +21,11 @@ module Smeagol
     # Public: Updates the wiki repository.
     #
     # Returns true if successful. Otherwise returns false.
-    def update
-      output = `cd #{path} && #{git} pull origin master 2>/dev/null`
-      return $? == 0
-    end
+    #def update
+    #  git    = ENV['git'] || ENV['GIT'] || 'git'
+    #  output = `cd #{path} && #{git} pull origin master 2>/dev/null`
+    #  return $? == 0
+    #end
 
     # Public: The Smeagol wiki settings. These can be found in the _settings.yml
     # file at the root of the repository.

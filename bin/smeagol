@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 def self.main(argv)
-  commands = %w{help init build sync preview server serve}
+  commands = %w{help init build sync preview update server serve}
   command = commands.include?(argv.first) ? argv.shift : 'server'
 
   case command
@@ -20,6 +20,9 @@ def self.main(argv)
   when 'build'
     require 'smeagol'
     Smeagol::CLI.build(argv)
+  when 'update'
+    require 'smeagol'
+    Smeagol::CLI.update(argv)
   when 'sync'
     require 'smeagol'
     Smeagol::CLI.sync(argv)

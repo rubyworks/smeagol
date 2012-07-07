@@ -11,50 +11,36 @@ module Smeagol
       # Initialize new Sync console command.
       def initialize(options={})
         super(options)
-
-        @site_dir = options[:site_dir]
       end
 
-      # Site directory path.
-      attr_accessor :site_dir
+      # Alternate site directory.
+      #attr_accessor :site_dir
 
       # Perform update or clone.
       def call
-        site = site_path.chomp('/')
+        wiki.repo.git.pull({}, 'orgin', 'master')
 
-        #wiki.update
-
-        if Dir.exist?(site)
-          Dir.chdir(site) do
-            system "#{git} pull origin #{site_branch}"
+        if settings.site
+          if Dir.exist?(site_path)
+            $stderr.puts "Pulling `#{repo.branch}' from `origin' in `#{repo.path}'..."
+            repo.pull
+          else
+            $stderr.puts "Cloning `#{repo.origin}' in `#{repo.path}'..."
+            repo.clone
           end
-        else
-          system "#{git} clone #{site_origin} #{site}"
         end
       end
 
-      # Default site directory is `.site` in the wiki repo directory,
-      # unless a `site_dir` option is given or setting is changed in
-      # `settings.yml`.
-      #
-      # Returns String of site directory path.
+      # Returns String of static site directory path.
       def site_path
-        site_dir || settings.site_path
+        settings.site_path
       end
 
+      # Site repository.
       #
-      def site_origin
-        settings.site_origin
-      end
-
-      #
-      def site_branch
-        settings.site_branch
-      end
-
-      #
-      def git
-        Smeagol.git
+      # Returns Repository instance.
+      def repo
+        settings.site_repo 
       end
 
     end

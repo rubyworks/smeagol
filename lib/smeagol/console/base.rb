@@ -13,6 +13,7 @@ module Smeagol
 
       #
       def initialize(options={})
+        @options  = options  # in case they need to be reused
         @wiki_dir = options[:wiki_dir] || Dir.pwd
       end
 
@@ -31,6 +32,22 @@ module Smeagol
       # Returns Smeagol::Settings instance.
       def settings
         @settings ||= Settings.load(wiki_dir)
+      end
+
+      # Git executable.
+      def git
+        Smeagol.git
+      end
+
+      # TODO: Maybe add a random number to be safe.
+      #
+      # Return String path to system temprorary directory.
+      def tmpdir(base=nil)
+        if base
+          ::File.join(Dir.tmpdir, 'smeagol', base)
+        else
+          ::File.join(Dir.tmpdir, 'smeagol', Time.now.year.to_s)
+        end
       end
 
     end

@@ -1,3 +1,5 @@
+# DEPRECATED
+
 module Smeagol
 
   module Console

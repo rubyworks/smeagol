@@ -5,9 +5,17 @@ module Smeagol
   #
   # TODO: Can we use shell.rb for this?
   #
+  # TODO: This hsould not be necessary. 99% of the time it's just `git`.
+  #       For the rest if $GIT environment variable.
+  #
   # Returns String path to git executable.
   def self.git
-    ENV['git'] ||= (
+    ENV['git'] || ENV['GIT'] || 'git'
+  end
+
+=begin
+  def self.git
+    ENV['GIT'] ||= (
       git = nil
 
       ['/usr/bin', '/usr/sbin', '/usr/local/bin', '/opt/local/bin'].each do |path|
@@ -26,6 +34,8 @@ module Smeagol
       git
     )
   end
+=end
+
 end
 
 require 'gollum'
@@ -49,6 +59,7 @@ require 'smeagol/wiki'
 require 'smeagol/app'
 require 'smeagol/cache'
 require 'smeagol/config'
+require 'smeagol/repository'
 require 'smeagol/settings'
 require 'smeagol/controller'
 
@@ -72,5 +83,5 @@ require 'smeagol/console/init'
 require 'smeagol/console/serve'
 require 'smeagol/console/build'
 require 'smeagol/console/update'
-require 'smeagol/console/sync'
+#require 'smeagol/console/sync'
 

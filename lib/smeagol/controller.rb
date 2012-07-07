@@ -103,43 +103,6 @@ module Smeagol
       list
     end
 
-=begin
-    # Collect list of pages.
-    def pages
-      @pages ||= filtered_pages.select{ |p| !p.post? }
-    end
-
-    # Collect list of posts.
-    def posts
-      @posts ||= filtered_pages.select{ |p| p.post? }
-    end
-
-    # Collect list of non-page files to be rendered.
-    def files
-      @files ||= filtered_files.select{ |f| f.extname == '.mustache' }
-    end
-
-    # Collect list of raw asset files.
-    def assets
-      @assets ||= filtered_files.select{ |f| f.extname != '.mustache' } 
-    end
-
-    #
-    def page_views(version='master')
-      @page_views ||= pages.map{ |page| Views::Page.new(page, version) }
-    end
-
-    #
-    def post_views(version='master')
-      @post_views ||= posts.map{ |post| Views::Post.new(post, version) }
-    end
-
-    #
-    def file_views(version='master')
-      @file_views ||= files.map{ |post| Views::Template.new(file, versionb) }
-    end
-=end
-
     # Filter files according to settings `include` and `exclude` fields.
     # Selection block can be given to further filter the list.
     #
@@ -153,6 +116,8 @@ module Smeagol
         unless wiki.settings.include.any?{ |x| File.fnmatch?(x, path) }
           # exclude settings file
           next if path == Settings::FILE
+          # exclude static directory
+          next if path.index(wiki.settings.static) == 0 if wiki.settings.static
           # exclude template directory (TODO: future version may allow this)
           next if path.index(wiki.settings.template_dir) == 0
           # exclude any files starting with `.` or `_`
@@ -193,6 +158,43 @@ module Smeagol
 
       return content
     end
+
+=begin
+    # Collect list of pages.
+    def pages
+      @pages ||= filtered_pages.select{ |p| !p.post? }
+    end
+
+    # Collect list of posts.
+    def posts
+      @posts ||= filtered_pages.select{ |p| p.post? }
+    end
+
+    # Collect list of non-page files to be rendered.
+    def files
+      @files ||= filtered_files.select{ |f| f.extname == '.mustache' }
+    end
+
+    # Collect list of raw asset files.
+    def assets
+      @assets ||= filtered_files.select{ |f| f.extname != '.mustache' } 
+    end
+
+    #
+    def page_views(version='master')
+      @page_views ||= pages.map{ |page| Views::Page.new(page, version) }
+    end
+
+    #
+    def post_views(version='master')
+      @post_views ||= posts.map{ |post| Views::Post.new(post, version) }
+    end
+
+    #
+    def file_views(version='master')
+      @file_views ||= files.map{ |post| Views::Template.new(file, versionb) }
+    end
+=end
 
     ## For static sites we cannot depend on the web server to default a link
     ## to a directory to the index.html file within it. So we need to append

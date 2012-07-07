@@ -10,22 +10,17 @@ module Smeagol
       def initialize(options={})
         super(options)
 
-        @build_dir = options[:build_dir]
-        @update    = options[:update]
-        @force     = options[:force]
+        @dir    = options[:dir]
+        @update = options[:update]
+        @force  = options[:force]
       end
 
-      #
-      attr :build_dir
+      # Alternate static directory.
+      attr :dir
 
       #
       def update?
         @update
-      end
-
-      #
-      def force?
-        @force
       end
 
       # Invoke build procedure.
@@ -34,23 +29,40 @@ module Smeagol
       def call
         gen = Smeagol::Static::Generator.new(wiki)
 
-        unless wiki.settings.static or force?
+        unless settings.static or @dir
           $stderr.puts "Trying to build non-static site."
-          abort "Must set static mode or use force option to proceed."
+          abort "Must set static path to proceed."
         end
 
-        wiki.update() if update?
+        Console.update(@options) if update?
 
         remove_build
 
         gen.build(build_path)
+
+        if settings.sync_script
+          cmd = settings.sync_script % [build_path, static_path]
+          $stderr.puts cmd
+          system cmd
+        end
       end
 
       # Full path to build directory.
       #
-      # Returns String of build path.
+      # Returns String to build path.
       def build_path
-        build_dir || settings.build_path
+        if settings.sync_script
+          tmpdir
+        else
+          settings.static_path
+        end
+      end
+
+      # Full path to static directory.
+      #
+      # Returns String of static path.
+      def static_path
+        (@dir || settings.static_path).chomp('/')
       end
 
       # Remove build directory.

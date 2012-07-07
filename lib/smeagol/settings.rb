@@ -2,21 +2,18 @@ module Smeagol
 
   # Wiki settings.
   #
-  # Note not all of these settings are fully supported yet.
+  # TODO: Would it be possible/prudent to move all this into controller?
   class Settings
-
-    ## Directory which contains user settings.
-    ##CONFIG_HOME = ENV['XDG_CONFIG_HOME'] || '~/.config'
 
     # The name of the settings file.
     # TODO: Rename to `smeagol.yml` ?
     FILE = "settings.yml"
 
     # Default site directory.
-    SITE_DIR  = '.site'
+    #SITE_DIR  = '.site'
 
-    # Default build directory.
-    BUILD_DIR = '.build'
+    # Default build-to directory for static builds.
+    BUILD_DIR = 'public'
 
     # Default template includes directory.
     TEMPLATE_DIR = 'assets/includes'
@@ -44,14 +41,14 @@ module Smeagol
     #
     #
     def initialize(settings={})
-      @site_dir      = SITE_DIR
-      @build_dir     = BUILD_DIR
       @template_dir  = TEMPLATE_DIR
       @index         = 'Home'
       @rss           = false
       @exclude       = []
       @include       = []
-      @site_branch   = 'master'
+      @static        = nil
+      @sync_script   = "rsync -arv --del --exclude .git* '%s/' '%s/'"
+      @site          = nil
 
       # TODO: Raise error if no wiki_dir ?
       @wiki_dir = settings[:wiki_dir]
@@ -74,19 +71,8 @@ module Smeagol
     # Deprecated: Alias ffor #assign.
     alias update assign
 
-    # Is this a static site, `true` or `false`? This is an important
-    # setting! It determines the default actions of certain smeagol
-    # commands. For example, if `static` is not set to true, trying to 
-    # call `$ smeagol build` will abort with an error message.
-    attr_accessor :static
-
     # Internal: Do not set this settings.yml!
     attr_accessor :wiki_dir
-
-    # Site's URL. If someone wanted to visit your website, this
-    # is the link they would follow, e.g. `http://trans.github.com`
-    attr_accessor :url
-
 
     # Gollum wiki's repo uri.
     # e.g. `git@github.com:trans/trans.github.com.wiki.git`
@@ -95,30 +81,49 @@ module Smeagol
     # The particular tag or reference id to serve. Default is 'master'.
     attr_accessor :wiki_ref
 
-    # Site's git repo uri.
-    # e.g. `git@github.com:trans/trans.github.com.git`
-    attr_accessor :site_origin
+    # Site's URL. If someone wanted to visit your website, this
+    # is the link they would follow, e.g. `http://trans.github.com`
+    attr_accessor :url
 
-    # If site is on a special branch, e.g. `gh-pages`.
-    # Default branch is `master`.
-    attr_accessor :site_branch
+    # Path Where to sync site. Default value is `_sync`, relative to working wiki
+    # directory.
+    #attr_reader :sync_dir
 
-    # If your repo is using (stupid) detached branch approach,
-    # then specify the branch name here. This will typically
-    # be of used for GitHub projects using Pages feature and set
-    # to 'gh-pages'.
-    attr_accessor :site_branch
+    # If a site is for static deployment, `static` should be set to the 
+    # build path. The typical value is `./public`, which is relative to
+    # the wiki's location. Be sure to add this to the wiki's `.gitignore`
+    # file.
+    #
+    # IMPORTANT: This is a crucial setting! It determines the default
+    # actions of certain smeagol commands. For example, if `static` is
+    # not set, trying to call `$ smeagol build` will abort with an error
+    # message.
+    attr_accessor :static
 
-    # Where to sync site. (For static builds only.)
-    # Default value is `.site`.
-    attr_accessor :site_dir
+    # If deplymet of site is done via git, you can use `site` to setup
+    # a Repository instance that can handle pulls and pushes on updates.
+    #
+    #   site:
+    #     origin: git@github.com:trans/trans.github.com.git
+    #     branch: gh-pages
+    #
+    attr_accessor :site
 
-    # Where to build static files. (For static builds only.)
-    # Default value is `.build`.
-    attr_accessor :build_dir
+    # Smeagol uses `rsync` to copy build files form temporary location to
+    # the final location given by `static`. By default this command is:
+    #
+    #   "rsync -arv --del --exclude .git* %s/ %s/"
+    #
+    # Where the first %s is the temporary location and the second is the location
+    # specified by the `static` setting. If this needs to be different it can
+    # be change here. Just be sure to honor the `%s` slots.
+    #
+    # If set to `~` (ie. `nil`) then the static files will be built-out directly
+    # the the static directory without using rsync.
+    attr_accessor :sync_script
 
-    # Where to find template includes.
-    # Default value is `assets/includes`.
+    # Where to find template includes. This is the location that Mustache uses
+    # when looking for partials. The default is `assets/includes`.
     attr_accessor :template_dir
 
     # Page to use as site index. The default is `Home`. A non-wiki
@@ -141,9 +146,6 @@ module Smeagol
 
     # Do not load plugins. (TODO?)
     #attr_accessor :safe
-
-    # Mapping of file to layout to be used to render.
-    attr_accessor :layouts
 
 
     # Title of site.
@@ -204,34 +206,30 @@ module Smeagol
     # TODO: Rename this field.
     attr_accessor :source_url
 
-    # Fully qulaified build directory.
+    # Fully qulaified site build directory.
     #
-    # If `build_dir` is an absolute path it will returned as given, 
-    # otherwsie it will be relative to the location of the wiki.
+    # If `static` is an absolute path it will returned as given, 
+    # otherwise it will be relative to the location of the wiki.
     #
     # Returns String of build path.
-    def build_path(alt_dir=nil)
-      dir = alt_dir || build_dir
-      if dir
-        relative?(dir) ? ::File.join(wiki_dir, dir) : dir
-      else
-        ::File.join(Dir.tmpdir, 'smeagol', 'build')
-      end
+    def static_path
+      path = relative?(static) ? ::File.join(wiki_dir, static) : static
+      path.chomp('/')  # ensure no trailing path separator
+      path
     end
 
-    # Fully qualitfed site directory.
+    alias :site_path :static_path
+
     #
-    # If `site_dir` is an absolute path it will returned as given, 
-    # otherwsie it will be relative to the location of the wiki.
+    # TODO: raise error is no site settings?
     #
-    # Returns String of site path.
-    def site_path(alt_dir=nil)
-      dir = alt_dir || site_dir
-      if dir
-        relative?(dir) ? ::File.join(wiki_dir, dir) : dir
-      else
-        ::File.join(Dir.tmpdir, 'smeagol', 'site')
-      end
+    # Returns Repository object for git-based deployment site.
+    def site_repo
+      @site_repo ||= (
+        opts = (site || {}).dup
+        site[:path] = static_path
+        Repository.new(site)
+      )
     end
 
     #  P R I V A T E  M E T H O D S
@@ -240,9 +238,10 @@ module Smeagol
 
     #
     def relative?(path)
+      return false if path =~ /^[A-Z]\:/
       return false if path.start_with?(::File::SEPARATOR)
       return false if path.start_with?('/')
-      return false if path.start_with?('.')
+      #return false if path.start_with?('.')
       return true
     end
 

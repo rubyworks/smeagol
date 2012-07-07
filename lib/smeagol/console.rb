@@ -57,9 +57,9 @@ module Smeagol
 
     #
     # Preview a generated build directory. This is useful to 
-    # ensure the static build when as expected.
+    # ensure the static build went as expected.
     #
-    # TODO: Would be happy to use thin if it supported "site" adapter.
+    # TODO: Would be happy to use thin if it supported fixed "static" adapter.
     #
     def preview(options={})
       #build_dir = options[:build_dir] || settings.build_dir

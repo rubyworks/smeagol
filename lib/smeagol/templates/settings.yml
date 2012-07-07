@@ -1,7 +1,10 @@
 ---
 # Default deployment mode. Do you need to deploy a static
 # site or not? This is important because it effects the 
-# default behavior of smeagol command line tools.
+# default behavior of smeagol command line tools. If you
+# so than put the path to the site location here. Typical
+# path would be `public`. Paths are relative to the wiki
+# location, unless an absolute path is given.
 
 static: false
 
@@ -15,12 +18,7 @@ url: {{ url }}
 
 wiki_origin: {{ wiki_origin }}
 
-# Site's git url.
-# e.g. `git@github.com:trans/trans.github.com.git`
-
-site_origin: {{ site_origin }}
-
-# Github project site, if applicable.
+# Source site, if applicable.
 # e.g. `http://github.com/trans`
 
 source_url: {{ source_url }}
@@ -59,11 +57,6 @@ author: {{ author }}
 menu:
 - title: Home
   href: /
-
-# Where to sync site. (For static builds only.)
-# Default value is `_site`.
-
-site_dir: _site
 
 # Google analytics tracking id. Could be used for other such
 # services if custom template is used.

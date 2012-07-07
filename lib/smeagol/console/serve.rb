@@ -54,7 +54,7 @@ module Smeagol
       #
       # Returns nothing.
       def show_repository
-        $stderr.puts "\n  Now serving on port #{@port} at /#{@base_path}:"
+        $stderr.puts "\n  Now serving on port #{config.port} at /#{config.base_path}:"
         config.repositories.each do |repository|
           $stderr.puts "  * #{repository.path} (#{repository.cname})"
         end
