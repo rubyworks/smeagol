@@ -17,15 +17,15 @@ def self.main(argv)
   when 'init'
     require 'smeagol'
     Smeagol::CLI.init(argv)
-  when 'build'
+  when 'build', 'sync'
     require 'smeagol'
     Smeagol::CLI.build(argv)
   when 'update'
     require 'smeagol'
     Smeagol::CLI.update(argv)
-  when 'sync'
-    require 'smeagol'
-    Smeagol::CLI.sync(argv)
+  #when 'sync'
+  #  require 'smeagol'
+  #  Smeagol::CLI.sync(argv)
   when 'preview'
     require 'smeagol'
     Smeagol::CLI.preview(argv)   
