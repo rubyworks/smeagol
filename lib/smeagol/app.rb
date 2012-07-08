@@ -19,11 +19,8 @@ module Smeagol
       # secret is appended to the URL.
       if repository.secret.nil? || key == repository.secret
         wiki = Smeagol::Wiki.new(repository.path)
-        if wiki.update(settings.git)
-          'ok'
-        else
-          'error'
-        end
+        repository.update
+        'ok'
       else
         # Show a forbidden response if the secret was not correct
         'forbidden'

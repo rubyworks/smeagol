@@ -15,13 +15,6 @@ module Smeagol
             Smeagol::Config.new(config)
           end
         )
-
-        #@port          = config.port
-        #@auto_update   = config.auto_update
-        #@cache_enabled = config.cache_enabled
-        #@mount_path    = config.mount_path
-        #@repositories  = config.repositories
-        #@git           = Smeagol.git
       end
 
       # Returns Smeagol::Config instance.
@@ -69,8 +62,11 @@ module Smeagol
             while true do
               sleep 86400
               config.repositories.each do |repository|
-                #wiki = Smeagol::Wiki.new(repository.path)
-                repository.update #(wiki, config.git)
+                out = repository.update
+                out = out[1] if Array === out
+                if out.index('Already up-to-date').nil? 
+                  $stderr.puts "== Repository updated at #{Time.new()} : #{repository.path} =="
+                end
               end
             end
           end
