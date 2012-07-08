@@ -114,48 +114,6 @@ module Smeagol
       Smeagol.git
     end
 
-    # Encapsulates a repository config entry.
-    #
-    class Repository
-      attr_accessor :path
-      attr_accessor :cname
-      attr_accessor :secret
-
-      def initialize(opts={})
-        opts = OpenStruct.new(opts)
-        @path   = opts.path
-        @cname  = opts.cname
-        @secret = opts.secret
-      end
-
-      # TODO: Change update method to raise errors instead of returning a status.
-
-      # Public: Updates the wiki repository.
-      # 
-      # git  - The path to the git binary.
-      #
-      # Returns true if successful. Otherwise returns false.
-      def update
-        git = Smeagol.git
-
-        # If the git executable is available, pull from master and check status.
-        if !git.nil?
-          output = `cd #{path} && #{git} pull origin master 2>/dev/null`
-
-          # Write update to log if something happened
-          if output.index('Already up-to-date').nil?
-            $stderr.puts "== Repository updated at #{Time.new()} : #{path} =="
-          end
-      
-          return $? == 0
-        # Otherwise return false.
-        else
-          return false
-        end
-      end
-
-    end
-
   end
 
 end

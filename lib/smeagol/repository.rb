@@ -1,9 +1,13 @@
 module Smeagol
 
-  # Repostiory settings.
+  # Repostiory encapsulation. THis class serves two needs,
+  # as a wiki repo for Config and as a site repo for Settings.
+  # Which fields are actually used depends on which of these
+  # two use cases is at play. 
   #
   class Repository
 
+    #
     def initialize(opts={})
       opts = OpenStruct.new(opts)
       @path   = opts.path
@@ -11,6 +15,7 @@ module Smeagol
       @ref    = opts.ref || opts.tag || opts.branch || 'master'
       @bare   = opts.bare
       @secret = opts.secret
+      @cname  = opts.cname
     end
 
     #
@@ -25,12 +30,6 @@ module Smeagol
     # for GitHub projects using `gh-pages`. Default is `master`.
     attr_accessor :ref
 
-    # Passcode, if needed to interact with repo.
-    attr_accessor :secret
-
-    # Is the repository bare?
-    attr_accessor :bare
-
     # Alias for #ref.
     alias tag ref
     alias tag= ref=
@@ -39,6 +38,16 @@ module Smeagol
     alias branch ref
     alias branch= ref=
 
+    # Passcode, if needed to interact with repo.
+    attr_accessor :secret
+
+    # Is the repository bare?
+    attr_accessor :bare
+
+    #
+    attr_accessor :cname
+
+    #
     def repo
       @repo ||= Grit::Repo.new(path, :is_bare=>bare)
     end
@@ -47,6 +56,9 @@ module Smeagol
     def pull
       repo.git.pull({}, 'origin', branch)
     end
+
+    #
+    alias :update :pull
 
     # Clone repo to path.
     def clone
