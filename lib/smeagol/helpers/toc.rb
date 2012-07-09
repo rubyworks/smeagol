@@ -8,8 +8,9 @@ module Smeagol
   class TOC
 
     #
-    def initialize(wiki, options={})
-      @wiki    = wiki
+    def initialize(ctrl, options={})
+      @ctrl    = ctrl
+      @wiki    = ctrl.wiki
       @version = options[:version] || 'master' 
       @pages   = options[:pages]
 
@@ -47,16 +48,21 @@ module Smeagol
 
     #
     def pages
-      @pages ||= (
-        @wiki.pages.map do |page|
-          if page.post?
-            Smeagol::Views::Post.new(page)
-          else
-            Smeagol::Views::Page.new(page)
-          end
-        end
-      )
+      @ctrl.views(@version).reject{ |v| Smeagol::Views::Form === v }
     end
+
+    #
+    #def pages
+    #  @pages ||= (
+    #    @wiki.pages.map do |page|
+    #      if page.post?
+    #        Smeagol::Views::Post.new(page)
+    #      else
+    #        Smeagol::Views::Page.new(page)
+    #      end
+    #    end
+    #  )
+    #end
 
   end
 

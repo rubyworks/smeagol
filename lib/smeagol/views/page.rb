@@ -34,6 +34,11 @@ module Smeagol
 
       # Public: The last edit date of this page.
       def date
+        post_date || metadata['date'] || commit_date
+      end
+
+      # Public: The last edit date of this page.
+      def commit_date
         page.version.authored_date.strftime("%B %d, %Y")
       end
 
@@ -51,7 +56,7 @@ module Smeagol
         if dir != '.'
           ::File.join(dir, name, 'index.html')
         else
-          if name == @wiki.settings.index #|| 'Home'
+          if name == settings.index #|| 'Home'
             'index.html'
           else
             ::File.join(name, 'index.html')

@@ -12,17 +12,30 @@ module Smeagol
     class Base < ::Mustache
       # Initializes a new mustache view template data object.
       #
+      # master  - Master controller, which creates all the views.
       # page    - The individual wiki page that this view represents.
       # version - The tagged version of the page.
       #
       # Returns a new page object.
-      def initialize(file, version='master')
+      def initialize(master, file, version='master')
+        @master  = master
         @file    = file
         @wiki    = file.wiki
         @version = version || 'master'
 
+        setup_template_path
+      end
+
+      # The Gollum::Wiki that this view represents.
+      attr_reader :wiki
+      
+      # The tagged version that is being viewed.
+      attr_reader :version
+
+      #
+      def setup_template_path
         # See FAQ for Views::Base class
-        dir = ::File.join(wiki.path, wiki.settings.template_dir)
+        dir = ::File.join(wiki.path, settings.template_dir)
         if ::File.directory?(dir)
           self.class.template_path = dir
         else
@@ -48,23 +61,23 @@ module Smeagol
 
       # Public: The title of the wiki. This is set in the settings file.
       def wiki_title
-        wiki.settings.title
+        settings.title
       end
       
       # Public: The tagline for the wiki. This is set in the settings file.
       def tagline
-        wiki.settings.tagline
+        settings.tagline
       end
       
       # Public: The URL of the project source code. This is set in the settings
       # file.
       def source_url
-        wiki.settings.source_url
+        settings.source_url
       end
 
       # Public: The Google Analytics tracking id from the settings file.
       def tracking_id
-        wiki.settings.tracking_id
+        settings.tracking_id
       end
 
       # Public: The HTML menu generated from the settings.yml file.
@@ -103,48 +116,25 @@ module Smeagol
         wiki.base_path
       end
 
-      # Collect list of viewable pages.
-      #
-      # TODO: exlcusion/inclusion matching might need tweaking.
-      #
+      # List of posts.
       def posts
-        @posts ||= (
-          filter(@wiki.pages){ |p| p.post? }.map do |page|
-            Smeagol::Views::Post.new(page, @version)
-          end
-        )
+        @posts ||= @master.posts
+        #@posts ||= (
+        #  filter(@wiki.pages){ |p| p.post? }.map do |page|
+        #    Smeagol::Views::Post.new(page, @version)
+        #  end
+        #)
       end
-
-      # Get the layout template for the view.
-      def layout
-        return nil if custom_layout? && !custom_layout
-        custom_layout || standard_layout || default_layout
-      end
-
-      #  P R O T E C T E D   M E T H O D S
-      
-      #protected
-      
-      # The Gollum::Wiki that this view represents.
-      attr_reader :wiki
-      
-      # The tagged version that is being viewed.
-      attr_reader :version
-      
-
-      #  P R I V A T E   M E T H O D S
-
-      private
 
       #
       def filter(paths, &selection)
         result = []
         paths.map do |file|
-          unless @wiki.settings.include.any?{ |x| File.fnmatch?(x, file.path) }
+          unless settings.include.any?{ |x| File.fnmatch?(x, file.path) }
             next if file.path.split('/').any? do |x|
               x.start_with?('_') or x.start_with?('.')
             end
-            next if @wiki.settings.exclude.any?{ |x| File.fnmatch?(x, file.path) }
+            next if settings.exclude.any?{ |x| File.fnmatch?(x, file.path) }
           end
           result << file
         end
@@ -176,6 +166,12 @@ module Smeagol
       #  slug
       #end
 
+      # Get the layout template for the view.
+      def layout
+        return nil if custom_layout? && !custom_layout
+        custom_layout || standard_layout || default_layout
+      end
+
       # Does the metadata specify a custom layout?
       def custom_layout?
         metadata.key?('layout')
@@ -202,7 +198,7 @@ module Smeagol
         end
         return layout
         #names.each do |name|
-        #  file = "#{@wiki.path}/#{@wiki.settings.layout_dir}/#{name}.mustache"
+        #  file = "#{@wiki.path}/#{settings.layout_dir}/#{name}.mustache"
         #  if ::File.exists?(file)
         #    return IO.read(file)
         #  end
@@ -225,9 +221,18 @@ module Smeagol
       end
 
       #
+      def settings
+        @master.settings
+      end
+
+      # Embedded metadata. 
+      #
+      # TODO: Can use file.metadata in future version of Gollum.
+      #
+      # Returns [Hash] of metadata.
       def metadata
         @metadata ||= (
-          if md = /\<\!---(.*?)--\>\s*\Z/m.match(content)
+          if md = /\<\!\-\-\-(.*?)\-{2,3}\>\s*\Z/m.match(content)
             YAML.load(md[1])
           else
             {}

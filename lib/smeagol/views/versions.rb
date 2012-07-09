@@ -1,11 +1,18 @@
 module Smeagol
   module Views
     class Versions < Base
-      # Public: The title of the wiki. This is set in the settings file.
-      def wiki_title
-        wiki.settings.title
+      # Initializes a new mustache view template data object.
+      #
+      # master - Master controller, which creates all the views.
+      #
+      # Returns a new page object.
+      def initialize(master)
+        @master  = master
+        @wiki    = master.wiki
+
+        setup_template_path
       end
-      
+
       # Public: The HTML formatted content of the page.
       def content
         html = "<a href=\"/\">Current</a><br/>"
@@ -18,8 +25,14 @@ module Smeagol
       # Public: The URL of the project source code. This is set in the settings
       # file.
       def source_url
-        wiki.settings.source_url
+        settings.source_url
       end
+
+      # TODO: Allow customization ?
+      def layout
+        IO.read(LIBDIR + "/templates/versions.mustache")
+      end
+
     end
   end
 end

@@ -8,8 +8,9 @@ module Smeagol
     #
     # Initialize a new Smeagol::RSS instance.
     #
-    def initialize(wiki, options={})
-      @wiki    = wiki
+    def initialize(ctrl, options={})
+      @ctrl    = ctrl
+      @wiki    = ctrl.wiki
       @version = options[:version] || 'master'
       @posts   = options[:posts]
     end
@@ -81,12 +82,13 @@ module Smeagol
 
     #
     def posts
-      @posts ||= (
-        @wiki.pages.map do |page|
-          next unless page.post?
-          Smeagol::Views::Post.new(page)
-        end.compact
-      )
+      @ctrl.views(@version).select{ |p| p.post? }
+      #@posts ||= (
+      #  @wiki.pages.map do |page|
+      #    next unless page.post?
+      #    Smeagol::Views::Post.new(@ctrl, page)
+      #  end.compact
+      #)
     end
 
   end

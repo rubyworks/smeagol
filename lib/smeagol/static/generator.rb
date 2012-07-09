@@ -17,18 +17,18 @@ module Smeagol
       attr_reader :controller
 
       #
-      def views
-        controller.views
-      end
-
-      #
-      def assets
-        controller.assets
-      end
-
-      #
       def settings
         controller.settings
+      end
+
+      #
+      def wiki_files
+        controller.wiki_files
+      end
+
+      #
+      def wiki_assets
+        controller.assets
       end
 
       #
@@ -46,37 +46,23 @@ module Smeagol
         save_rss if settings.rss
         save_toc
 
-        views.each do |view|
-          content = controller.render_view(view)
-          path = ::File.join(@dir, view.href)
-          write(path, content)
+        wiki_files.each do |file|
+          if view = controller.view(file)
+            data = controller.render_view(view)
+            path = ::File.join(@dir, view.href)
+            write(path, data)
+          else
+            data = file.raw_data
+            path = ::File.join(@dir, file.path)
+            write(path, data)
+          end
         end
 
-        assets.each do |file|
-          content = ::File.read(::File.join(wiki.path, file))
-          path    = ::File.join(@dir, file)
-          write(path, content)
+        wiki_assets.each do |file|
+          data = ::File.read(::File.join(wiki.path, file))
+          path = ::File.join(@dir, file)
+          write(path, data)
         end
-
-        #pages.each do |page|
-        #  #html = Mustache.render(template(page, :page), page)  # page.gollum_page)
-        #  view, content = controller.render_page(page)
-        #  path = File.join(@dir, view.href)
-        #  write(path, content)
-        #end
-
-        #posts.each do |post|
-        #  #html = Mustache.render(template(post, :post), post)  # page.gollum_page)
-        #  view, content = controller.render_post(post)
-        #  path = File.join(@dir, view.href)
-        #  write(path, content)         
-        #end
-
-        #files.each do |file|
-        #  view, content = controller.render_file(file)
-        #  path = File.join(@dir, view.href)
-        #  write(path, content)
-        #end
       end
 
     private
@@ -163,14 +149,14 @@ module Smeagol
 
       # Save tab le of contents.
       def save_toc
-        toc  = TOC.new(@wiki)
+        toc  = TOC.new(@controller)
         file = File.join(@dir, 'toc.json')
         write(file, toc)
       end
 
       # Generate RSS feed from post pages and save.
       def save_rss
-        rss = RSS.new(@wiki)
+        rss = RSS.new(@controller)
         file = File.join(@dir, 'rss.xml')
         write(file, rss)
       end

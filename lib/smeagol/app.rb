@@ -30,7 +30,9 @@ module Smeagol
     # Lists the tagged versions of the repo.
     get '/versions' do
       wiki = Smeagol::Wiki.new(repository.path, {:base_path => mount_path})
-      Mustache.render(get_template('versions'), Smeagol::Views::Versions.new(wiki))
+      ctrl = Smeagol::Controller.new(wiki)
+      view = Smeagol::Views::Versions.new(ctrl)
+      Mustache.render(view.layout, view)
     end
 
     # Assets are alwasy served unversioned directly from the file system
@@ -45,17 +47,16 @@ module Smeagol
 
     # All other resources go through Gollum.
     get '/*' do
+      wiki  = Smeagol::Wiki.new(repository.path, {:base_path => mount_path})
+      cache = Smeagol::Cache.new(wiki)
+      ctrl  = Smeagol::Controller.new(wiki) # settings)
+
       name, version, tag_name = parse_params(params)
 
-      name = "Home" if name == ""   # TODO wiki.settings.index instead of 'Home'
+      name = (ctrl.settings.index || "Home") if name == ""
       name = name.gsub(/\/+$/, '')
       name = sanitize_path(name)
       file_path = "#{repository.path}/#{name}"
-      
-      wiki  = Smeagol::Wiki.new(repository.path, {:base_path => mount_path})
-      cache = Smeagol::Cache.new(wiki)
-
-      controller = Controller.new(wiki) # settings)
 
       # First check the cache
       if settings.cache_enabled && cache.cache_hit?(name, version)
@@ -63,26 +64,26 @@ module Smeagol
       # Then try to create the wiki page
       elsif page = wiki.page(name, version)
         if page.post?
-          content = controller.render(page, version)
+          content = ctrl.render(page, version)
         else
-          content = controller.render(page, version)
+          content = ctrl.render(page, version)
         end
         cache.set_page(name, page.version.id, content) if settings.cache_enabled
         content
       # If it is not a wiki page then try to find the file
       elsif file = wiki.file(name+'.mustache', version)
-        content = controller.render(file, version)
+        content = ctrl.render(file, version)
         cache.set_page(name, file.version.id, content) if settings.cache_enabled
         content
       # Smeagol can create an RSS feed automatically.
       elsif name == 'rss.xml'
-        rss = RSS.new(wiki, :version=>version)
+        rss = RSS.new(ctrl, :version=>version)
         content = rss.to_s
         content_type 'application/rss+xml' 
         content
       # Smeagol can create a JSON-formatted table of contents.
       elsif name == 'toc.json'
-        toc = TOC.new(wiki, :version=>version)
+        toc = TOC.new(ctrl, :version=>version)
         content = toc.to_s
         content_type 'application/json'
         content
@@ -131,7 +132,10 @@ module Smeagol
       return name, version, tag_name
     end
 
+=begin
     # The Mustache template to use for page rendering.
+    #
+    # TODO: Get layout from controller instance instead.
     #
     # name - The name of the template to use.
     #
@@ -145,6 +149,7 @@ module Smeagol
         IO.read(::File.join(::File.dirname(__FILE__), "templates/#{name}.mustache"))
       end
     end
+=end
 
     # Retrieves the mime type for a filename based on its extension.
     #
@@ -194,10 +199,10 @@ module Smeagol
       path.gsub(/\.\.(?=$|\/)/, '') unless path.nil?
     end
 
-    #
-    def layout_dir
-      wiki.settings.layout_dir
-    end
+    ##
+    ##def layout_dir
+    ##  wiki.settings.layout_dir
+    ##end
 
   end
 

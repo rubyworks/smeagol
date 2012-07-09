@@ -35,7 +35,7 @@ module Smeagol
         if dir != '.'
           ::File.join(dir, name.chomp(ext)) #file.path) 
         else
-          if name == @wiki.settings.index #|| 'Home'
+          if name == settings.index #|| 'Home'
             'index.html'
           else
             name.chomp(ext) #file.path

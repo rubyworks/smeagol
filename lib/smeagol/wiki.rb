@@ -3,8 +3,7 @@ module Smeagol
   # Subclass of Gollum::Wiki.
   #
   # TODO: Techincailly this is probably not needed. Presently it only adds
-  #       two methods, both of which can be placed elsewhere, albeit #settings
-  #       will take some work to move.
+  #       one methods.
   #
   class Wiki < Gollum::Wiki
 
@@ -14,18 +13,6 @@ module Smeagol
     self.default_committer_name  = 'Anonymous'
     self.default_committer_email = 'anon@anon.com'
     self.default_ws_subs = ['_','-']
-
-    # TODO: Change update method to raise errors if something goes wrong instead
-    #       of returning a status?     
-
-    # Public: Updates the wiki repository.
-    #
-    # Returns true if successful. Otherwise returns false.
-    #def update
-    #  git    = ENV['git'] || ENV['GIT'] || 'git'
-    #  output = `cd #{path} && #{git} pull origin master 2>/dev/null`
-    #  return $? == 0
-    #end
 
     # Public: The Smeagol wiki settings. These can be found in the _settings.yml
     # file at the root of the repository.
