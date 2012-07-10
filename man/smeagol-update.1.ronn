@@ -1,0 +1,22 @@
+smeagol-update(1) - update wiki and/or site git repositories
+============================================================
+
+## SYNOPSIS
+
+`smeagol update [options]`
+
+## DESCRIPTION
+
+Uses git to pull updates from wiki repo and update or \n" +
+clone static site repo if designated in settings.\n\n"
+
+## OPTIONS
+
+  * `-d`, `--dir <DIR>`
+    Designate an alternate site directory where static
+    rendition of the website will be built. By default
+    this is `public` but can also be change in `settings.yml`.
+
+## SEE ALSO
+
+smeagol(1), smeagol-build(1), git(1)

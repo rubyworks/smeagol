@@ -1,0 +1,28 @@
+smeagol-build(1) - build static rendition of website
+====================================================
+
+## SYNOPSIS
+
+`smeagol build [options]`
+
+## DESCRIPTION
+
+Builds a static version of the website.
+
+## OPTIONS
+
+  * `-d`, `--dir <DIR>`
+    Designate an alternate site directory where static
+    rendition of the website will be built. By default
+    this is `public` but can also be change in `settings.yml`.
+
+  * `-u`, `--update`
+    Run update before performing build.
+
+  * `--force`
+    Force static mode, even though settings.yml is not set
+    as such.
+
+## SEE ALSO
+
+smeagol(1), smeagol-update(1)

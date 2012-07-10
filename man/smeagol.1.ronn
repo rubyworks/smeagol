@@ -1,0 +1,37 @@
+smeagol(1) - main command for smeagol utilities
+===============================================
+
+## SYNOPSIS
+
+Smeagol is a read-only Gollum server and static site generator.
+It can be used to serve Gollum wiki files with a customized 
+look and feel, either directly from the wiki files or by
+generating a set of static files for doing so.
+
+## COMMANDS
+
+The smeagol command line tool has a number of tools for setting-up,
+previewing, building and serving a Gollum wiki.
+
+  * `init`
+    Copy default set of file to wiki repo needed to customize
+    a site to desired look and feel.
+
+  * `preview`
+    Preview website. If static mode, serves static files, otherwise
+    it serves the wiki directly via git.
+
+  * `update`
+    Update wiki repo and static site repo (if setup in settings).
+
+  * `build`
+    Build static website.
+
+  * `serve`
+    Serve multiple repositories using cname configuration.
+    If no configuration found works like preview.
+
+## SEE ALSO
+
+smeagol-preview(1), smeagol-update(1), smeagol-build(1), smeagold(1) 
+
