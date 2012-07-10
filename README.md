@@ -2,7 +2,7 @@ Smeagol - A Read-Only Gollum Server
 ===================================
 
 [Website](http://rubyworks.github.com/smeagol) /
-[Documentation](http://rubydoc.info/rubyworks/smeagol)
+[Documentation](http://rubydoc.info/rubyworks/smeagol) /
 [Source Code](http://github.com/rubyworks/smeagol) /
 [Report Issue](http://github.com/rubyworks/smeagol/issues)
 
@@ -10,9 +10,13 @@ Smeagol - A Read-Only Gollum Server
 ## DESCRIPTION
 
 Smeagol is a server that can run a read-only version of a
-[Gollum](http://github.com/github/gollum) wiki. This can be useful when you want
-to maintain a standalone copy of a Github wiki but you want to update it through
-the Github interface.
+[Gollum](http://github.com/github/gollum) wiki, or a static
+site generator that can convert you Gollum wiki into a static
+website to be served by any hosting service. 
+
+This can be useful when you want to maintain a standalone website,
+but you want to update it through the Gollum wiki interface,
+e.g. via GitHub.
 
 Smeagol follows the rules of [Semantic Versioning](http://semver.org/) and uses
 [TomDoc](http://tomdoc.org/) for inline documentation.
@@ -60,7 +64,7 @@ use to configure smeagol for your site. See SETTINGS below.
 
 There will also be a file called `_Layout.html`. Using Mustache templating
 use this file to create a custom page layout for your site. To learn more
-about the varaibles available for use in this template see
+about the variables available for use in this template see
 the [Smeagol Wiki](http://github.com/rubyworks/smeagol/wiki).
 
 Be sure to add these files to your repo and commit them. (You can just check
@@ -70,7 +74,7 @@ wiki in any way.)
 
 ## SETTINGS
 
-The `settings.yml` file allows you to confgure certain behaviors of Smeagol.
+The `settings.yml` file allows you to configure certain behaviors of Smeagol.
 An example `settings.yml` file:
 
     ---
@@ -90,7 +94,7 @@ An example `settings.yml` file:
     - title: Projects
       href: "http://github.com/trans"
 
-Probably the most important feild is `static`. By setting this to `public`, we inform
+Probably the most important field is `static`. By setting this to `public`, we inform
 Smeagol that we deploying a static site and the static files are to be saved in 'public/`
 directory.
 
