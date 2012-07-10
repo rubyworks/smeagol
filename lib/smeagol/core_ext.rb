@@ -10,4 +10,3 @@ class OpenStruct
   end
 end
 
-require 'facets/hash/rekey'

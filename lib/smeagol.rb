@@ -47,7 +47,7 @@ require 'ostruct'
 require 'yaml'
 
 require 'smeagol/version'
-require 'smeagol/core_ext/ostruct'
+require 'smeagol/core_ext'
 
 # gollum plugins, can be removed when new version of Gollum is out.
 require 'smeagol/gollum/wiki'
@@ -67,7 +67,7 @@ require 'smeagol/views/base'
 require 'smeagol/views/page'
 require 'smeagol/views/post'
 require 'smeagol/views/form'
-require 'smeagol/views/file'
+#require 'smeagol/views/file'
 require 'smeagol/views/versions'
 
 require 'smeagol/helpers/rss'
