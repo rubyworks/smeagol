@@ -22,8 +22,8 @@ qedoc:
 qed:
   active: true
 
-rubytest:
-  active: true
+#rubytest:
+#  active: true
 
 dnote:
   labels   : ~
