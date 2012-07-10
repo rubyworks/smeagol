@@ -1,8 +1,8 @@
 # Update load path
 #$:.unshift(File.expand_path(File.dirname(__FILE__) + '/../../lib'))
 
-require 'rack/test'
 require 'smeagol'
+require 'rack/test'
 
 # TODO: Use Grit instead of shell.
 def test_wiki

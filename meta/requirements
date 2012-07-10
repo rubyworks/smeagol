@@ -3,8 +3,9 @@
 - gollum 1.3+
 - sinatra 1.0~
 - daemons 1.1~
-- citron   (development test)
-- ae       (develpoment test)
+- citron    (development test)
+- ae        (develpoment test)
+- rack-test (development test)
 #- mocha    (development test)
 #- capybara (development test)
 

@@ -16,15 +16,11 @@ requirements:
 - name: rack
   version: 1.2~
 - name: gollum
-  version: 1.3~
+  version: 1.3+
 - name: sinatra
   version: 1.0~
 - name: daemons
   version: 1.1~
-- name: rake
-  groups:
-  - development
-  development: true
 - name: citron
   groups:
   - development
@@ -33,6 +29,11 @@ requirements:
 - name: ae
   groups:
   - develpoment
+  - test
+  development: true
+- name: rack-test
+  groups:
+  - development
   - test
   development: true
 dependencies: []
