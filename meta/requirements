@@ -6,6 +6,8 @@
 - citron    (development test)
 - ae        (develpoment test)
 - rack-test (development test)
+- rdiscount (development doc)
+
 #- mocha    (development test)
 #- capybara (development test)
 

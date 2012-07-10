@@ -36,6 +36,11 @@ requirements:
   - development
   - test
   development: true
+- name: rdiscount
+  groups:
+  - development
+  - doc
+  development: true
 dependencies: []
 alternatives: []
 conflicts: []
