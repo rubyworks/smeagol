@@ -10,24 +10,21 @@ module Smeagol
     def init(argv)
       parser.banner = "usage: smeagol init [OPTIONS] [WIKI-URI]"
 
-      #parser.on('-b', '--build-dir [DIRECTORY]') do |dir|
-      #  options[:build_dir] = dir
-      #end
-
       parser.on('--static', 'Static mode site?') do
         options['static'] = true
       end
 
-      parser.on('--git [GIT]', 'Path to Git binary.') do |path|
-        options['git'] = path
-      end
+      #parser.on('-b', '--build-dir [DIRECTORY]') do |dir|
+      #  options[:build_dir] = dir
+      #end
 
       # TODO: support more settings options for creating setup
 
       Console.init(*parse(argv))
     end
 
-    #
+    # Preview site. If in static mode this will preview static build,
+    # otherwise it will serve the Gollum pages directory.
     def preview(argv)
       if static?(argv)
         preview_static(argv)
@@ -156,25 +153,21 @@ module Smeagol
         options[:port] = port.to_i
       end
 
-      #parser.on('--auto-update', 'Updates the repository on a daily basis.') do |flag|
-      #  options[:auto_update] = flag
-      #end
-
       parser.on('--[no-]cache', 'Enables page caching.') do |flag|
         options[:cache] = flag
-      end
-
-      parser.on('--secret [KEY]', 'Specifies the secret key used to update.') do |str|
-        options[:secret] = str
       end
 
       parser.on('--mount-path', 'Serve website from this base path.') do |path|
         options[:mount_path] = path
       end
 
-      parser.on('--git [GIT]', 'Path to Git binary.') do |path|
-        options[:git] = path
-      end
+      #parser.on('--auto-update', 'Updates the repository on a daily basis.') do |flag|
+      #  options[:auto_update] = flag
+      #end
+
+      #parser.on('--secret [KEY]', 'Specifies the secret key used to update.') do |str|
+      #  options[:secret] = str
+      #end
 
       repository = {}
       repository[:path]   = argv.first || Dir.pwd
@@ -190,7 +183,7 @@ module Smeagol
 
     # Serve all Gollum repositories as setup in Smeagol config.
     # This can be used to serve sites in production. It makes use
-    # cnames to serve multiple sites via a single domain.
+    # of cnames to serve multiple sites via a single domain.
     #
     # Returns nothing.
     def serve(argv)
@@ -206,10 +199,6 @@ module Smeagol
         options[:port] = port.to_i
       end
 
-      parser.on('--auto-update', 'Updates the repository on a daily basis.') do |flag|
-        options[:auto_update] = flag
-      end
-
       parser.on('--[no-]cache', 'Enables page caching.') do |flag|
         options[:cache] = flag
       end
@@ -218,15 +207,30 @@ module Smeagol
         options[:mount_path] = path
       end
 
-      parser.on('--secret [KEY]', 'Specifies the secret key used to update.') do |str|
+      parser.on('--auto-update', 'Updates the repository on a daily basis.') do |flag|
+        options[:auto_update] = flag
+      end
+
+      parser.on('--secret [KEY]', 'Specifies the secret key, if needed to update.') do |str|
         options[:secret] = str
       end
 
-      parser.on('--git [GIT]', 'Path to Git binary.') do |path|
-        options[:git] = path
+      Console.serve(*parse(argv))
+    end
+
+    # Update wiki repo and update/clone static site repo, if designated
+    # by settings.
+    #
+    # Returns nothing.
+    def update(argv)
+      parser.banner = "Usage: smeagol update [OPTIONS]\n\n"
+
+      parser.on('-d', '--dir DIR', 'alternate static site directory') do |dir|
+        dir = nil if %w{false nil ~}.include?(dir)  # TODO: better approach? 
+        options[:site_dir] = dir
       end
 
-      Console.serve(*parse(argv))
+      Console.update(*parse(argv))
     end
 
     # Build a static site.
@@ -239,63 +243,16 @@ module Smeagol
         options[:force] = true
       end
 
-      parser.on('-u', '--update', 'update wiki repo before build') do
+      parser.on('-u', '--update', 'run update before build') do
         options[:update] = true
       end
 
-      parser.on('-d', '--dir DIR', 'alternate build directory') do |dir|
+      parser.on('-d', '--dir DIR', 'alternate static site directory') do |dir|
         dir = nil if %w{false nil ~}.include?(dir)  # TODO: better approach? 
-        options[:build_dir] = dir
+        options[:dir] = dir
       end
 
       Console.build(*parse(argv))
-    end
-
-    # Update/clone site repo.
-    #
-    # Returns nothing.
-    def update(argv)
-      parser.banner = "Usage: smeagol update [OPTIONS]"
-
-      #parser.on('--force', 'force even if not static mode') do
-      #  options[:force] = true
-      #end
-
-      parser.on('-d', '--dir DIR', 'alternate site directory') do |dir|
-        dir = nil if %w{false nil ~}.include?(dir)  # TODO: better approach? 
-        options[:site_dir] = dir
-      end
-
-      Console.update(*parse(argv))
-    end
-
-    # Use rsync to update the site directory from the build directory.
-    #
-    # Returns nothing.
-    def sync(argv)
-      parser.banner = "usage: smeagol sync [OPTIONS]"
-
-      parser.on('--force', 'force static mode') do
-        options[:force] = true
-      end
-
-      parser.on('-b', '--build', 'perform build before sync') do
-        options[:build] = true
-      end
-
-      parser.on('--build-dir [DIRECTORY]', 'use alternate build directory') do
-        options[:build_dir] = dir
-      end
-
-      parser.on('-s', '--site-dir [DIRECTORY]', 'sync to specifed directory') do |dir|
-        options[:site_dir] = dir
-      end
-
-      parser.on('-u', '--update', 'Update site repo before sync, will clone if not present.') do
-        options[:update] = true
-      end
-
-      Console.sync(*parse(argv))
     end
 
   private
@@ -335,7 +292,7 @@ module Smeagol
           exit 0
         end
         parser.on_tail('-h', '-?', '--help', 'Display this help screen.') do
-          puts self
+          puts parser
           exit 0
         end
         parser

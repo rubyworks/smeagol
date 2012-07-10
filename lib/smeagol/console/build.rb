@@ -54,7 +54,7 @@ module Smeagol
         if settings.sync_script
           tmpdir
         else
-          settings.static_path
+          static_path
         end
       end
 
