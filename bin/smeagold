@@ -9,6 +9,8 @@
 #       instead.
 
 require 'daemons'
-filename = File.expand_path('smeagol-run', File.dirname(__FILE__))
-Daemons.run(filename)
+Daemons.run_proc(File.basename(__FILE__)) do
+  require 'smeagol'
+  Smeagol::CLI.serve(argv)
+end
 

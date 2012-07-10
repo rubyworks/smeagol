@@ -1,8 +1,8 @@
 #!/usr/bin/env ruby
 
 def self.main(argv)
-  commands = %w{help init build sync preview update server serve}
-  command = commands.include?(argv.first) ? argv.shift : 'server'
+  commands = %w{help init build sync preview update serve}
+  command = commands.include?(argv.first) ? argv.shift : 'preview'
 
   case command
   when 'help'
@@ -29,19 +29,9 @@ def self.main(argv)
   when 'preview'
     require 'smeagol'
     Smeagol::CLI.preview(argv)   
-  when 'server', 'serve'
-    # TODO: make daemon the default (once it actually works)?
-    if ARGV.include?('-d')
-      ARGV.delete('-d')
-      require 'daemons'
-      Daemons.run_proc(File.basename(__FILE__)) do
-        require 'smeagol'
-        Smeagol::CLI.serve(argv)
-      end
-    else
-      require 'smeagol'
-      Smeagol::CLI.serve(argv)
-    end
+  when 'serve'
+    require 'smeagol'
+    Smeagol::CLI.serve(argv)
   end
 end
 
