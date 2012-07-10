@@ -1,4 +1,37 @@
 ---
+email:
+  mailto  : 
+    - ruby-talk@ruby-lang.org
+    - rubyworks-mailinglist@google.groups.com
+  file    : ~
+  subject : ~
+
 github:
   folder: web
+
+gem:
+  active : true
+
+qedoc:
+  files: demo
+  title: "Smeagol Demonstrations"
+  output:
+    - DEMO.md
+    #- web/demo.html
+
+qed:
+  active: true
+
+rubytest:
+  active: true
+
+dnote:
+  labels   : ~
+  output   : log/notes.html
+
+vclog:
+  active: false
+  output:
+    ~ log/changes.html
+    - lob/history.html
 
