@@ -199,11 +199,6 @@ module Smeagol
       path.gsub(/\.\.(?=$|\/)/, '') unless path.nil?
     end
 
-    ##
-    ##def layout_dir
-    ##  wiki.settings.layout_dir
-    ##end
-
   end
 
 end
