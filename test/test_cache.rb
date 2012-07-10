@@ -1,32 +1,32 @@
 require 'helper'
 require 'fileutils'
 
-class CacheTestCase < MiniTest::Unit::TestCase
-  def setup
-    @wiki = Smeagol::Wiki.new(ENV['SMEAGOL_TEST_WIKI_PATH'])
+testcase Smeagol::Cache do
+  setup do
+    @wiki = Smeagol::Wiki.new(test_wiki)
     @cache = Smeagol::Cache.new(@wiki)
     @cache.clear()
   end
 
-  def test_should_show_cache_hit
+  test 'should show cache hit' do
     @cache.set_page('Home', 'master', 'abc')
     assert @cache.cache_hit?('Home')
   end
   
-  def test_should_show_cache_miss
+  test 'should show cache miss' do
     assert !@cache.cache_hit?('Home')
   end
 
-  def test_should_show_cache_miss_for_nonexistent_page
+  test 'should show cache miss for nonexistent_page' do
     assert !@cache.cache_hit?('THIS_IS_NOT_A_PAGE!')
   end
 
-  def test_should_cache_page
+  test 'should cache page' do
     @cache.set_page('Home', 'master', 'abc')
-    assert_equal 'abc', @cache.get_page('Home')
+    @cache.get_page('Home').assert == 'abc'
   end
 
-  def test_should_remove_cache
+  test 'should remove cache' do
     @cache.set_page('Home', 'master', 'abc')
     @cache.remove_page('Home')
     assert !@cache.cache_hit?('Home')

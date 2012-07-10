@@ -1,6 +1,7 @@
 require 'helper'
 
-class FileTestCase < MiniTest::Unit::TestCase
+testcase File do
+
   def test_sanitize_should_remove_parent_refs
     assert_equal '/', File.sanitize_path('../')
     assert_equal '/', File.sanitize_path('/..')

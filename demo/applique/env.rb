@@ -7,12 +7,13 @@ require 'smeagol'
 # TODO: Use Grit instead of shell.
 def test_wiki
   @__test_wiki__ ||= (
-    if ::File.directory?('smeagol-test/.git')
-      system "cd #{test_wiki}; git reset --hard"
+    directory = 'smeagol-test'
+    if ::File.directory?("#{directory}/.git")
+      #system "cd #{directory} && git reset --hard"
     else
       system "git clone https://github.com/rubyworks/smeagol-test.git"
     end
-    'smeagol-test'
+    directory
   )
 end
 
