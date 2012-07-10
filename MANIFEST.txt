@@ -50,4 +50,5 @@ test/test_cache.rb
 test/test_wiki.rb
 HISTORY.md
 README.md
+DEMO.md
 LICENSE.txt
