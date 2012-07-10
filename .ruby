@@ -1,6 +1,6 @@
 ---
 source:
-- var
+- meta
 authors:
 - name: Ben Johnson
   email: benbjohnson@yahoo.com
@@ -19,37 +19,20 @@ requirements:
   version: 1.3~
 - name: sinatra
   version: 1.0~
-- name: OptionParser
-  version: 0.5~
 - name: daemons
   version: 1.1~
 - name: rake
   groups:
   - development
   development: true
-- name: minitest
+- name: citron
   groups:
   - development
   - test
   development: true
-- name: mocha
+- name: ae
   groups:
-  - development
-  - test
-  development: true
-- name: cucumber
-  groups:
-  - development
-  - test
-  development: true
-- name: rspec
-  groups:
-  - development
-  - test
-  development: true
-- name: capybara
-  groups:
-  - development
+  - develpoment
   - test
   development: true
 dependencies: []
@@ -77,11 +60,11 @@ extra: {}
 load_path:
 - lib
 revision: 0
+name: smeagol
+title: Semagol
 created: '2010-08-16'
 summary: Wiki Cum Website
-title: Semagol
-version: 0.6.0
-name: smeagol
 description: Smeagol is a server that can run a read-only version of a Gollum wiki.
 organization: rubyworks
-date: '2012-06-12'
+version: 0.6.0
+date: '2012-07-10'
