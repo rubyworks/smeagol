@@ -140,7 +140,9 @@ or fix a bug. There are a couple things I ask:
 * Create an appropriately named topic branch that contains your change.
 * Please try to provide tests for all code you check in.
 
-Note that Smeagol uses QED, Citron and AE for testing.
+Note that Smeagol uses QED, Citron and AE for testing. And admittedly the project
+is water-falling too much at present. So if you would like to contribute, but
+don't have any specific request, writing a few tests would be a great help.
 
 
 ## COPYRIGHTS
