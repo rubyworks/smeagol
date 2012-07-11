@@ -21,7 +21,7 @@ module Smeagol
           @clone = true
         else
           @wiki_dir = Dir.pwd
-          @wiki_url = wiki(@wiki_dir).repo.config['remote.origin.url']
+          @wiki_url = wiki.repo.config['remote.origin.url']
           @clone = false
         end
       end
@@ -96,7 +96,7 @@ module Smeagol
 
       #
       def save_settings
-        file = File.join(wiki_dir, "_settings.yml")
+        file = File.join(wiki_dir, "settings.yml")
         text = Mustache.render(settings_template, settings) 
         File.open(file, 'w') do |f|
           f.write(text)
