@@ -17,9 +17,9 @@ def test_wiki
   )
 end
 
-$stderr.puts "-" * 40
+$stderr.puts "-" * 50
 test_wiki
-$stderr.puts "-" * 40
+$stderr.puts "-" * 50
 $stderr.puts
 
 Smeagol::App.set :environment, :test
