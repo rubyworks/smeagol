@@ -35,11 +35,11 @@ module Smeagol
       #
       def setup_template_path
         # See FAQ for Views::Base class
-        dir = ::File.join(wiki.path, settings.template_dir)
+        dir = ::File.join(wiki.path, settings.partials)
         if ::File.directory?(dir)
           self.class.template_path = dir
         else
-          self.class.template_path = ::File.join(LIBDIR, 'templates')
+          self.class.template_path = ::File.join(LIBDIR, 'partials')
         end
       end
 
@@ -55,9 +55,6 @@ module Smeagol
       def name
         file.name
       end
-
-      # The Gollum::Wiki.
-      attr_reader :wiki
 
       # Public: The title of the wiki. This is set in the settings file.
       def wiki_title
@@ -92,7 +89,7 @@ module Smeagol
             else
               prefix = ""
             end
-            html << "<li><a href=\"#{prefix}#{href}\">#{title}</a></li>\n"
+            html << "<li class=\"minibutton\"><a href=\"#{prefix}#{href}\">#{title}</a></li>\n"
           end
           html << "</ul>\n"
         end
@@ -126,6 +123,7 @@ module Smeagol
         #)
       end
 
+=begin
       #
       def filter(paths, &selection)
         result = []
@@ -141,6 +139,7 @@ module Smeagol
         result = result.select(&selection)
         result
       end
+=end
 
       # Generates the correct ribbon url
       def ribbon_url(name, pos)
@@ -187,13 +186,14 @@ module Smeagol
       # Returns the content of the specified template file in the
       # wiki repository if it exists. Otherwise, it returns `nil`.
       def standard_layout
-        name   = metadata['layout'] || '_Layout.html'
-        dir    = ::File.dirname(file.path)
+        name   = metadata['layout'] || 'default.html'
+        dir    = ::File.expand_path(::File.dirname(file.path))
+        root   = ::File.expand_path(wiki.path)
         layout = nil 
         loop do
-          f = ::File.join(dir, '_Layout.html')
+          f = ::File.join(dir, '_layouts', name)
           break (layout = IO.read(f)) if ::File.exist?(f)
-          break nil if dir == wiki.path
+          break nil if dir == root
           dir = ::File.dirname(dir)
         end
         return layout

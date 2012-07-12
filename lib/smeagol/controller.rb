@@ -155,21 +155,24 @@ module Smeagol
       result = []
       files.map do |file|
         path = (String === file ? file : file.path)
-        unless wiki.settings.include.any?{ |x| File.fnmatch?(x, path) }
+        unless settings.include.any?{ |x| File.fnmatch?(x, path) }
+          # TODO: If we enforce the use of underscore the we would
+          #       not need to filter out settings, partials and static locations.
           # exclude settings file
           next if path == Settings::FILE
 #          # exlcude assets
 #          next if path.index('assets') == 0
-          # exclude static site directory
-          next if path.index(wiki.settings.static) == 0 if wiki.settings.static
           # exclude template directory (TODO: future version may allow this)
-          next if path.index(wiki.settings.template_dir) == 0
+          next if path.index(settings.partials) == 0
           # exclude any files starting with `.` or `_`
           next if path.split('/').any? do |x|
             x.start_with?('_') or x.start_with?('.')
           end
           # exclude any files specifically exluded by settings
-          next if wiki.settings.exclude.any?{ |x| File.fnmatch?(x, path) }
+          next if settings.exclude.any? do |x|
+            ::File.fnmatch?(x, path) ||
+              x.end_with?('/') && path.index(x) == 0
+          end
         end
         result << file
       end

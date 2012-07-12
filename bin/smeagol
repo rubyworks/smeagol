@@ -1,39 +1,9 @@
 #!/usr/bin/env ruby
 
-def self.main(argv)
-  commands = %w{help init build sync preview update serve}
-  command = commands.include?(argv.first) ? argv.shift : 'preview'
-
-  case command
-  when 'help'
-    puts "usage: smeagol [COMMAND] [OPTIONS]"
-    puts
-    puts "COMMANDS:"
-    commands.each do |c|
-      puts "  #{c}"
-    end
-    puts
-    puts "Default command if none given is `server'."
-  when 'init'
-    require 'smeagol'
-    Smeagol::CLI.init(argv)
-  when 'build', 'sync'
-    require 'smeagol'
-    Smeagol::CLI.build(argv)
-  when 'update'
-    require 'smeagol'
-    Smeagol::CLI.update(argv)
-  #when 'sync'
-  #  require 'smeagol'
-  #  Smeagol::CLI.sync(argv)
-  when 'preview'
-    require 'smeagol'
-    Smeagol::CLI.preview(argv)   
-  when 'serve'
-    require 'smeagol'
-    Smeagol::CLI.serve(argv)
-  end
+cmd = ['smeagol']
+ARGV.each do |arg|
+  break if arg.start_with?('-')
+  cmd << ARGV.shift
 end
-
-main(ARGV)
+exec(cmd.join('-'), *ARGV)
 

@@ -34,17 +34,17 @@ module Smeagol
 
       # Public: The last edit date of this page.
       def date
-        post_date || metadata['date'] || commit_date
+        post_date || commit_date
       end
 
       # Public: The last edit date of this page.
       def commit_date
-        page.version.authored_date.strftime("%B %d, %Y")
+        page.version.authored_date.strftime(settings.date_format)
       end
 
       # Public: A flag stating that this is not the home page.
       def not_home?
-        page.title != "Home"
+        page.title != "Home"  # settings.index
       end
 
       # Public: static href, used when generating static site.
@@ -87,16 +87,65 @@ module Smeagol
       # and is taken to be a blog entry, rather then an ordinary static page.
       def post_date
         if md = /^(\d\d\d\d-\d\d-\d\d)/.match(filename)
-          md[1]
+          Time.parse(md[1]).strftime(settings.date_format)
         end
       end
 
       #
       def post?
-        post_date
+        /^(\d\d\d\d-\d\d-\d\d)/.match(filename)
       end
 
-      #private
+      def has_header
+        @header = (@page.header || false) if @header.nil?
+        !!@header
+      end
+
+      def header_content
+        has_header && @header.formatted_data
+      end
+
+      def header_format
+        has_header && @header.format.to_s
+      end
+
+      def has_footer
+        @footer = (@page.footer || false) if @footer.nil?
+        !!@footer
+      end
+
+      def footer_content
+        has_footer && @footer.formatted_data
+      end
+
+      def footer_format
+        has_footer && @footer.format.to_s
+      end
+
+      def has_sidebar
+        @sidebar = (@page.sidebar || false) if @sidebar.nil?
+        !!@sidebar
+      end
+
+      def sidebar_content
+        has_sidebar && @sidebar.formatted_data
+      end
+
+      def sidebar_format
+        has_sidebar && @sidebar.format.to_s
+      end
+
+      def has_toc
+        !@toc_content.nil?
+      end
+
+      def toc_content
+        @toc_content
+      end
+
+      def mathjax
+        @mathjax
+      end
 
     end
 

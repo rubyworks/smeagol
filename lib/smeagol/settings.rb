@@ -7,16 +7,10 @@ module Smeagol
 
     # The name of the settings file.
     # TODO: Rename to `smeagol.yml` ?
-    FILE = "settings.yml"
-
-    # Default site directory.
-    #SITE_DIR  = '.site'
-
-    # Default build-to directory for static builds.
-    BUILD_DIR = 'public'
+    FILE = "_settings.yml"
 
     # Default template includes directory.
-    TEMPLATE_DIR = 'assets/includes'
+    PARTIALS = '_partials'
 
     # Load settings.
     #
@@ -38,17 +32,16 @@ module Smeagol
       new(settings)
     end
 
-    #
+    # Initialize Settings.
     #
     def initialize(settings={})
-      @template_dir  = TEMPLATE_DIR
+      @partials  = PARTIALS
       @index         = 'Home'
-      @rss           = false
+      @rss           = true
       @exclude       = []
       @include       = []
-      @static        = nil
-      @sync_script   = "rsync -arv --del --exclude .git* '%s/' '%s/'"
       @site          = nil
+      @date_format   = "%B %d, %Y"
 
       # TODO: Raise error if no wiki_dir ?
       @wiki_dir = settings[:wiki_dir]
@@ -62,13 +55,15 @@ module Smeagol
     end
 
     # Assign settings hash via writer methods.
+    #
+    # Returns nothing.
     def assign(settings={})
       settings.each do |k,v|
-        __send__("#{k}=", v)
+        __send__("#{k}=", v) if respond_to?("#{k}=")
       end
     end
 
-    # Deprecated: Alias ffor #assign.
+    # Deprecated: Alias for #assign.
     alias update assign
 
     # Internal: Do not set this settings.yml!
@@ -89,18 +84,7 @@ module Smeagol
     # directory.
     #attr_reader :sync_dir
 
-    # If a site is for static deployment, `static` should be set to the 
-    # build path. The typical value is `./public`, which is relative to
-    # the wiki's location. Be sure to add this to the wiki's `.gitignore`
-    # file.
-    #
-    # IMPORTANT: This is a crucial setting! It determines the default
-    # actions of certain smeagol commands. For example, if `static` is
-    # not set, trying to call `$ smeagol build` will abort with an error
-    # message.
-    attr_accessor :static
-
-    # If deplymet of site is done via git, you can use `site` to setup
+    # If deploymet of a site is done via git, you can use `site` to setup
     # a Repository instance that can handle pulls and pushes on updates.
     #
     #   site:
@@ -109,22 +93,9 @@ module Smeagol
     #
     attr_accessor :site
 
-    # Smeagol uses `rsync` to copy build files form temporary location to
-    # the final location given by `static`. By default this command is:
-    #
-    #   "rsync -arv --del --exclude .git* %s/ %s/"
-    #
-    # Where the first %s is the temporary location and the second is the location
-    # specified by the `static` setting. If this needs to be different it can
-    # be change here. Just be sure to honor the `%s` slots.
-    #
-    # If set to `~` (ie. `nil`) then the static files will be built-out directly
-    # the the static directory without using rsync.
-    attr_accessor :sync_script
-
-    # Where to find template includes. This is the location that Mustache uses
-    # when looking for partials. The default is `assets/includes`.
-    attr_accessor :template_dir
+    # Where to find template partials. This is the location that Mustache uses
+    # when looking for partials. The default is `_partials`.
+    attr_accessor :partials
 
     # Page to use as site index. The default is `Home`. A non-wiki
     # page can be used as well, such as `index.html` (well, duh!).
@@ -146,6 +117,8 @@ module Smeagol
 
     # Do not load plugins. (TODO?)
     #attr_accessor :safe
+
+    attr_accessor :date_format
 
 
     # Title of site.
