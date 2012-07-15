@@ -1,0 +1,5 @@
+#!/usr/bin/env ruby
+require 'smeagol'
+require 'smeagol/static'
+Smeagol::CLI.static_build(ARGV)
+
