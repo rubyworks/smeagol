@@ -6,7 +6,7 @@ module Smeagol
   class Settings
 
     # The name of the settings file.
-    # TODO: Rename to `smeagol.yml` ?
+    # TODO: Rename to `_smeagol.yml` ?
     FILE = "_settings.yml"
 
     # Default template includes directory.
@@ -49,7 +49,8 @@ module Smeagol
       @site          = nil
       @date_format   = "%B %d, %Y"
       @sync_script   = SYNC_SCRIPT
-      @static        = STATIC_DIR
+      @site_path     = SITE_DIR
+      @static        = false
 
       # TODO: Raise error if no wiki_dir ?
       @wiki_dir = settings[:wiki_dir]
@@ -110,7 +111,7 @@ module Smeagol
 
     # Default value is `./_public`, which is relative to
     # the wiki's location. Be sure to add this to the wiki's
-    # `.gitignore` file.
+    # `.gitignore` file, if it is.
     #
     attr_accessor :site_path
 
@@ -151,9 +152,8 @@ module Smeagol
     # Do not load plugins. (TODO?)
     #attr_accessor :safe
 
-    # TODO: I hate this. Makers me want to swtich to liquid templates.
+    # TODO: I hate this. Make's me want to swtich to liquid templates.
     attr_accessor :date_format
-
 
     # Title of site.
     attr_accessor :title
@@ -226,14 +226,14 @@ module Smeagol
     # to the static directory without using rsync.
     attr_accessor :sync_script
 
-    # Fully qulaified site build directory.
+    # Expanded site directory.
     #
-    # If `static` is an absolute path it will returned as given, 
-    # otherwise it will be relative to the location of the wiki.
+    # If `site_path` is an absolute path it will returned as given, 
+    # otherwise this will be relative to the location of the wiki.
     #
     # Returns String of build path.
-    def static_path
-      path = relative?(static) ? ::File.join(wiki_dir, static) : static
+    def full_site_path
+      path = relative?(site_path) ? ::File.join(wiki_dir, site_path) : site_path
       path.chomp('/')  # ensure no trailing path separator
       path
     end
@@ -245,8 +245,8 @@ module Smeagol
     def site_repo
       @site_repo ||= (
         opts = (site || {}).dup
-        site[:path] = static_path
-        Repository.new(site)
+        opts[:path] = full_site_path
+        Repository.new(opts)
       )
     end
 

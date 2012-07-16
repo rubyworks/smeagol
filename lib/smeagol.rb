@@ -74,8 +74,8 @@ require 'smeagol/views/versions'
 require 'smeagol/helpers/rss'
 require 'smeagol/helpers/toc'
 
-#require 'smeagol/static/generator'
-#require 'smeagol/static/server'
+require 'smeagol/generator'
+require 'smeagol/static_server'
 
 require 'smeagol/cli'
 require 'smeagol/console'

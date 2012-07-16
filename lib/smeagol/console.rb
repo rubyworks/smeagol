@@ -75,9 +75,11 @@ module Smeagol
 
     #
     def copy_layouts
-      src = LIBDIR + '/templates/layouts'
       dst = ::File.join(wiki_dir, Settings::LAYOUT_DIR)
-      FileUtils.cp_r(src, dst)
+      Fileutils.mkdir_p(dst)
+      Dir[LIBDIR + '/templates/layouts/*'].each do |src|
+        FileUtils.cp_r(src, dst)
+      end
     end
 
     #
@@ -85,18 +87,18 @@ module Smeagol
       file = File.join(wiki_dir, '.gitignore')
       if File.exist?(file)
         File.open(file, 'a') do |f|
-          f.write(".build\n.site")
+          f.write("_public")
         end
       else
         File.open(file, 'w') do |f|
-          f.write(".build\n.site")
+          f.write("_public")
         end
       end
     end
 
     #
     def save_settings
-      file = File.join(wiki_dir, "settings.yml")
+      file = File.join(wiki_dir, "_settings.yml")
       text = Mustache.render(settings_template, settings) 
       File.open(file, 'w') do |f|
         f.write(text)
@@ -111,7 +113,83 @@ module Smeagol
       IO.read(file)
     end
 
-    #  S E R V E
+    #  C O M P I L E
+
+    #
+    # Compile site. for static sites this means generating the 
+    # static files and synching them to the site path.
+    #
+    def compile(options={})
+      if settings.static
+        static_build(options)
+      else
+        # nothing to do (yet)
+      end
+    end
+
+    #
+    # Generate static build.
+    #
+    def static_build(options={})
+      static_path options[:dir]
+
+      if options[:update]
+        update options
+      end
+
+      generator = Generator.new(wiki)
+
+      remove_static_build
+
+      generator.build(static_build_path)
+
+      if settings.sync_script
+        cmd = settings.sync_script % [build_path, static_path]
+        $stderr.puts cmd
+        system cmd
+      end
+    end
+
+    #
+    # Preview a generated build directory. This is useful to 
+    # ensure the static build went as expected.
+    #
+    # TODO: Would be happy to use thin if it supported fixed "static" adapter.
+    #
+    def static_preview(options={})
+      #build_dir = options[:build_dir] || settings.build_dir
+      #system "thin start -A file -c #{build_dir}"
+      StaticServer.run(options)
+    end
+
+    # Remove static build directory.
+    #
+    def remove_static_build
+      if File.exist?(static_build_path)
+        FileUtils.rm_r(static_build_path)
+      end
+    end
+
+    # Full path to build directory.
+    #
+    # Returns String to build path.
+    def static_build_path
+      if settings.sync_script
+        tmpdir
+      else
+        static_path
+      end
+    end
+
+    # Full path to static site directory.
+    #
+    # Returns String of static path.
+    def static_path(dir=nil)
+      @static_path = dir if dir
+      (@static_path || settings.static_path).chomp('/')
+    end
+
+    #  S E R V E R
 
     #
     # Run the web server.
@@ -230,7 +308,7 @@ module Smeagol
     # Site repository.
     #
     # Returns Repository instance.
-    def repo
+    def site_repo
       settings.site_repo 
     end
 
