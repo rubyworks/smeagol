@@ -10,13 +10,14 @@ Smeagol - A Read-Only Gollum Server
 ## DESCRIPTION
 
 Smeagol is a server that can run a read-only version of a
-[Gollum](http://github.com/github/gollum) wiki, or a static
-site generator that can convert you Gollum wiki into a static
-website to be served by any hosting service. 
-
+[Gollum](http://github.com/github/gollum) wiki.
 This can be useful when you want to maintain a standalone website,
 but you want to update it through the Gollum wiki interface,
 e.g. via GitHub.
+
+Smeagol also includes a static site generator that can convert
+a Gollum wiki into a static website to be served by any hosting
+service. 
 
 Smeagol follows the rules of [Semantic Versioning](http://semver.org/) and uses
 [TomDoc](http://tomdoc.org/) for inline documentation.
@@ -38,9 +39,9 @@ Of course, the first thing you need to do is clone your Gollum wiki repo.
     $ git clone git@github.com:user/user.github.com.git
 
 
-## VIEWING
+## PREVIEWING
 
-To view your site via smeagol, simply change directories to your Gollum repository
+To preview your site via smeagol, simply change directories to your Gollum repository
 and run `smeagol preview` from the command line:
 
     $ cd /path/to/repo
@@ -53,8 +54,8 @@ by setting the `--port` or `-p` option on the command line.
 ## CUSTOMIZING
 
 Of course, you want to customize your site to suit your style. To do this you
-need to setup your wiki repo with some Smeagol support files. You can use the
-`init` command to have Smeagol put the default files in place.
+need to add some Smeagol support files. Use the `init` command to have Smeagol
+put the default files in place.
 
     $ cd path/to/wiki
     $ smeagol init
@@ -74,8 +75,8 @@ wiki in any way.)
 
 ## SETTINGS
 
-The `settings.yml` file allows you to configure certain behaviors of Smeagol.
-An example `settings.yml` file:
+The `_settings.yml` file allows you to configure certain behaviors of Smeagol.
+An example `_settings.yml` file:
 
     ---
     static: public
@@ -101,21 +102,6 @@ directory.
 See the API documentation for more details about each field.
 
 
-## BUILDING
-
-To generate a static site use the the `build` command.
-
-    $ cd /path/to/wiki
-    $ smeagol build
-
-By default the build will be placed in `public/` in the wiki repo. To use an
-alternate destination use the `-d`/`--dir` options.
-
-    $ smeagol build -d /path/to/site
-
-The default location can be changed in `settings.yml` via the `static` field.
-
-
 ## UPDATING
 
 Updating only works when using the Smeagol server. It does not work for static
@@ -130,6 +116,21 @@ automatically perform a `git pull origin master` on your repository once per day
 
 To perform a manual update, simply go to the `update` route, e.g. `http://localhost:4567/update`,
 and Smeagol will perform a git pull. Change the URL for your appropriate hostname and port.
+
+
+## STATIC SITES
+
+To generate a static site use the the `static` command.
+
+    $ cd /path/to/wiki
+    $ smeagol static
+
+By default the build will be placed in `public/` in the wiki repo. To use an
+alternate destination use the `-d`/`--dir` options.
+
+    $ smeagol build -d /path/to/site
+
+The default location can be changed in `_settings.yml` via the `static` field.
 
 
 ## CONTRIBUTE

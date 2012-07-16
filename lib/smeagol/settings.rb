@@ -12,6 +12,12 @@ module Smeagol
     # Default template includes directory.
     PARTIALS = '_partials'
 
+    # Default build-to directory for static builds.
+    SITE_DIR = '_public'
+
+    # Default sync command.
+    SYNC_SCRIPT = "rsync -arv --del --exclude .git* '%s/' '%s/'"
+
     # Load settings.
     #
     # wiki_dir - Local file system location of wiki repo. 
@@ -42,6 +48,8 @@ module Smeagol
       @include       = []
       @site          = nil
       @date_format   = "%B %d, %Y"
+      @sync_script   = SYNC_SCRIPT
+      @static        = STATIC_DIR
 
       # TODO: Raise error if no wiki_dir ?
       @wiki_dir = settings[:wiki_dir]
@@ -80,18 +88,43 @@ module Smeagol
     # is the link they would follow, e.g. `http://trans.github.com`
     attr_accessor :url
 
-    # Path Where to sync site. Default value is `_sync`, relative to working wiki
-    # directory.
-    #attr_reader :sync_dir
+    # If a site is for static deployment, `static` should be set to `true`. 
+    attr_accessor :static
 
-    # If deploymet of a site is done via git, you can use `site` to setup
+    #
+    def site
+      {'path'=>site_path, 'origin'=>site_origin, 'branch'=>site_branch}
+    end
+
+    #
+    def site=(entry)
+      case entry
+      when Hash
+        self.site_path   = site['path']
+        self.site_origin = site['origin']
+        self.site_branch = site['branch']
+      else
+        self.site_path = site.to_s     
+      end
+    end
+
+    # Default value is `./_public`, which is relative to
+    # the wiki's location. Be sure to add this to the wiki's
+    # `.gitignore` file.
+    #
+    attr_accessor :site_path
+
+    # If deployment of a site is done via git, you can use `site` to setup
     # a Repository instance that can handle pulls and pushes on updates.
     #
     #   site:
     #     origin: git@github.com:trans/trans.github.com.git
     #     branch: gh-pages
     #
-    attr_accessor :site
+    attr_accessor :site_origin
+
+    # Special branch if using silly branch style, e.g. `gh-pages`.
+    attr_accessor :site_branch
 
     # Where to find template partials. This is the location that Mustache uses
     # when looking for partials. The default is `_partials`.
@@ -118,6 +151,7 @@ module Smeagol
     # Do not load plugins. (TODO?)
     #attr_accessor :safe
 
+    # TODO: I hate this. Makers me want to swtich to liquid templates.
     attr_accessor :date_format
 
 
@@ -179,6 +213,19 @@ module Smeagol
     # TODO: Rename this field.
     attr_accessor :source_url
 
+    # Smeagol uses `rsync` to copy build files from temporary location to
+    # the final location given by `static`. By default this command is:
+    #
+    #   "rsync -arv --del --exclude .git* %s/ %s/"
+    #
+    # Where the first %s is the temporary location and the second is the location
+    # specified by the `static` setting. If this needs to be different it can
+    # be change here. Just be sure to honor the `%s` slots.
+    #
+    # If set to `~` (ie. `nil`) then the static files will be built-out directly
+    # to the static directory without using rsync.
+    attr_accessor :sync_script
+
     # Fully qulaified site build directory.
     #
     # If `static` is an absolute path it will returned as given, 
@@ -190,8 +237,6 @@ module Smeagol
       path.chomp('/')  # ensure no trailing path separator
       path
     end
-
-    alias :site_path :static_path
 
     #
     # TODO: raise error is no site settings?

@@ -1,0 +1,9 @@
+#/usr/bibn/env ruby
+
+ignore 'tmp'
+
+desc 'Checkout wiki.'
+task 'wiki' do
+  sh 'git clone git@github.com:rubyworks/smeagol.wiki.git wiki'
+end
+
