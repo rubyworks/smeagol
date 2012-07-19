@@ -186,7 +186,7 @@ module Smeagol
       # Returns the content of the specified template file in the
       # wiki repository if it exists. Otherwise, it returns `nil`.
       def standard_layout
-        name   = metadata['layout'] || 'default.html'
+        name   = metadata['layout'] || 'default.mustache'
         dir    = ::File.expand_path(::File.dirname(file.path))
         root   = ::File.expand_path(wiki.path)
         layout = nil 
@@ -211,7 +211,7 @@ module Smeagol
       # Returns [String] The template included with the Smeagol package.
       def default_layout
         @default_layout ||= (
-          IO.read(LIBDIR + "/templates/layout.mustache")
+          IO.read(LIBDIR + "/templates/layouts/default.mustache")
         )
       end
 

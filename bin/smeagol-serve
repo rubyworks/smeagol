@@ -1,4 +1,4 @@
 #!/usr/bin/env ruby
 require 'smeagol'
-Smeagol::CLI.serve(argv)
+Smeagol::CLI.serve(ARGV)
 

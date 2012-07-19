@@ -102,6 +102,31 @@ directory.
 See the API documentation for more details about each field.
 
 
+## SERVING 
+
+Shelob can serve multiple Gollum repos simulataneously.
+
+    $ shelob start
+
+To shutdown the server use `stop`.
+
+    $ shelob stop
+
+
+## UPDATING
+
+There are two ways to handle updates of the repository through Shelob: 
+*automatic updating* and *manual updating*.
+
+To setup Shelob to automatically update your repository in fixed intervals,
+simply pass the `--auto-update` option in the command line and Shelob will
+automatically perform a `git pull origin master` on your repository once per day.
+
+To perform a manual update, simply go to the `update` route, e.g. `http://localhost:4567/update`,
+and Shelob will perform a git pull. Obviously, change the URL appropriately
+for your hostname and port.
+
+
 ## UPDATING
 
 Updating only works when using the Smeagol server. It does not work for static

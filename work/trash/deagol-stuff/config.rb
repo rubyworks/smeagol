@@ -2,24 +2,6 @@ module Smeagol
 
   # Server configuration.
   #
-  # Configuration can be loaded from configuration files located
-  # at `/etc/smaegol/config.yml` and `~/.config/smaegol/config.yml`
-  # or `~/.smaegol/config.yml`. Here is an example configuration:
-  #
-  #   ---
-  #   port: 3000
-  #   auto_update: true
-  #   cache_enabled: true
-  #   repositories:
-  #     - path: /path/to/wiki/repo
-  #       cname: 'domain.name'
-  #       origin: 'git@github.com:foo/foo.github.com.wiki.git'
-  #       ref: master
-  #       bare: false
-  #       secret: 'pass123'
-  #
-  # TODO: auto_update should be per repo.
-  #
   class Config
 
     # Directory which contains user configuration.
@@ -128,9 +110,9 @@ module Smeagol
     end
 
     # Lookup git executable.
-    #def git
-    #  ENV['git'] || ENV['GIT'] || 'git'
-    #end
+    def git
+      Smeagol.git
+    end
 
   end
 

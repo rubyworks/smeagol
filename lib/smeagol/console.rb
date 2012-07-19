@@ -7,8 +7,7 @@ module Smeagol
   module Console
     extend self
 
-    #  I N I T
-
+    #
     # Initialize Gollum wiki for use with Smeagol.
     # This will clone the wiki repo, if given and it
     # doesn't already exist and create the `_smeagol`
@@ -54,17 +53,28 @@ module Smeagol
     attr_accessor :wiki_dir
 
     #
+    # If a wiki git URI is given, the clone the wiki.
+    #
+    # @todo Use grit instead of shelling out.
+    #
     def clone_wiki
       system "git clone #{wiki_url} #{wiki_dir}"
     end
 
     #
+    # If the `_settings.yml` file already exists then it is assumed
+    # the location has already been prepared for use with Smeagol.
+    #
     def abort_if_already_smeagol
-      if ::File.exist?(File.join(wiki_dir, '_layouts'))
+      if ::File.exist?(File.join(wiki_dir, '_settings.yml'))
         abort "Looks like the wiki is already setup for Smeagol."
       end
     end
 
+    #
+    # When using #init, this provided the initial settings.
+    #
+    # @returns [Settings]
     #
     def initial_settings
       @settings = Settings.new(
@@ -73,6 +83,8 @@ module Smeagol
       )
     end
 
+    #
+    # Copy layout templates to `_layouts` directory. 
     #
     def copy_layouts
       dst = ::File.join(wiki_dir, Settings::LAYOUT_DIR)
@@ -97,6 +109,8 @@ module Smeagol
     end
 
     #
+    # Save settings.
+    #
     def save_settings
       file = File.join(wiki_dir, "_settings.yml")
       text = Mustache.render(settings_template, settings) 
@@ -113,88 +127,29 @@ module Smeagol
       IO.read(file)
     end
 
-    #  C O M P I L E
+    #
+    # Preview current wiki (from working directory).
+    #
+    def preview(options)
+      repository = {}
+      repository[:path]   = Dir.pwd
+      #repository[:cname] = options[:cname]  if options[:cname]
+      repository[:secret] = options.delete(:secret) if options.key?(:secret)
 
-    #
-    # Compile site. for static sites this means generating the 
-    # static files and synching them to the site path.
-    #
-    def compile(options={})
-      if settings.static
-        static_build(options)
-      else
-        # nothing to do (yet)
-      end
+      options[:repositories] = [repository]
+
+      config = Smeagol::Config.new(options)
+
+      catch_signals
+      show_repository(config)
+
+      run_server(config)
     end
 
     #
-    # Generate static build.
+    # Serve up sites defined in smeagol config file.
     #
-    def static_build(options={})
-      static_path options[:dir]
-
-      if options[:update]
-        update options
-      end
-
-      generator = Generator.new(wiki)
-
-      remove_static_build
-
-      generator.build(static_build_path)
-
-      if settings.sync_script
-        cmd = settings.sync_script % [build_path, static_path]
-        $stderr.puts cmd
-        system cmd
-      end
-    end
-
-    #
-    # Preview a generated build directory. This is useful to 
-    # ensure the static build went as expected.
-    #
-    # TODO: Would be happy to use thin if it supported fixed "static" adapter.
-    #
-    def static_preview(options={})
-      #build_dir = options[:build_dir] || settings.build_dir
-      #system "thin start -A file -c #{build_dir}"
-      StaticServer.run(options)
-    end
-
-    # Remove static build directory.
-    #
-    def remove_static_build
-      if File.exist?(static_build_path)
-        FileUtils.rm_r(static_build_path)
-      end
-    end
-
-    # Full path to build directory.
-    #
-    # Returns String to build path.
-    def static_build_path
-      if settings.sync_script
-        tmpdir
-      else
-        static_path
-      end
-    end
-
-    # Full path to static site directory.
-    #
-    # Returns String of static path.
-    def static_path(dir=nil)
-      @static_path = dir if dir
-      (@static_path || settings.static_path).chomp('/')
-    end
-
-    #  S E R V E R
-
-    #
-    # Run the web server.
-    #
-    def serve(options={})
+    def serve(options)
       config_file = options[:config_file]
       config = Config.load(config_file)
       config.assign(options)
@@ -208,42 +163,35 @@ module Smeagol
         config.repositories.each{ |r| r['secret'] = options['secret'] }
       end
 
-      @server_config = (
-        if Smeagol::Config === config
-          config
-        else
-          Smeagol::Config.new(config)
-        end
-      )
+      #@server_config = config
 
       catch_signals
-      show_repository
-      auto_update
-      clear_caches
 
-      Smeagol::App.set(:git, server_config.git)
-      Smeagol::App.set(:repositories, server_config.repositories)
-      Smeagol::App.set(:cache_enabled, server_config.cache_enabled)
-      Smeagol::App.set(:mount_path, server_config.mount_path)
-      Smeagol::App.run!(:port => server_config.port)
+      show_repository(config)
+      auto_update(config)
+      clear_caches(config)
+
+      run_server(config)
     end
 
-    # Returns Smeagol::Config instance.
-    attr :server_config
-
+    #
     # Setup trap signals.
     #
-    # Returns nothing.
     def catch_signals
       Signal.trap('TERM') do
         Process.kill('KILL', 0)
       end
     end
 
+    #
+    # Returns Smeagol::Config instance.
+    #
+    attr :server_config
+
+    #
     # Show repositories being served
     #
-    # Returns nothing.
-    def show_repository
+    def show_repository(server_config)
       $stderr.puts "\n  Now serving on port #{server_config.port} at /#{server_config.base_path}:"
       server_config.repositories.each do |repository|
         $stderr.puts "  * #{repository.path} (#{repository.cname})"
@@ -251,63 +199,79 @@ module Smeagol
       $stderr.puts "\n"
     end
 
+    #
     # Run the auto update process.
     #
-    def auto_update
-      if server_config.auto_update
-        Thread.new do
-          while true do
-            sleep 86400
-            server_config.repositories.each do |repository|
-              out = repository.update
-              out = out[1] if Array === out
-              if out.index('Already up-to-date').nil? 
-                $stderr.puts "== Repository updated at #{Time.new()} : #{repository.path} =="
-              end
+    def auto_update(server_config)
+      return unless server_config.auto_update
+      Thread.new do
+        while true do
+          sleep 86400
+          server_config.repositories.each do |repository|
+            next unless repository.auto_update?
+            out = repository.update
+            out = out[1] if Array === out
+            if out.index('Already up-to-date').nil? 
+              $stderr.puts "== Repository updated at #{Time.new()} : #{repository.path} =="
             end
           end
         end
       end
     end
 
+    #
     # Clear the caches.
     #
-    # Returns nothing.
-    def clear_caches
+    def clear_caches(server_config)
       server_config.repositories.each do |repository|
         Smeagol::Cache.new(Gollum::Wiki.new(repository.path)).clear()
       end
     end
 
     #
-    #  U P D A T E
+    # Run the web server.
     #
+    def run_server(server_config)
+      #Smeagol::App.set(:git, server_config.git)
+      Smeagol::App.set(:repositories, server_config.repositories)
+      Smeagol::App.set(:cache_enabled, server_config.cache_enabled)
+      Smeagol::App.set(:mount_path, server_config.mount_path)
+      Smeagol::App.run!(:port => server_config.port)
+    end
 
     #
     # Update/clone site repo.
     #
+    # TODO: update all repos in smeagol/config.yml ?
+    #
     def update(options={})
       wiki.repo.git.pull({}, 'orgin', 'master')
 
-      if settings.site
-        if Dir.exist?(site_path)
-          $stderr.puts "Pulling `#{repo.branch}' from `origin' in `#{repo.path}'..."
-          repo.pull
-        else
-          $stderr.puts "Cloning `#{repo.origin}' in `#{repo.path}'..."
-          repo.clone
-        end
-      end
+      #if settings.site
+      #  if Dir.exist?(site_path)
+      #    $stderr.puts "Pulling `#{repo.branch}' from `origin' in `#{repo.path}'..."
+      #    repo.pull
+      #  else
+      #    $stderr.puts "Cloning `#{repo.origin}' in `#{repo.path}'..."
+      #    repo.clone
+      #  end
+      #end
     end
 
-    # Returns String of static site directory path.
+    #
+    # Static site directory path.
+    #
+    # @returns [String]
+    #
     def site_path
       settings.site_path
     end
 
+    #
     # Site repository.
     #
-    # Returns Repository instance.
+    # @returns [Repository]
+    #
     def site_repo
       settings.site_repo 
     end
@@ -322,52 +286,40 @@ module Smeagol
     #  Sync.run(options)
     #end
 
-    ## Get wiki instance.
-    ## 
-    ## Returns Smeagol::Wiki object.
-    #def wiki(dir=Dir.pwd)
-    #  @wiki ||= Smeagol::Wiki.new(dir)
-    #end
-
     #
-    #def initialize(options={})
-    #  @options  = options  # in case they need to be reused
-    #  @wiki_dir = options[:wiki_dir] || Dir.pwd
-    #end
-
+    # Current wiki directory.
+    #
+    # @returns [String]
     #
     def wiki_dir
       @wiki_dir || Dir.pwd
     end
 
+    #
     # Get and cache Wiki object.
     #
-    # Returns Smeagol::Wiki instance.
+    # @returns [Smeagol::Wiki]
+    #
     def wiki
       @wiki ||= Smeagol::Wiki.new(wiki_dir)
     end
 
+    #
     # Local wiki settings.
     #
-    # Returns Smeagol::Settings instance.
+    # @returns [Smeagol::Settings]
+    #
     def settings
       @settings ||= Settings.load(wiki_dir)
     end
 
+    #
     # Git executable.
+    #
+    # @returns [String]
+    #
     def git
       Smeagol.git
-    end
-
-    # TODO: Maybe add a random number to be safe.
-    #
-    # Return String path to system temprorary directory.
-    def tmpdir(base=nil)
-      if base
-        ::File.join(Dir.tmpdir, 'smeagol', base)
-      else
-        ::File.join(Dir.tmpdir, 'smeagol', Time.now.year.to_s)
-      end
     end
 
   end

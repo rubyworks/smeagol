@@ -1,5 +1,6 @@
-module Smeagol
+require 'fileutils'
 
+module Smeagol
   class Cache
     # Creates a cache object for a Gollum wiki.
     #
@@ -86,7 +87,5 @@ module Smeagol
         "#{path}/#{page.path}/#{page.version.id}"
       end
     end
-
   end
-
 end

@@ -40,17 +40,18 @@ end
 
 require 'gollum'
 require 'rack/file'
-require 'sinatra'
 require 'mustache'
 require 'tmpdir'
 require 'ostruct'
 require 'yaml'
 require 'optparse'
+require 'fileutils'
+require 'sinatra'
 
 require 'smeagol/version'
 require 'smeagol/core_ext'
 
-# gollum plugins, can be removed when new version of Gollum is out.
+# some gollum plugins, can be removed when new version of Gollum is out.
 require 'smeagol/gollum/wiki'
 require 'smeagol/gollum/file'
 require 'smeagol/gollum/page'
@@ -74,15 +75,6 @@ require 'smeagol/views/versions'
 require 'smeagol/helpers/rss'
 require 'smeagol/helpers/toc'
 
-require 'smeagol/generator'
-require 'smeagol/static_server'
-
 require 'smeagol/cli'
 require 'smeagol/console'
-#require 'smeagol/console/base'
-#require 'smeagol/console/init'
-#require 'smeagol/console/serve'
-#require 'smeagol/console/build'
-#require 'smeagol/console/update'
-#require 'smeagol/console/sync'
 

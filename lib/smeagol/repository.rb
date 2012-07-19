@@ -16,6 +16,7 @@ module Smeagol
       @bare   = opts.bare
       @secret = opts.secret
       @cname  = opts.cname
+      @update = opts.update
     end
 
     #
@@ -46,6 +47,11 @@ module Smeagol
 
     #
     attr_accessor :cname
+
+    #
+    def auto_update?
+      @update
+    end
 
     #
     def repo
