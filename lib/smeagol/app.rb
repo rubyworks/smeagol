@@ -108,11 +108,13 @@ module Smeagol
   
     private
 
+    #
     # If the path starts with a version identifier, use it.
     #
-    # params - Request parameters.
+    # params - The request parameters. [Hash]
     #
-    # Returns version number String.
+    # Returns the version number. [String]
+    #
     def parse_params(params)
       name     = params[:splat].first
       version  = 'master'
@@ -132,32 +134,15 @@ module Smeagol
       return name, version, tag_name
     end
 
-=begin
-    # The Mustache template to use for page rendering.
     #
-    # TODO: Get layout from controller instance instead.
-    #
-    # name - The name of the template to use.
-    #
-    # Returns the content of the page.mustache file in the root of the Gollum
-    # repository if it exists. Otherwise, it uses the default page.mustache file
-    # packaged with the Smeagol library.
-    def get_template(name)
-      if File.exists?("#{repository.path}/#{layout_dir}/#{name}.mustache")
-        IO.read("#{repository.path}/#{layout_dir}/#{name}.mustache")
-      else
-        IO.read(::File.join(::File.dirname(__FILE__), "templates/#{name}.mustache"))
-      end
-    end
-=end
-
     # Retrieves the mime type for a filename based on its extension.
     #
-    # file - The filename.
+    # file - The filename. [String]
     #
-    # Returns the mime type for a file.
+    # Returns the mime type for a file. [String]
+    #
     def get_mime_type(file)
-      if !file.nil?
+      unless file.nil?
         extension = ::File.extname(file)
         return Rack::Mime::MIME_TYPES[extension] || 'text/plain'
       end
@@ -165,9 +150,11 @@ module Smeagol
       return 'text/plain'
     end
 
+    #
     # Determines the repository to use based on the hostname.
     #
-    # Returns [OpenStruct] repository.
+    # Returns the matching repository. [Repository]
+    #
     def repository
       # Match on hostname
       settings.repositories.each do |repository|
@@ -181,20 +168,24 @@ module Smeagol
       settings.repositories.first
     end
 
+    #
     # Determines the mounted path to prefix to internal links.
     #
-    # Returns the mount path.
+    # Returns the mount path. [String]
+    #
     def mount_path
       path = settings.mount_path
       path += '/' unless path.end_with?('/')
       path
     end
 
+    #
     # Removes all references to parent directories (../) in a path.
     #
-    # path - The path to sanitize.
+    # path - The path to sanitize. [String]
     #
-    # Returns a clean, pristine path.
+    # Returns a clean, pristine path. [String]
+    #
     def sanitize_path(path)
       path.gsub(/\.\.(?=$|\/)/, '') unless path.nil?
     end

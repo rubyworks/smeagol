@@ -114,7 +114,7 @@ module Smeagol
     #
     # Command line options.
     #
-    # @returns [Hash] options
+    # Returns the command line options. [Hash]
     #
     def options
       @options ||= {}
@@ -123,7 +123,7 @@ module Smeagol
     #
     # Read command line options into `options` hash.
     #
-    # @returns [Array] arguments and options
+    # Returns arguments and options. [Array]
     #
     def parse(argv)
       begin
@@ -139,7 +139,7 @@ module Smeagol
     #
     # Create and cache option parser.
     #
-    # @returns [OptionParser]
+    # Returns option parser instance. [OptionParser]
     #
     def parser
       @parser ||= (

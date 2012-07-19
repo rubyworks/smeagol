@@ -1,10 +1,13 @@
 module Smeagol
 
-  # Server configuration.
+  # Server configuration is used to store the options for the Smeagol
+  # server for serving sites.
   #
   # Configuration can be loaded from configuration files located
   # at `/etc/smaegol/config.yml` and `~/.config/smaegol/config.yml`
   # or `~/.smaegol/config.yml`. Here is an example configuration:
+  #
+  # Examples
   #
   #   ---
   #   port: 3000
@@ -18,8 +21,6 @@ module Smeagol
   #       bare: false
   #       secret: 'pass123'
   #
-  # TODO: auto_update should be per repo.
-  #
   class Config
 
     # Directory which contains user configuration.
@@ -27,7 +28,7 @@ module Smeagol
 
     # Public: Load Smeagol server configuration.
     #
-    # Returns Config object.
+    # Returns [Config]
     def self.load(file=nil)
       config = {}
 
@@ -45,7 +46,9 @@ module Smeagol
     # `settings.yml` file. Loads and returns the result of
     # the first file found.
     #
-    # Returns Hash of settings and empty Hash if none found.
+    # dirs - List of directories to search for config file. [Array<String>]
+    #
+    # Returns configuration settings or empty Hash if none found. [Hash]
     def self.load_config(*dirs)
       dirs.each do |dir|
         file = File.join(dir, 'config.yml')
@@ -58,6 +61,7 @@ module Smeagol
     end
 
     #
+    # Initialize new Config instance.
     #
     def initialize(settings={})
       @port          = 4567
@@ -69,9 +73,9 @@ module Smeagol
       assign(settings)
     end
 
+    #
     # Given a Hash of settings, assign via writer methods.
     #
-    # Returns nothing.
     def assign(settings={})
       settings.each do |k,v|
         __send__("#{k}=", v)
@@ -109,6 +113,7 @@ module Smeagol
     #
     attr_reader :repositories
 
+    #
     # Set list of repositories.
     #
     def repositories=(repos)
@@ -122,7 +127,9 @@ module Smeagol
       )
     end
 
+    #
     # Deprecated: Ability to access config like hash.
+    #
     def [](name)
       instance_variable_get("@#{name}")
     end

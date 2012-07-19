@@ -163,8 +163,6 @@ module Smeagol
         config.repositories.each{ |r| r['secret'] = options['secret'] }
       end
 
-      #@server_config = config
-
       catch_signals
 
       show_repository(config)
@@ -182,11 +180,6 @@ module Smeagol
         Process.kill('KILL', 0)
       end
     end
-
-    #
-    # Returns Smeagol::Config instance.
-    #
-    attr :server_config
 
     #
     # Show repositories being served
@@ -259,9 +252,9 @@ module Smeagol
     end
 
     #
-    # Static site directory path.
+    # Site directory path.
     #
-    # @returns [String]
+    # Returns expanded site path. [String]
     #
     def site_path
       settings.site_path
@@ -270,7 +263,7 @@ module Smeagol
     #
     # Site repository.
     #
-    # @returns [Repository]
+    # Returns repository. [Repository]
     #
     def site_repo
       settings.site_repo 
@@ -289,7 +282,7 @@ module Smeagol
     #
     # Current wiki directory.
     #
-    # @returns [String]
+    # Returns wiki directory. [String]
     #
     def wiki_dir
       @wiki_dir || Dir.pwd
@@ -298,7 +291,7 @@ module Smeagol
     #
     # Get and cache Wiki object.
     #
-    # @returns [Smeagol::Wiki]
+    # Returns wiki. [Wiki]
     #
     def wiki
       @wiki ||= Smeagol::Wiki.new(wiki_dir)
@@ -307,7 +300,7 @@ module Smeagol
     #
     # Local wiki settings.
     #
-    # @returns [Smeagol::Settings]
+    # Returns wiki settings. [Settings]
     #
     def settings
       @settings ||= Settings.load(wiki_dir)
@@ -316,7 +309,7 @@ module Smeagol
     #
     # Git executable.
     #
-    # @returns [String]
+    # Returns git command path. [String]
     #
     def git
       Smeagol.git

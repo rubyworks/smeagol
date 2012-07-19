@@ -18,11 +18,13 @@ module Smeagol
     # Default sync command.
     SYNC_SCRIPT = "rsync -arv --del --exclude .git* '%s/' '%s/'"
 
+    #
     # Load settings.
     #
-    # wiki_dir - Local file system location of wiki repo. 
+    # wiki_dir - Local file system location of wiki repo. [String]
     #
-    # Returns [Settings] instance.
+    # Returns settings instance. [Settings]
+    #
     def self.load(wiki_dir=nil)
       wiki_dir = Dir.pwd unless wiki_dir
       file = File.join(wiki_dir, FILE)
@@ -38,7 +40,10 @@ module Smeagol
       new(settings)
     end
 
+    #
     # Initialize Settings.
+    #
+    # settings - Settings hash. [Hash]
     #
     def initialize(settings={})
       @partials  = PARTIALS
