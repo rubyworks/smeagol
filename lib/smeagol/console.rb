@@ -8,18 +8,24 @@ module Smeagol
     extend self
 
     #
+    def report(msg)
+      $stderr.puts msg unless $QUIET
+    end
+
+    #
     # Initialize Gollum wiki for use with Smeagol.
     # This will clone the wiki repo, if given and it
     # doesn't already exist and create `_settings.yml`,
     # `_layouts/` and `assets/smeagol/`.
     #
-    # TODO: Instead of aborting if _settings already exists.
-    #       only copy files that don't already exist,
-    #       reporting the status of each copied file. Maybe
-    #       use a supporting "managed copy" gem.
+    # TODO: Perhaps use a supporting "managed copy" gem in future?
+    #
+    # TODO: Add --force option to override skips?
+    #
+    # Returns nothing.
     #
     def init(*args)
-      options = args.pop
+      options = (Hash === args.last ? args.pop : {})
 
       abort "Too many arguments." if args.size > 2
 
@@ -33,23 +39,21 @@ module Smeagol
         @clone = true
       else
         @wiki_dir = Dir.pwd
-        @wiki_url = wiki.repo.config['remote.origin.url']
+        if File.exist?(File.join(@wiki_dir, '.git'))
+          @wiki_url = wiki.repo.config['remote.origin.url'].to_s
+        else
+          abort "smeagol: not a git repo."
+        end
         @clone = false
       end
 
-      if @clone
-        clone_wiki
-      else
-        abort_if_already_smeagol
-      end
+      clone_wiki if @clone
 
-      copy_layouts
-      copy_assets
-
-      initial_settings
-
+      save_settings(options)
       save_gitignore
-      save_settings
+
+      copy_layouts unless options[:no_layouts]
+      copy_assets  unless options[:no_assets]
     end
 
     # The wiki git url.
@@ -68,50 +72,47 @@ module Smeagol
     end
 
     #
-    # If the `_settings.yml` file already exists then it is assumed
-    # the location has already been prepared for use with Smeagol.
-    #
-    def abort_if_already_smeagol
-      if ::File.exist?(File.join(wiki_dir, '_settings.yml'))
-        abort "Looks like the wiki is already setup for Smeagol."
-      end
-    end
-
-    #
-    # When using #init, this provided the initial settings.
-    #
-    # @returns [Settings]
-    #
-    def initial_settings
-      @settings = Settings.new(
-        :wiki_origin => wiki_url,
-        :site_origin => wiki_url.sub('.wiki', '')
-      )
-    end
-
-    #
     # Copy layout templates to `_layouts` directory. 
     #
     def copy_layouts
-      dst = ::File.join(wiki_dir, Settings::LAYOUT_DIR)
-      Fileutils.mkdir_p(dst)
-      Dir[LIBDIR + '/templates/layouts/*'].each do |src|
-        FileUtils.cp_r(src, dst)
+      dst_dir = File.join(wiki_dir, '_layouts')
+      src_dir = LIBDIR + '/templates/layouts'
+      copy_dir(src_dir, dst_dir)
+    end
+
+    #
+    # Copy assets to `assets` directory. 
+    #
+    def copy_assets
+      dst_dir = File.join(wiki_dir, 'assets')
+      src_dir = LIBDIR + '/public/assets'
+      copy_dir(src_dir, dst_dir)
+    end
+
+    #
+    def copy_dir(src_dir, dst_dir)
+      FileUtils.mkdir_p(dst_dir)
+
+      Dir[File.join(src_dir, '**/*')].each do |src|
+        next if File.directory?(src)
+        dst = File.join(dst_dir, src.sub(src_dir, ''))
+        copy_file(src, dst)
       end
     end
 
     #
-    # Copy assets directory. 
-    #
-    def copy_assets
-      dst = wiki_dir
-      #Fileutils.mkdir_p(dst)
-      src = LIBDIR + '/public/assets'
-      FileUtils.cp_r(src, dst)
+    def copy_file(src, dst)
+      if File.exist?(dst)
+        report " skip: #{dst.sub(Dir.pwd,'')}"
+      else
+        FileUtils.mkdir_p(File.dirname(dst))
+        FileUtils.cp(src, dst)
+        report " copy: #{dst.sub(Dir.pwd,'')}"
+      end
     end
 
     #
-    #
+    # Create or append `_site` to .gitignore file.
     #
     def save_gitignore
       file = File.join(wiki_dir, '.gitignore')
@@ -129,12 +130,28 @@ module Smeagol
     #
     # Save settings.
     #
-    def save_settings
+    def save_settings(options)
       file = File.join(wiki_dir, "_settings.yml")
-      text = Mustache.render(settings_template, settings) 
-      File.open(file, 'w') do |f|
-        f.write(text)
+      if File.exist?(file)
+        $stderr.puts " skip: #{file}"
+      else
+        text = Mustache.render(settings_template, initial_settings(options)) 
+        File.open(file, 'w') do |f|
+          f.write(text)
+        end
       end
+    end
+
+    #
+    # When using #init, this provided the initial settings.
+    #
+    # @returns [Settings]
+    #
+    def initial_settings(options={})
+      options[:wiki_origin] = wiki_url
+      options[:site_origin] = wiki_url.sub('.wiki', '')
+
+      @settings = Settings.new(options)
     end
 
     #
