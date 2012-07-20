@@ -12,8 +12,8 @@ module Smeagol
     # Default template includes directory.
     PARTIALS = '_partials'
 
-    # Default build-to directory for static builds.
-    SITE_DIR = nil #'_public'
+    # Default site stage directory.
+    SITE_PATH = '_site'
 
     # Default sync command.
     SYNC_SCRIPT = "rsync -arv --del --exclude .git* '%s/' '%s/'"
@@ -54,7 +54,7 @@ module Smeagol
       @site          = nil
       @date_format   = "%B %d, %Y"
       @sync_script   = SYNC_SCRIPT
-      @site_dir      = SITE_DIR
+      @site_stage    = nil
       #@static        = false
 
       # TODO: Raise error if no wiki_dir ?
@@ -94,45 +94,59 @@ module Smeagol
     # is the link they would follow, e.g. `http://trans.github.com`
     attr_accessor :url
 
-    # If a site is intended for static deployment, `static` should be set to `true`. 
+    # If a site is intended for static deployment, `static` should be set to `true`.
     #attr_accessor :static
 
     #
     def site
-      {'path'=>full_site_path, 'origin'=>site_origin, 'branch'=>site_branch}
+      {'stage'=>site_stage, 'origin'=>site_origin, 'branch'=>site_branch}
     end
 
+    # If deployment of a site is done via git or via a staging directory,
+    # then `site` can be used to set these.
     #
-    def site=(entry)
-      case entry
-      when Hash
-        self.site_dir    = site['path']
-        self.site_origin = site['origin']
-        self.site_branch = site['branch']
-      else
-        self.site_dir = site.to_s     
-      end
-    end
-
-    # If deployment of a site is done via git, you can use `site` to setup
-    # a Repository instance that can handle pulls and pushes on updates.
+    # Examples
     #
     #   site:
     #     origin: git@github.com:trans/trans.github.com.git
     #     branch: gh-pages
+    #     path: _site
+    #
+    def site=(entry)
+      case entry
+      when Hash
+        self.site_stage  = site['stage']
+        self.site_origin = site['origin']
+        self.site_branch = site['branch']
+      else
+        self.site_stage = true
+        self.site_path  = site.to_s
+      end
+    end
+
+    # If deployment of a site is done via git, then `site_origin` can be used to
+    # setup a Repository instance that can handle pulls and pushes automatically.
+    #
+    # Examples
+    #
+    #   site_origin: git@github.com:trans/trans.github.com.git
     #
     attr_accessor :site_origin
 
     # Special branch if using silly branch style, e.g. `gh-pages`.
     attr_accessor :site_branch
 
-    # Set the site_path if a site needs to be staged for deployment.
+    # Set `site_stage` if the site needs to be staged for deployment.
     # In other words, if the servable files in the wiki need to be
-    # copied into a separate directory.
+    # copied into a separate directory. This can be set to `true`
+    # in which case the default `_site` path will be used, otherwise
+    # set it to the path desired.
     #
     # Non-absolute paths are relative to the wiki's location.
-    # Be sure to add this to the wiki's .gitignore file, if it is.
-    attr_accessor :site_dir
+    # Be sure to add this to the wiki's .gitignore file, if it is, and
+    # if not prefixed by and underscore, be sure to add it to `exclude`
+    # setting as well.
+    attr_accessor :site_stage
 
     # Where to find template partials. This is the location that Mustache uses
     # when looking for partials. The default is `_partials`.
@@ -159,7 +173,8 @@ module Smeagol
     # Do not load plugins. (TODO?)
     #attr_accessor :safe
 
-    # TODO: I hate this. Make's me want to swtich to liquid templates.
+    # TODO: I hate this. Make's me want to switch to Liquid templates.
+    #       Hurry up with Mustache 2.0 already!
     attr_accessor :date_format
 
     # Title of site.
@@ -220,17 +235,20 @@ module Smeagol
     # TODO: Rename this field.
     attr_accessor :source_url
 
-    # Smeagol uses `rsync` to copy build files from temporary location to
-    # the final location given by `static`. By default this command is:
+    # Smeagol uses `rsync` to copy files from the repository to
+    # the staging location if given by `site_path`. By default this
+    # command is:
     #
     #   "rsync -arv --del --exclude .git* %s/ %s/"
     #
-    # Where the first %s is the temporary location and the second is the location
-    # specified by the `static` setting. If this needs to be different it can
+    # Where the first %s is the repository location and the second is the location
+    # specified by the `site_path` setting. If this needs to be different it can
     # be change here. Just be sure to honor the `%s` slots.
     #
-    # If set to `~` (ie. `nil`) then the static files will be built-out directly
-    # to the static directory without using rsync.
+    # If set to `~` (ie. `nil`) then the files will be copied directly
+    # to the site_path directory without using rsync.
+    #
+    # Note that this isn't actually used yet.
     attr_accessor :sync_script
 
     # Expanded site directory.
@@ -239,22 +257,28 @@ module Smeagol
     # otherwise this will be relative to the location of the wiki.
     #
     # Returns String of build path.
-    def full_site_path
-      return nil unless site_dir
+    def site_path
+      return nil unless site_stage
 
-      path = relative?(site_dir) ? ::File.join(wiki_dir, site_dir) : site_dir
+      site_path = (TrueClass === site_stage ? SITE_PATH : site_stage.to_s)
+
+      path = relative?(site_path) ? ::File.join(wiki_dir, site_path) : site_path
       path.chomp('/')  # ensure no trailing path separator
       path
     end
+
+    # Deprecated: Original name for #site_path.
+    alias :full_site_path :site_path
 
     #
     # TODO: raise error is no site settings?
     #
     # Returns Repository object for git-based deployment site.
+    #
     def site_repo
       @site_repo ||= (
         opts = (site || {}).dup
-        opts[:path] = full_site_path
+        opts[:path] = site_path
         Repository.new(opts)
       )
     end
