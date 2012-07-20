@@ -13,13 +13,13 @@ module Smeagol
     def init(argv)
       parser.banner = "usage: smeagol init [OPTIONS] [WIKI-URI]"
 
-      #parser.on('--static', 'Static mode site?') do
-      #  options['static'] = true
-      #end
+      parser.on('-t', '--title [TITLE]') do |title|
+        options[:title] = title
+      end
 
-      #parser.on('-b', '--build-dir [DIRECTORY]') do |dir|
-      #  options[:build_dir] = dir
-      #end
+      parser.on('-i', '--index [PAGE]') do |page_name|
+        options[:index] = page_name
+      end
 
       # TODO: support more settings options for creating setup
 
@@ -30,7 +30,7 @@ module Smeagol
     # Preview current Gollum wiki.
     #
     def preview(argv)
-      parser.banner = "Usage: deagol-preview [OPTIONS]\n\n"
+      parser.banner = "Usage: smeagol-preview [OPTIONS]\n\n"
 
       parser.on('--port [PORT]', 'Bind port (default 4567).') do |port|
         options[:port] = port.to_i
@@ -65,7 +65,7 @@ module Smeagol
     def serve(argv)
       config_file = nil
 
-      parser.banner = "usage: smeagol-start [OPTIONS] [PATH]\n\n"
+      parser.banner = "usage: smeagol-serve [OPTIONS]\n\n"
 
       parser.on('-c', '--config [PATH]', 'Load config file instead of default.') do |path|
         options[:config_file] = path
@@ -101,10 +101,13 @@ module Smeagol
     def update(argv)
       parser.banner = "Usage: smeagol update [OPTIONS]\n\n"
 
-      parser.on('-d', '--dir DIR', 'alternate site directory') do |dir|
-        dir = nil if %w{false nil ~}.include?(dir)  # TODO: better approach? 
-        options[:site_dir] = dir
+      parser.on('-a', '--all', 'Update all configured repos.') do
+        options[:all] = true
       end
+
+      #parser.on('-s', '--site', 'Also update site directories, if applicable.') do
+      #  options[:site] = true
+      #end
 
       Console.update(*parse(argv))
     end
