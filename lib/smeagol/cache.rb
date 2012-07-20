@@ -66,7 +66,7 @@ module Smeagol
     # Returns nothing.
     #
     def set_page(name, version, content)
-      p "set page: #{name} : #{version.class}"
+      $stderr.puts "set page: #{name} : #{version.class}" unless $QUIET
       page = wiki.page(name, version)
       if !page.nil?
         path = page_path(name, version)
