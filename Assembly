@@ -12,18 +12,9 @@ github:
 gem:
   active : true
 
-qedoc:
-  files: demo
-  title: "Smeagol Demonstrations"
-  output:
-    - DEMO.md
-    #- web/demo.html
-
-qed:
-  active: true
-
 #rubytest:
 #  active: true
+#  loadpath: [lib,test]
 
 dnote:
   labels   : ~

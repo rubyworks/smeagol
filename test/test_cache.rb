@@ -1,5 +1,4 @@
 require 'helper'
-require 'fileutils'
 
 testcase Smeagol::Cache do
   setup do

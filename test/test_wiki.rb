@@ -1,6 +1,7 @@
 require 'helper'
 
 testcase Smeagol::Wiki do
+
   setup do
     @wiki = Smeagol::Wiki.new(test_wiki)
   end
@@ -12,4 +13,6 @@ testcase Smeagol::Wiki do
   #test 'settings should be read from file' do
   #   @wiki.settings.title.assert == 'Smeagol'
   #end
+
 end
+
