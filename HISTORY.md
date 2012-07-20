@@ -3,16 +3,15 @@
 ## v0.6.0 / 2012-07-01
 
 Version 0.6 is a major refactoring of the code base.
-While all the prevsious functionaility remains, new
-features have been added some configuration settings
-have been adjusted. Users of previous version should
-consult update documentation and adjust their sites
-accordingly.
+While most previous functionaility remains, new features
+have been added and certain configuration settings have been
+adjusted. Users of previous version should consult the updated
+documentation and adjust their sites accordingly.
 
 * Use _layouts directory to store templates.
 * Use _settings.yml instead of settings.yml.
-* Add commands for handling static builds.
-* Add init command for setting up a new wiki.
+* Spin-off static builds to Shelob project.
+* Add init command for setting up wiki for Smeagol.
 
 ## v0.5.9
 

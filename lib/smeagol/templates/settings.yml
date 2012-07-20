@@ -8,7 +8,7 @@
 
 static: false
 
-# Site URL.
+# Website address.
 # e.g. `http://trans.github.com`
 
 url: {{ url }}

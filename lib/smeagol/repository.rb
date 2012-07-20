@@ -59,6 +59,8 @@ module Smeagol
     end
 
     # Pull down any changes.
+    #
+    # TODO: What about secret?
     def pull
       repo.git.pull({}, 'origin', branch)
     end
