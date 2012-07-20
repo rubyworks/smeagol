@@ -187,13 +187,16 @@ module Smeagol
       # wiki repository if it exists. Otherwise, it returns `nil`.
       def standard_layout
         name   = metadata['layout'] || 'default.mustache'
-        dir    = ::File.expand_path(::File.dirname(file.path))
+        dir    = ::File.expand_path(::File.join(wiki.path, ::File.dirname(file.path)))
         root   = ::File.expand_path(wiki.path)
-        layout = nil 
+        home   = ::File.expand_path('~')
+        layout = nil
         loop do
           f = ::File.join(dir, '_layouts', name)
           break (layout = IO.read(f)) if ::File.exist?(f)
           break nil if dir == root
+          break nil if dir == home  # just in case
+          break nil if dir == '/'
           dir = ::File.dirname(dir)
         end
         return layout
