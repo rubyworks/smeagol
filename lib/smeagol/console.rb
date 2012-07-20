@@ -10,8 +10,13 @@ module Smeagol
     #
     # Initialize Gollum wiki for use with Smeagol.
     # This will clone the wiki repo, if given and it
-    # doesn't already exist and create the `_smeagol`
-    # directory.
+    # doesn't already exist and create `_settings.yml`,
+    # `_layouts/` and `assets/smeagol/`.
+    #
+    # TODO: Instead of aborting if _settings already exists.
+    #       only copy files that don't already exist,
+    #       reporting the status of each copied file. Maybe
+    #       use a supporting "managed copy" gem.
     #
     def init(*args)
       options = args.pop
@@ -39,6 +44,7 @@ module Smeagol
       end
 
       copy_layouts
+      copy_assets
 
       initial_settings
 
@@ -95,15 +101,27 @@ module Smeagol
     end
 
     #
+    # Copy assets directory. 
+    #
+    def copy_assets
+      dst = wiki_dir
+      #Fileutils.mkdir_p(dst)
+      src = LIBDIR + '/public/assets'
+      FileUtils.cp_r(src, dst)
+    end
+
+    #
+    #
+    #
     def save_gitignore
       file = File.join(wiki_dir, '.gitignore')
       if File.exist?(file)
         File.open(file, 'a') do |f|
-          f.write("_public")
+          f.write("_site")
         end
       else
         File.open(file, 'w') do |f|
-          f.write("_public")
+          f.write("_site")
         end
       end
     end
@@ -238,7 +256,23 @@ module Smeagol
     # TODO: update all repos in smeagol/config.yml ?
     #
     def update(options={})
-      wiki.repo.git.pull({}, 'orgin', 'master')
+      if options[:all]
+        file   = options[:config_file]
+        config = Config.load(file)
+        #config.assign(options)  # TODO: assign secret if given
+        abort "No repositories configured." if config.repositories.empty?
+
+        config.repositories.each do |repository|
+          out = repository.update
+          out = out[1] if Array === out
+          if out.index('Already up-to-date').nil? 
+            $stderr.puts "Updated: #{repository.path}"
+          end
+        end
+      else
+        wiki.repo.git.pull({}, 'origin', 'master')
+      end
+    end
 
       #if settings.site
       #  if Dir.exist?(site_path)
@@ -249,7 +283,6 @@ module Smeagol
       #    repo.clone
       #  end
       #end
-    end
 
     #
     # Site directory path.
@@ -268,16 +301,6 @@ module Smeagol
     def site_repo
       settings.site_repo 
     end
-
-    # Sync site directory to build directory. This command
-    # shells out to `rsync`.
-    #
-    # TODO: Would it be a good idea to create a site
-    # branch for the build instead of using a build directory.
-    #
-    #def sync(options={})
-    #  Sync.run(options)
-    #end
 
     #
     # Current wiki directory.
