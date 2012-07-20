@@ -19,8 +19,8 @@ requirements:
   version: 1.3+
 - name: sinatra
   version: 1.0~
-- name: daemons
-  version: 1.1~
+- name: rubypython
+  version: 0.5+
 - name: citron
   groups:
   - development
@@ -66,11 +66,11 @@ extra: {}
 load_path:
 - lib
 revision: 0
-name: smeagol
-title: Semagol
 created: '2010-08-16'
 summary: Wiki Cum Website
+title: Semagol
+version: 0.6.0
+name: smeagol
 description: Smeagol is a server that can run a read-only version of a Gollum wiki.
 organization: rubyworks
-version: 0.6.0
-date: '2012-07-10'
+date: '2012-07-20'
