@@ -2,12 +2,13 @@
 - rack 1.2~
 - gollum 1.3+
 - sinatra 1.0~
-- daemons 1.1~
+- rubypython 0.5+
 - citron    (development test)
 - ae        (develpoment test)
 - rack-test (development test)
 - rdiscount (development doc)
 
+#- daemons 1.1~
 #- mocha    (development test)
 #- capybara (development test)
 
