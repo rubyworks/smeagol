@@ -29,18 +29,11 @@ testcase Smeagol::App do
     test "Code Page" do
       get '/Code-page'
       body = last_response.body.gsub(/^\s+| +$/, '')
-      body.assert.include? <<-END.gsub(/^\s+| +$/, '')
-        <h1>Code page</h1>
-        <div id="content">
-          <p>This is Ruby code:</p>
-        
-          <div class="highlight"><pre><span class="k">def</span> <span class="nf">hello</span>
-            <span class="nb">puts</span> <span class="s2">"Hello, World!"</span>
-          <span class="k">end</span>
-          </pre>
-          </div>
-        </div>
-      END
+      body.assert.include?('<h1>Code page</h1>')
+      body.assert.include?('<p>This is Ruby code:</p>')
+      body.assert.include?('<div class="highlight">')
+      body.assert.include?('<span class="k">')
+      body.assert.include?('<span class="s2">"Hello World!"</span>')
     end
 
     #
