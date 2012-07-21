@@ -11,7 +11,7 @@ module Smeagol
     # Initialize Gollum wiki site for use with Smeagol.
     #
     def init(argv)
-      parser.banner = "usage: smeagol init [OPTIONS] [WIKI-URI]"
+      parser.banner = "usage: smeagol-init [OPTIONS] [WIKI-URI]\n"
 
       parser.on('-t', '--title [TITLE]') do |title|
         options[:title] = title
@@ -30,7 +30,7 @@ module Smeagol
     # Preview current Gollum wiki.
     #
     def preview(argv)
-      parser.banner = "Usage: smeagol-preview [OPTIONS]\n\n"
+      parser.banner = "Usage: smeagol-preview [OPTIONS]\n"
 
       parser.on('--port [PORT]', 'Bind port (default 4567).') do |port|
         options[:port] = port.to_i
@@ -65,7 +65,7 @@ module Smeagol
     def serve(argv)
       config_file = nil
 
-      parser.banner = "usage: smeagol-serve [OPTIONS]\n\n"
+      parser.banner = "usage: smeagol-serve [OPTIONS]\n"
 
       parser.on('-c', '--config [PATH]', 'Load config file instead of default.') do |path|
         options[:config_file] = path
@@ -99,7 +99,7 @@ module Smeagol
     # in settings.
     #
     def update(argv)
-      parser.banner = "Usage: smeagol update [OPTIONS]\n\n"
+      parser.banner = "Usage: smeagol-update [OPTIONS]\n"
 
       parser.on('-a', '--all', 'Update all configured repos.') do
         options[:all] = true
@@ -147,6 +147,9 @@ module Smeagol
     def parser
       @parser ||= (
         parser = ::OptionParser.new
+        parser.on_tail('--quiet', 'Turn on $QUIET mode.') do
+          $QUIET = true
+        end
         parser.on_tail('--debug', 'Turn on $DEBUG mode.') do
           $DEBUG = true
         end
