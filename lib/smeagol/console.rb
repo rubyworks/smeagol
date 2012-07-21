@@ -72,11 +72,16 @@ module Smeagol
     end
 
     #
-    # Copy layout templates to `_layouts` directory. 
+    # Copy layout templates to `_layouts` directory and 
+    # partial templates to `_partials`.
     #
     def copy_layouts
       dst_dir = File.join(wiki_dir, '_layouts')
       src_dir = LIBDIR + '/templates/layouts'
+      copy_dir(src_dir, dst_dir)
+
+      dst_dir = File.join(wiki_dir, '_partials')
+      src_dir = LIBDIR + '/templates/partials'
       copy_dir(src_dir, dst_dir)
     end
 

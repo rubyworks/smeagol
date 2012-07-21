@@ -39,7 +39,7 @@ module Smeagol
         if ::File.directory?(dir)
           self.class.template_path = dir
         else
-          self.class.template_path = ::File.join(LIBDIR, 'partials')
+          self.class.template_path = ::File.join(LIBDIR, 'templates', 'partials')
         end
       end
 
@@ -60,7 +60,7 @@ module Smeagol
       def wiki_title
         settings.title
       end
-      
+
       # Public: The tagline for the wiki. This is set in the settings file.
       def tagline
         settings.tagline
@@ -84,7 +84,7 @@ module Smeagol
           html = "<ul>\n"
           menu.each do |item|
             title, href = item['title'], item['href']
-            if version != 'master' && item.href.index('/') == 0
+            if version != 'master' && item['href'].index('/') == 0
               prefix = "/#{version}"
             else
               prefix = ""
@@ -186,7 +186,7 @@ module Smeagol
       # Returns the content of the specified template file in the
       # wiki repository if it exists. Otherwise, it returns `nil`.
       def standard_layout
-        name   = metadata['layout'] || 'default.mustache'
+        name   = metadata['layout'] || 'page.mustache'
         dir    = ::File.expand_path(::File.join(wiki.path, ::File.dirname(file.path)))
         root   = ::File.expand_path(wiki.path)
         home   = ::File.expand_path('~')
@@ -214,7 +214,7 @@ module Smeagol
       # Returns [String] The template included with the Smeagol package.
       def default_layout
         @default_layout ||= (
-          IO.read(LIBDIR + "/templates/layouts/default.mustache")
+          IO.read(LIBDIR + "/templates/layouts/page.mustache")
         )
       end
 

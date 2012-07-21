@@ -30,7 +30,7 @@ module Smeagol
 
       # TODO: Allow customization ?
       def layout
-        IO.read(LIBDIR + "/templates/versions.mustache")
+        IO.read(LIBDIR + "/templates/layouts/versions.mustache")
       end
 
     end
