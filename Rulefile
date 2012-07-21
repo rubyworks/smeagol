@@ -1,9 +1,18 @@
 #/usr/bibn/env ruby
 
-ignore 'tmp'
+ignore 'Gemfile.lock', 'log', 'tmp', 'web', 'wiki', 'work'
 
-desc 'Checkout wiki.'
+desc 'clone wiki'
 task 'wiki' do
-  sh 'git clone git@github.com:rubyworks/smeagol.wiki.git wiki'
+  if File.directory?('wiki')
+    puts 'wiki directory already exists'
+  else
+    sh 'git clone git@github.com:rubyworks/smeagol.wiki.git wiki'
+  end
+end
+
+desc 'run unit tests'
+task 'test' do
+  sh 'bundle exec rubytest -Itest -Ilib test/test*'
 end
 
