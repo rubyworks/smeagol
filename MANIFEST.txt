@@ -5,6 +5,7 @@ bin/smeagol-init
 bin/smeagol-preview
 bin/smeagol-serve
 bin/smeagol-update
+bin/smeagold
 lib/smeagol/app.rb
 lib/smeagol/cache.rb
 lib/smeagol/cli.rb
@@ -24,8 +25,10 @@ lib/smeagol/public/assets/smeagol/pygment.css
 lib/smeagol/public/assets/smeagol/template.css
 lib/smeagol/repository.rb
 lib/smeagol/settings.rb
-lib/smeagol/templates/layouts/default.mustache
+lib/smeagol/templates/layouts/page.mustache
 lib/smeagol/templates/layouts/versions.mustache
+lib/smeagol/templates/partials/footer.mustache
+lib/smeagol/templates/partials/header.mustache
 lib/smeagol/templates/settings.yml
 lib/smeagol/version.rb
 lib/smeagol/views/base.rb
@@ -39,6 +42,7 @@ test/helper.rb
 test/test_app.rb
 test/test_cache.rb
 test/test_init.rb
+test/test_update.rb
 test/test_wiki.rb
 HISTORY.md
 README.md
