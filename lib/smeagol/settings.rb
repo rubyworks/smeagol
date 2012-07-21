@@ -46,7 +46,7 @@ module Smeagol
     # settings - Settings hash. [Hash]
     #
     def initialize(settings={})
-      @partials  = PARTIALS
+      @partials      = PARTIALS
       @index         = 'Home'
       @rss           = true
       @exclude       = []

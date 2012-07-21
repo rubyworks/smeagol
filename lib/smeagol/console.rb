@@ -270,8 +270,17 @@ module Smeagol
     #
     # Update wiki repo(s).
     #
-    def update(options={})
-      if options[:all]
+    def update(*args)
+      options  = (Hash === args.last ? args.pop : {})
+      wiki_dir = args.first
+
+      if wiki_dir
+        wiki_dir = File.expand_path(wiki_dir)
+        repo = Repository.new(:path=>wiki_dir)
+        out = repo.update
+        out = out[1] if Array === out
+        report out
+      else
         file   = options[:config_file]
         config = Config.load(file)
         abort "No repositories configured." if config.repositories.empty?
@@ -283,11 +292,6 @@ module Smeagol
           out = out[1] if Array === out
           report out
         end
-      else
-        repo = Repository.new(:path=>Dir.pwd)
-        out = repo.update
-        out = out[1] if Array === out
-        report out
       end
     end
 

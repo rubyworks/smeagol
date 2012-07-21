@@ -58,17 +58,21 @@ module Smeagol
       @repo ||= Grit::Repo.new(path, :is_bare=>bare)
     end
 
+    #
     # Pull down any changes.
     #
-    # TODO: What about secret?
     def pull
       repo.git.pull({}, 'origin', branch)
     end
 
     #
+    # The old name for #pull.
+    #
     alias :update :pull
 
+    #
     # Clone repo to path.
+    #
     def clone
       tmp = ::File.join(::Dir.tmpdir, 'smeagol', Time.to_i)
       git = Grit::Git.new(tmp)

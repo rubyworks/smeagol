@@ -140,15 +140,12 @@ module Smeagol
     #end
 
     #
-    # Set secret for any repo without one.
-    #
-    # Note that setting `secret` to `false` in repository configuration would
-    # prevent this assignment, but still be equivalent to having none assigned.
+    # Set secret for all repositories.
     #
     def secret=(secret)
       return if secret.nil?
       repositories.each do |repo|
-        repo.secret = secret if repo.secret.nil?
+        repo.secret = secret
       end
     end
 

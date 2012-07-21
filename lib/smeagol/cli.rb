@@ -99,11 +99,7 @@ module Smeagol
     # in settings.
     #
     def update(argv)
-      parser.banner = "Usage: smeagol-update [OPTIONS]\n"
-
-      parser.on('-a', '--all', 'Update all configured repos.') do
-        options[:all] = true
-      end
+      parser.banner = "Usage: smeagol-update [OPTIONS] [WIKI-DIR]\n"
 
       #parser.on('-s', '--site', 'Also update site directories, if applicable.') do
       #  options[:site] = true
