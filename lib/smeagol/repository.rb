@@ -1,6 +1,6 @@
 module Smeagol
 
-  # Repostiory encapsulation. THis class serves two needs,
+  # Repostiory encapsulation. This class serves two needs,
   # as a wiki repo for Config and as a site repo for Settings.
   # Which fields are actually used depends on which of these
   # two use cases is at play. 

@@ -268,21 +268,6 @@ module Smeagol
     #  end
     #end
 
-#    # The Mustache template to use for page rendering.
-#    #
-#    # name - The name of the template to use.
-#    #
-#    # Returns the content of the page.mustache file in the root of the Gollum
-#    # repository if it exists. Otherwise, it uses the default page.mustache file
-#    # packaged with the Smeagol library.
-#    def get_template(name)
-#      if File.exists?("#{wiki.path}/#{layout_dir}/#{name}.mustache")
-#        IO.read("#{wiki.path}/#{layout_dir}/#{name}.mustache")
-#      else
-#        IO.read(::File.join(::File.dirname(__FILE__), "templates/layouts/#{name}.mustache"))
-#      end
-#    end
-
   end
 
 end
