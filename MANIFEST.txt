@@ -1,4 +1,4 @@
-#!mast .ruby .yardopts bin demo lib test *.md *.rdoc *.txt
+#!mast .ruby .yardopts bin demo lib spec test *.md *.rdoc *.txt
 .ruby
 bin/smeagol
 bin/smeagol-init
