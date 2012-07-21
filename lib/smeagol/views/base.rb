@@ -85,7 +85,7 @@ module Smeagol
           menu.each do |item|
             title, href = item['title'], item['href']
             if version != 'master' && item['href'].index('/') == 0
-              prefix = "/#{version}"
+              prefix = version.start_with?('v') ? "/#{version}" : "/v#{version}"
             else
               prefix = ""
             end

@@ -45,6 +45,9 @@ module Smeagol
       content
     end
 
+    # TODO: Instead of using `/^v\d/` as a match of versioned pages,
+    #       use `/v/{tag_name}` path instead.
+
     # All other resources go through Gollum.
     get '/*' do
       wiki  = Smeagol::Wiki.new(repository.path, {:base_path => mount_path})
@@ -123,11 +126,14 @@ module Smeagol
       if name.index(/^v\d/)
         repo = Grit::Repo.new(repository.path)
         tag_name = name.split('/').first
-        repo.tags.each do |tag|
-          if tag.name == tag_name  # TODO: don't assume actual v prefix
-            version = tag.commit.id
-            name = name.split('/')[1..-1].join('/')
-          end
+        repo_tag = repo.tags.find do |tag|
+          tag_name == tag.name or tag_name == "v#{tag.name}"
+        end
+        if repo_tag
+          version = repo_tag.name #repo_tag.commit.id
+          name = name.split('/')[1..-1].join('/')
+        else
+          # TODO: page not found
         end
       end
 

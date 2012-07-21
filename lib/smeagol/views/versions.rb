@@ -17,7 +17,8 @@ module Smeagol
       def content
         html = "<a href=\"/\">Current</a><br/>"
         wiki.repo.tags.each do |tag|
-          html << "<a href=\"/#{tag.name}\">#{tag.name}</a><br/>"
+          href = tag.name.start_with?('v') ? "/#{tag.name}" : "/v#{tag.name}"
+          html << "<a href=\"#{href}\">#{tag.name}</a><br/>"
         end
         html
       end
