@@ -53,8 +53,8 @@ module Smeagol
       @include       = []
       @site          = nil
       @date_format   = "%B %d, %Y"
-      @sync_script   = SYNC_SCRIPT
       @site_stage    = nil
+      @site_sync     = SYNC_SCRIPT
       #@static        = false
 
       # TODO: Raise error if no wiki_dir ?
@@ -115,12 +115,14 @@ module Smeagol
     def site=(entry)
       case entry
       when Hash
-        self.site_stage  = site['stage']
         self.site_origin = site['origin']
         self.site_branch = site['branch']
+        self.site_stage  = site['stage']
+        self.site_sync   = site['sync'] if site['sync']
       else
-        self.site_stage = true
-        self.site_path  = site.to_s
+        raise ArgumentError, 'site must be a mapping'
+        # TODO: maybe make this smarter in future to guess if single entry is origin or stage.
+        #self.site_stage = entry
       end
     end
 
@@ -147,6 +149,20 @@ module Smeagol
     # if not prefixed by and underscore, be sure to add it to `exclude`
     # setting as well.
     attr_accessor :site_stage
+
+    # Smeagol uses `rsync` to copy files from the repository to
+    # the staging location if given by `site_path`. By default this
+    # command is:
+    #
+    #   "rsync -arv --del --exclude .git* %s/ %s/"
+    #
+    # Where the first %s is the repository location and the second is the location
+    # specified by the `site_path` setting. If this needs to be different it can
+    # be change here. Just be sure to honor the `%s` slots.
+    #
+    # If set to `~` (ie. `nil`) then the files will be copied directly
+    # to the site_path directory without using rsync.
+    attr_accessor :site_sync
 
     # Where to find template partials. This is the location that Mustache uses
     # when looking for partials. The default is `_partials`.
@@ -234,22 +250,6 @@ module Smeagol
     #
     # TODO: Rename this field.
     attr_accessor :source_url
-
-    # Smeagol uses `rsync` to copy files from the repository to
-    # the staging location if given by `site_path`. By default this
-    # command is:
-    #
-    #   "rsync -arv --del --exclude .git* %s/ %s/"
-    #
-    # Where the first %s is the repository location and the second is the location
-    # specified by the `site_path` setting. If this needs to be different it can
-    # be change here. Just be sure to honor the `%s` slots.
-    #
-    # If set to `~` (ie. `nil`) then the files will be copied directly
-    # to the site_path directory without using rsync.
-    #
-    # Note that this isn't actually used yet.
-    attr_accessor :sync_script
 
     # Expanded site directory.
     #
