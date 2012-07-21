@@ -268,38 +268,38 @@ module Smeagol
     end
 
     #
-    # Update/clone site repo.
-    #
-    # TODO: update all repos in smeagol/config.yml ?
+    # Update wiki repo(s).
     #
     def update(options={})
       if options[:all]
         file   = options[:config_file]
         config = Config.load(file)
-        #config.assign(options)  # TODO: assign secret if given
         abort "No repositories configured." if config.repositories.empty?
 
+        config.secret = options[:secret]
         config.repositories.each do |repository|
+          report "Updating: #{repository.path}"
           out = repository.update
           out = out[1] if Array === out
-          if out.index('Already up-to-date').nil? 
-            $stderr.puts "Updated: #{repository.path}"
-          end
+          report out
         end
       else
-        wiki.repo.git.pull({}, 'origin', 'master')
+        repo = Repository.new(:path=>Dir.pwd)
+        out = repo.update
+        out = out[1] if Array === out
+        report out
       end
     end
 
-      #if settings.site
-      #  if Dir.exist?(site_path)
-      #    $stderr.puts "Pulling `#{repo.branch}' from `origin' in `#{repo.path}'..."
-      #    repo.pull
-      #  else
-      #    $stderr.puts "Cloning `#{repo.origin}' in `#{repo.path}'..."
-      #    repo.clone
-      #  end
-      #end
+    #if settings.site
+    #  if Dir.exist?(site_path)
+    #    $stderr.puts "Pulling `#{repo.branch}' from `origin' in `#{repo.path}'..."
+    #    repo.pull
+    #  else
+    #    $stderr.puts "Cloning `#{repo.origin}' in `#{repo.path}'..."
+    #    repo.clone
+    #  end
+    #end
 
     #
     # Site directory path.
