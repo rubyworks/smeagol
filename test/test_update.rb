@@ -10,7 +10,7 @@ testcase Smeagol::Console do
 
     test "update should fit pull down current repo" do
       Dir.chdir(@test_dir) do
-        Smeagol::Console.update()
+        Smeagol::Console.update('.')
       end
     end
 
