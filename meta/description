@@ -1,4 +1,3 @@
 Smeagol is a customizable read-only Gollum wiki server.
-This can be useful when you want to maintain a standalone website,
-but you want to update it through the Gollum wiki interface,
-e.g. via GitHub.
+Smeagol makes it possible to maintain a standalone website,
+but update it through the Gollum wiki interface, e.g. via GitHub.

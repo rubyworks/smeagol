@@ -23,6 +23,18 @@ Smeagol follows the rules of [Semantic Versioning](http://semver.org/) and uses
 [TomDoc](http://tomdoc.org/) for inline documentation.
 
 
+## STATUS
+
+[![Build Status](https://secure.travis-ci.org/rubyworks/smeagol.png)](http://travis-ci.org/rubyworks/smeagol)
+
+As of v0.6.0 Smeagol is in fairly good shape. It has a number of tests and they
+are all green. However the tests are far from comprehensive. So there is a some
+QA waterfalling going on here too. Probably it is best to consider the v0.6.x
+series an advanced beta set. So if you run into any issues, or see any clear ways
+to improve the project, let us know via the issues tracker to help us move
+toward a rock-solid 0.7. 
+
+
 ## INSTALLATION
 
 You can install Smeagol with RubyGems:
@@ -118,44 +130,13 @@ To shutdown the server use `stop`.
 There are two ways to handle updates of the repository through Shelob: 
 *automatic updating* and *manual updating*.
 
-To setup Shelob to automatically update your repository in fixed intervals,
-simply pass the `--auto-update` option in the command line and Shelob will
-automatically perform a `git pull origin master` on your repository once per day.
-
-To perform a manual update, simply go to the `update` route, e.g. `http://localhost:4567/update`,
-and Shelob will perform a git pull. Obviously, change the URL appropriately
-for your hostname and port.
-
-
-## UPDATING
-
-Updating only works when using the Smeagol server. It does not work for static
-sites. There are two ways to update the repository through Smeagol:
-
-* Auto Update
-* Manual Update
-
 To setup Smeagol to automatically update your repository in fixed intervals,
-simply pass the `--auto-update` option in the command line and Smeagol will
+simply pass the `--auto-update` option in the command line and Smjeagol will
 automatically perform a `git pull origin master` on your repository once per day.
 
 To perform a manual update, simply go to the `update` route, e.g. `http://localhost:4567/update`,
-and Smeagol will perform a git pull. Change the URL for your appropriate hostname and port.
-
-
-## STATIC SITES
-
-To generate a static site use the the `static` command.
-
-    $ cd /path/to/wiki
-    $ smeagol static
-
-By default the build will be placed in `public/` in the wiki repo. To use an
-alternate destination use the `-d`/`--dir` options.
-
-    $ smeagol build -d /path/to/site
-
-The default location can be changed in `_settings.yml` via the `static` field.
+and Smeagol will perform a git pull. Of course, change the URL appropriately
+for your hostname and port.
 
 
 ## CONTRIBUTE
@@ -166,7 +147,7 @@ or fix a bug. There are a couple things I ask:
 * Create an appropriately named topic branch that contains your change.
 * Please try to provide tests for all code you check in.
 
-Note that Smeagol uses QED, Citron and AE for testing. And admittedly the project
+Note that Smeagol uses Citron and AE for testing. And admittedly the project
 is water-falling too much at present. So if you would like to contribute, but
 don't have any specific request, writing a few tests would be a great help.
 

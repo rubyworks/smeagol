@@ -1,6 +1,6 @@
 # RELEASE HISTORY
 
-## v0.6.0 / 2012-07-19
+## v0.6.0 / 2012-07-26
 
 Version 0.6 is a major refactoring of the code base. While most previous
 functionaility remains, new features have been added and certain configuration
@@ -9,6 +9,10 @@ the static generation feature has been spun-off to a new gem called Shelob.
 Another important change is the use of an initial underscore to denote special
 files. Users of the previous version should consult the updated documentation
 and adjust their sites accordingly.
+
+This release is dedicated to Ben Johnson, the original author of Smeagol.
+Thanks for all your hard work and putting the project in the care of the
+Rubyworks Foundation.
 
 Changes:
 
