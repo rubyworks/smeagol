@@ -71,6 +71,12 @@ summary: Wiki Cum Website
 title: Semagol
 version: 0.6.0
 name: smeagol
-description: Smeagol is a server that can run a read-only version of a Gollum wiki.
+description: ! 'Smeagol is a customizable read-only Gollum wiki server.
+
+  This can be useful when you want to maintain a standalone website,
+
+  but you want to update it through the Gollum wiki interface,
+
+  e.g. via GitHub.'
 organization: rubyworks
-date: '2012-07-20'
+date: '2012-07-26'
