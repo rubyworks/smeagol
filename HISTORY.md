@@ -1,13 +1,14 @@
 # RELEASE HISTORY
 
-## v0.6.0 / 2012-07-01
+## v0.6.0 / 2012-07-19
 
 Version 0.6 is a major refactoring of the code base. While most previous
 functionaility remains, new features have been added and certain configuration
-settings have been adjusted. Perhaps the most note-worthy change is the
-fact that the static generation feature has been spun-off to a new gem
-called Shelob, which will get its first release soon. Users of the previous
-version should consult the updated documentation and adjust their sites accordingly.
+settings have been adjusted. One of the more note-worthy changes is that
+the static generation feature has been spun-off to a new gem called Shelob.
+Another important change is the use of an initial underscore to denote special
+files. Users of the previous version should consult the updated documentation
+and adjust their sites accordingly.
 
 * Use _layouts directory to store templates.
 * Use _settings.yml instead of settings.yml.
