@@ -280,10 +280,10 @@ module Smeagol
       wiki_dir = args.first
 
       if wiki_dir
-        wiki_dir = File.expand_path(wiki_dir)
-        repo = Repository.new(:path=>wiki_dir)
-        out = repo.update
-        out = out[1] if Array === out
+        dir  = File.expand_path(wiki_dir)
+        repo = Repository.new(:path=>dir)
+        out  = repo.update
+        out  = out[1] if Array === out
         report out
       else
         file   = options[:config_file]

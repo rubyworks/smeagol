@@ -132,6 +132,8 @@ module Smeagol
     def collect_files(base, offset)
       list = []
       dir  = ::File.join(base, offset)
+      return list unless File.directory?(dir)
+
       ::Dir.entries(dir).each do |path|
         next if path == '.' or path == '..'
         subdir = ::File.join(dir, path)

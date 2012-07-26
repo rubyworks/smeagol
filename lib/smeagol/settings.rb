@@ -256,11 +256,9 @@ module Smeagol
     # If `site_path` is an absolute path it will returned as given, 
     # otherwise this will be relative to the location of the wiki.
     #
-    # Returns String of build path.
+    # Returns String of site path.
     def site_path
-      return nil unless site_stage
-
-      site_path = (TrueClass === site_stage ? SITE_PATH : site_stage.to_s)
+      site_path = (TrueClass === site_stage ? SITE_PATH : site_stage || SITE_PATH)
 
       path = relative?(site_path) ? ::File.join(wiki_dir, site_path) : site_path
       path.chomp('/')  # ensure no trailing path separator
@@ -270,8 +268,6 @@ module Smeagol
     # Deprecated: Original name for #site_path.
     alias :full_site_path :site_path
 
-    #
-    # TODO: raise error is no site settings?
     #
     # Returns Repository object for git-based deployment site.
     #

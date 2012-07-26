@@ -46,7 +46,7 @@ require 'ostruct'
 require 'yaml'
 require 'optparse'
 require 'fileutils'
-require 'sinatra'
+require 'sinatra/base'
 
 require 'smeagol/version'
 require 'smeagol/core_ext'
