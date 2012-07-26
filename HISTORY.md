@@ -10,6 +10,8 @@ Another important change is the use of an initial underscore to denote special
 files. Users of the previous version should consult the updated documentation
 and adjust their sites accordingly.
 
+Changes:
+
 * Use _layouts directory to store templates.
 * Use _settings.yml instead of settings.yml.
 * Spin-off static builds to Shelob project.
@@ -20,12 +22,16 @@ and adjust their sites accordingly.
 
 Bug fix release for static site generation.
 
+Changes:
+
 * Static site generator bug fixes. (kylef)
 
 
 ## v0.5.8 / 2011-09-23
 
 This release adds ability to generate a static site.
+
+Changes:
 
 * Added static site generator. (kylef)
 
@@ -34,10 +40,16 @@ This release adds ability to generate a static site.
 
 Simple CSS style fix release. 
 
+Changes:
+
 * Fix frame in CSS.
 
 
 ## v0.5.3 / 2011-02-04
+
+This realease simple updates the version of Gollum dependency.
+
+Changes:
 
 * Upgrade to Gollum 1.1.1
 
@@ -47,12 +59,16 @@ Simple CSS style fix release.
 New release adds Google Analytics support. Just
 add a `tracking_id` to setting.yml.
 
+Changes:
+
 * Added Google Analytics support
 
 
 ## v0.5.1 / 2010-10-13
 
 Release fixes bug in menu generation.
+
+Changes:
 
 * Fixed menu bug.
 
@@ -63,6 +79,8 @@ This release adds support for site versions. The old
 versions of pages can be viewed by providing the commit
 id or tag name in the URL.
 
+Changes:
+
 * Added versioning using git tags.
 
 
@@ -70,6 +88,8 @@ id or tag name in the URL.
 
 This release imvproves CSS styling, including the addtion
 of a CSS reset.
+
+Changes:
 
 * Added CSS styles.
 * Added CSS reset.
@@ -79,6 +99,8 @@ of a CSS reset.
 
 Bug release fixes missing require issue.
 
+Changes:
+
 * Missing require bug fixed.
 
 
@@ -87,6 +109,8 @@ Bug release fixes missing require issue.
 This release adds a number of new features, such as
 GitHub "fork me" ribbon support. It also makes a few 
 API adjustments.
+
+Changes:
 
 * Added secret update key.
 * Added GitHub ribbon support.
@@ -101,6 +125,8 @@ API adjustments.
 
 First public release of Smeagol!
 
+Changes:
+
 * Added multiple repository support.
 * Added `smeagold` process daemon.
 * Removed Bundler dependency.
@@ -110,6 +136,8 @@ First public release of Smeagol!
 ## v0.1.0 / 2010-09-20
 
 First private release of Smeagol.
+
+Changes:
 
 * Smeagol was born!
 
