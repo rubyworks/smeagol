@@ -18,6 +18,12 @@ module Smeagol
       end
 
       #
+      def title
+        filename  # TODO: better idea for form title?
+      end
+      alias_method :page_title, :title
+
+      #
       #def content=(text)
       #  @content = text
       #end

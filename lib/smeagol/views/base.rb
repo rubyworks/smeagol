@@ -223,6 +223,11 @@ module Smeagol
         false
       end
 
+      # Support mathjax?
+      def mathjax
+        settings.mathjax
+      end
+
       #
       def settings
         @master.settings

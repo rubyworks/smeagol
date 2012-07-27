@@ -1,7 +1,7 @@
 module Smeagol
 
   # Repostiory encapsulation. This class serves two needs,
-  # as a wiki repo for Config and as a site repo for Settings.
+  # as a wiki repo (for Config) and as a site repo (for Settings).
   # Which fields are actually used depends on which of these
   # two use cases is at play. 
   #
@@ -74,6 +74,7 @@ module Smeagol
     # Clone repo to path.
     #
     def clone
+      # dummy location
       tmp = ::File.join(::Dir.tmpdir, 'smeagol', Time.to_i)
       git = Grit::Git.new(tmp)
       git.clone({:quiet=>false, :verbose=>true, :progress=>true, :branch=>branch}, origin, path)

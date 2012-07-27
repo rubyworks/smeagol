@@ -56,6 +56,8 @@ module Smeagol
       @site_stage    = nil
       @site_sync     = SYNC_SCRIPT
       #@static        = false
+      @mathjax       = true
+      @future        = false
 
       # TODO: Raise error if no wiki_dir ?
       @wiki_dir = settings[:wiki_dir]
@@ -185,6 +187,9 @@ module Smeagol
     # Include posts with future dates? By default all posts dated in the
     # future are omitted.
     attr_accessor :future
+
+    # Support the use of mathjax? Default is `true`.
+    attr_accessor :mathjax
 
     # Do not load plugins. (TODO?)
     #attr_accessor :safe
