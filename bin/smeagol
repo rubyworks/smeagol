@@ -1,9 +1,16 @@
 #!/usr/bin/env ruby
 
-cmd = ['smeagol']
-ARGV.each do |arg|
+cmd = []
+
+while (arg = ARGV.first)
   break if arg.start_with?('-')
   cmd << ARGV.shift
 end
-exec(cmd.join('-'), *ARGV)
+
+if cmd.empty?
+  puts "smeagol: no command given"
+else
+  cmd = 'smeagol-' + cmd.join('-')
+  exec(cmd, *ARGV)
+end
 

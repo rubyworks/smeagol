@@ -208,6 +208,31 @@ module Smeagol
       return content
     end
 
+    ## For static sites we cannot depend on the web server to default a link
+    ## to a directory to the index.html file within it. So we need to append
+    ## index.html to any href links for which we have wiki pages.
+    ## This is not a prefect solution, but there may not be a better one.
+    ##
+    #def index_directory_hrefs(html)
+    #  html.gsub(/href=\"(.*)\"/) do |match|
+    #    link = "#{$1}/index.html"
+    #    if @pages[link] #if File.directory?(File.join(current_directory, $1))
+    #      "href=\"#{link}\""
+    #    else
+    #      match  # no change
+    #    end
+    #  end
+    # end
+
+    # Public: Get a list of plugin files.
+    #
+    # Returns Array of plugin files.
+    #def plugins
+    #  files.map do |f|
+    #    File.fnmatch?('_plugins/*.rb', f.path)
+    #  end
+    #end
+
 =begin
     # Collect list of pages.
     def pages
@@ -244,31 +269,6 @@ module Smeagol
       @file_views ||= files.map{ |post| Views::Template.new(file, versionb) }
     end
 =end
-
-    ## For static sites we cannot depend on the web server to default a link
-    ## to a directory to the index.html file within it. So we need to append
-    ## index.html to any href links for which we have wiki pages.
-    ## This is not a prefect solution, but there may not be a better one.
-    ##
-    #def index_directory_hrefs(html)
-    #  html.gsub(/href=\"(.*)\"/) do |match|
-    #    link = "#{$1}/index.html"
-    #    if @pages[link] #if File.directory?(File.join(current_directory, $1))
-    #      "href=\"#{link}\""
-    #    else
-    #      match  # no change
-    #    end
-    #  end
-    # end
-
-    # Public: Get a list of plugin files.
-    #
-    # Returns Array of plugin files.
-    #def plugins
-    #  files.map do |f|
-    #    File.fnmatch?('_plugins/*.rb', f.path)
-    #  end
-    #end
 
   end
 
