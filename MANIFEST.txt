@@ -1,5 +1,6 @@
 #!mast .ruby .yardopts bin demo lib spec test *.md *.rdoc *.txt
 .ruby
+.yardopts
 bin/smeagol
 bin/smeagol-init
 bin/smeagol-preview

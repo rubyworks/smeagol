@@ -1,0 +1,9 @@
+--title "Smeagol"
+--readme README.md
+--protected
+--private
+--plugin tomdoc
+lib
+-
+[A-Z]*.*
+
