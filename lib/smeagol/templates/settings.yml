@@ -1,22 +1,13 @@
 ---
-# Default deployment mode. Do you need to deploy a static
-# site or not? This is important because it effects the 
-# default behavior of smeagol command line tools. If you
-# so than put the path to the site location here. Typical
-# path would be `public`. Paths are relative to the wiki
-# location, unless an absolute path is given.
+# Gollum wiki url.
+# e.g. `git@github.com:trans/trans.github.com.wiki.git`
 
-static: false
+wiki_origin: {{ wiki_origin }}
 
 # Website address.
 # e.g. `http://trans.github.com`
 
 url: {{ url }}
-
-# Gollum wiki url.
-# e.g. `git@github.com:trans/trans.github.com.wiki.git`
-
-wiki_origin: {{ wiki_origin }}
 
 # Source site, if applicable.
 # e.g. `http://github.com/trans`
@@ -36,7 +27,7 @@ tagline: Welcome to My Site
 description:
   This is my awesome site.
 
-# Primary author/maintainer of site.
+# Webmaster of site.
 
 author: {{ author }}
 
