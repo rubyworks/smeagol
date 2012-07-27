@@ -3,7 +3,7 @@
 ## v0.6.0 / 2012-07-26
 
 Version 0.6 is a major refactoring of the code base. While most previous
-functionaility remains, new features have been added and certain configuration
+functionality remains, new features have been added and certain configuration
 settings have been adjusted. One of the more note-worthy changes is that
 the static generation feature has been spun-off to a new gem called Shelob.
 Another important change is the use of an initial underscore to denote special
@@ -51,7 +51,7 @@ Changes:
 
 ## v0.5.3 / 2011-02-04
 
-This realease simple updates the version of Gollum dependency.
+This release simple updates the version of Gollum dependency.
 
 Changes:
 
@@ -90,7 +90,7 @@ Changes:
 
 ## v0.4.2 / 2010-10-11
 
-This release imvproves CSS styling, including the addtion
+This release improves CSS styling, including the addition
 of a CSS reset.
 
 Changes:

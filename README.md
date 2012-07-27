@@ -72,10 +72,10 @@ put the default files in place.
     $ cd path/to/wiki
     $ smeagol init
 
-In your wiki this will add a few files. One of these is `settings.yml` which you
+In your wiki this will add a few files. One of these is `_settings.yml` which you
 use to configure smeagol for your site. See SETTINGS below.
 
-There will also be a file called `_Layout.html`. Using Mustache templating
+There will also be a file called `_layouts/page.mustache`. Using Mustache templating
 use this file to create a custom page layout for your site. To learn more
 about the variables available for use in this template see
 the [Smeagol Wiki](http://github.com/rubyworks/smeagol/wiki).
@@ -107,32 +107,41 @@ An example `_settings.yml` file:
     - title: Projects
       href: "http://github.com/trans"
 
-Probably the most important field is `static`. By setting this to `public`, we inform
-Smeagol that we deploying a static site and the static files are to be saved in 'public/`
-directory.
-
 See the API documentation for more details about each field.
 
 
 ## SERVING 
 
-Shelob can serve multiple Gollum repos simulataneously.
+Smeagol can serve multiple Gollum repos simulataneously. To do this
+create a configuration file at `~/.smeagol/config.yml`. An example file
+looks like this:
 
-    $ shelob start
+    ---
+    port: 3000
+    auto_update: true
+    cache_enabled: true
+    repositories:
+      - path: ~/websites/acme/wiki
+        cname: acme.org
+        origin: 'git@github.com:acme/acme.wiki.git'
+        ref: master
+        bare: false
+        secret: X123
 
-To shutdown the server use `stop`.
+Then to serve the listed repositories use:
 
-    $ shelob stop
+    $ smeagol serve
 
 
 ## UPDATING
 
-There are two ways to handle updates of the repository through Shelob: 
+There are two ways to handle updates of the repository through Smeagol: 
 *automatic updating* and *manual updating*.
 
 To setup Smeagol to automatically update your repository in fixed intervals,
-simply pass the `--auto-update` option in the command line and Smjeagol will
-automatically perform a `git pull origin master` on your repository once per day.
+simply pass the `--auto-update` option in the `smeagol-serve` command and Smeagol
+will automatically perform a `git pull origin master` on your repository once
+per day.
 
 To perform a manual update, simply go to the `update` route, e.g. `http://localhost:4567/update`,
 and Smeagol will perform a git pull. Of course, change the URL appropriately
