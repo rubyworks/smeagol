@@ -77,4 +77,4 @@ description: ! 'Smeagol is a customizable read-only Gollum wiki server.
 
   but update it through the Gollum wiki interface, e.g. via GitHub.'
 organization: rubyworks
-date: '2012-07-26'
+date: '2012-07-30'

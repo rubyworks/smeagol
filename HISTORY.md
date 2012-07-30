@@ -1,6 +1,6 @@
 # RELEASE HISTORY
 
-## v0.6.0 / 2012-07-26
+## v0.6.0 / 2012-07-30
 
 Version 0.6 is a major refactoring of the code base. While most previous
 functionality remains, new features have been added and certain configuration
