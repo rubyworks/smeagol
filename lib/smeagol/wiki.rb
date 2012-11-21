@@ -13,6 +13,7 @@ module Smeagol
     self.default_committer_name  = 'Anonymous'
     self.default_committer_email = 'anon@anon.com'
     self.default_ws_subs = ['_','-']
+    self.default_options = {}
 
     # Public: The Smeagol wiki settings. These can be found in the _settings.yml
     # file at the root of the repository.
