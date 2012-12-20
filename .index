@@ -1,0 +1,80 @@
+---
+type: ruby
+revision: 2013
+sources:
+- var
+authors:
+- name: Ben Johnson
+  email: benbjohnson@yahoo.com
+- name: Thomas Sawyer
+  email: transfire@gmail.com
+organizations: []
+requirements:
+- version: 1.2~
+  name: rack
+- version: 1.3+
+  name: gollum
+- version: 1.0~
+  name: sinatra
+- version: 0.5+
+  name: rubypython
+- groups:
+  - development
+  - test
+  development: true
+  name: citron
+- groups:
+  - develpoment
+  - test
+  development: true
+  name: ae
+- groups:
+  - development
+  - test
+  development: true
+  name: rack-test
+- groups:
+  - development
+  - doc
+  development: true
+  name: rdiscount
+conflicts: []
+alternatives: []
+resources:
+- type: home
+  uri: http://rubyworks.github.com/smeagol
+  label: Homepage
+- type: code
+  uri: http://github.com/rubyworks/smeagol
+  label: Source Code
+- type: docs
+  uri: http://rubydoc.info/gems/smeagol/frames
+  label: Documentation
+- type: mail
+  uri: http://groups.google.com/groups/rubyworks-mailinglist
+  label: Mailing List
+repositories:
+- name: upstream
+  scm: git
+  uri: git://github.com/rubyworks/smeagol.git
+categories: []
+paths:
+  load:
+  - lib
+copyrights:
+- holder: Ben Johnson
+  year: '2010'
+- holder: Rubyworks
+  year: '2011'
+  license: BSD-2-Clause
+created: '2010-08-16'
+summary: Wiki Cum Website
+title: Semagol
+version: 0.6.0
+name: smeagol
+description: ! 'Smeagol is a customizable read-only Gollum wiki server.
+
+  Smeagol makes it possible to maintain a standalone website,
+
+  but update it through the Gollum wiki interface, e.g. via GitHub.'
+date: '2012-12-20'
