@@ -2,7 +2,7 @@
 email:
   mailto  : 
     - ruby-talk@ruby-lang.org
-    - rubyworks-mailinglist@google.groups.com
+    - rubyworks-mailinglist@googlegroups.com
   file    : ~
   subject : ~
 
