@@ -45,6 +45,7 @@ module Smeagol
           Views::Page.new(self, wiki_file, version)
         end
       when Gollum::File
+        # TODO: Support for other markup formats.
         if wiki_file.extname == '.mustache'
           Views::Form.new(self, wiki_file, version)
         else
