@@ -2,4 +2,7 @@
 
 ignore 'Gemfile.lock', 'log', 'tmp', 'web', 'wiki', 'work', 'vendor'
 
+file "MANIFEST.txt" do
+  sh "mast -u"
+end
 
