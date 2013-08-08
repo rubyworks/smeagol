@@ -24,7 +24,7 @@ requirements:
   - compiled
   version: 0.5+
   development: true
-  name: githib-markdown
+  name: github-markdown
 - groups:
   - test
   development: true

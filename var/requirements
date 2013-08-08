@@ -4,7 +4,7 @@
 - grit 2.5+
 - sinatra 1.4+
 - rubypython 0.5+
-- githib-markdown 0.5+ (compiled)
+- github-markdown 0.5+ (compiled)
 - rubytest-cli (test)
 - citron       (test)
 - ae           (test)
