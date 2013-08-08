@@ -24,6 +24,11 @@ requirements:
   - development
   - test
   development: true
+  name: rubytest-cli
+- groups:
+  - development
+  - test
+  development: true
   name: citron
 - groups:
   - develpoment

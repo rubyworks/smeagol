@@ -4,10 +4,11 @@
 - grit 2.5+
 - sinatra 1.4+
 - rubypython 0.5+
-- citron    (development test)
-- ae        (develpoment test)
-- rack-test (development test)
-- rdiscount (development doc)
+- rubytest-cli (development test)
+- citron       (development test)
+- ae           (develpoment test)
+- rack-test    (development test)
+- rdiscount    (development doc)
 
 #- daemons 1.1~
 #- mocha    (development test)
