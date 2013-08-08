@@ -82,7 +82,7 @@ module Smeagol
     # Deprecated: Alias for #assign.
     alias update assign
 
-    # Internal: Do not set this settings.yml!
+    # Internal: Do not set this in _settings.yml!
     attr_accessor :wiki_dir
 
     # Gollum wiki's repo uri.
@@ -98,6 +98,22 @@ module Smeagol
 
     # If a site is intended for static deployment, `static` should be set to `true`.
     #attr_accessor :static
+
+    #
+    def wiki
+      {'origin'=>wiki_origin, 'ref'=>wiki_ref}
+    end
+
+    #
+    def wiki=(entry)
+      case entry
+      when Hash
+        self.wiki_origin = site['origin']
+        self.wiki_ref    = site['ref']
+      else
+        raise ArgumentError, 'wiki must be a mapping'
+      end
+    end
 
     #
     def site
