@@ -14,8 +14,6 @@ requirements:
   name: rack
 - version: 2.5+
   name: gollum
-- version: 2.5+
-  name: grit
 - version: 1.4+
   name: sinatra
 - version: 0.5+
@@ -84,5 +82,5 @@ description: |-
   Smeagol is a customizable read-only Gollum wiki server.
   Smeagol makes it possible to maintain a standalone website,
   but update it through the Gollum wiki interface, e.g. via GitHub.
-version: 0.6.1
+version: 0.6.2
 date: '2013-08-08'

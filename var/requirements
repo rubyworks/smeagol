@@ -1,7 +1,7 @@
 ---
 - rack 1.5+
 - gollum 2.5+
-- grit 2.5+
+#- grit 2.5+
 - sinatra 1.4+
 - rubypython 0.5+
 - github-markdown 0.5+ (compiled)
