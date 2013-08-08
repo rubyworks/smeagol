@@ -2,7 +2,11 @@
 
 ignore 'Gemfile.lock', 'log', 'tmp', 'web', 'wiki', 'work', 'vendor'
 
-file "MANIFEST.txt" do
+file "lib" do
   sh "mast -u"
+end
+
+file "var/*" do
+  sh "index"
 end
 
