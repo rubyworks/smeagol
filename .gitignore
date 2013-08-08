@@ -1,10 +1,11 @@
 .bundle/
 .rvmrc
-pkg
-log
-web
-wiki
-tmp
+pkg/
+log/
+web/
+wiki/
+tmp/
+vendor/
 work/sandbox
 DEMO.md
 Gemfile.lock

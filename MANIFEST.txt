@@ -1,5 +1,5 @@
-#!mast .ruby .yardopts bin demo lib spec test *.md *.rdoc *.txt
-.ruby
+#!mast .index .yardopts bin demo lib spec test vendor/grit/lib *.md *.rdoc *.txt
+.index
 .yardopts
 bin/smeagol
 bin/smeagol-init
@@ -45,6 +45,34 @@ test/test_cache.rb
 test/test_init.rb
 test/test_update.rb
 test/test_wiki.rb
-HISTORY.md
+vendor/grit/lib/grit/actor.rb
+vendor/grit/lib/grit/blame.rb
+vendor/grit/lib/grit/blob.rb
+vendor/grit/lib/grit/commit.rb
+vendor/grit/lib/grit/commit_stats.rb
+vendor/grit/lib/grit/config.rb
+vendor/grit/lib/grit/diff.rb
+vendor/grit/lib/grit/errors.rb
+vendor/grit/lib/grit/git-ruby/commit_db.rb
+vendor/grit/lib/grit/git-ruby/git_object.rb
+vendor/grit/lib/grit/git-ruby/internal/file_window.rb
+vendor/grit/lib/grit/git-ruby/internal/loose.rb
+vendor/grit/lib/grit/git-ruby/internal/pack.rb
+vendor/grit/lib/grit/git-ruby/internal/raw_object.rb
+vendor/grit/lib/grit/git-ruby/repository.rb
+vendor/grit/lib/grit/git-ruby.rb
+vendor/grit/lib/grit/git.rb
+vendor/grit/lib/grit/index.rb
+vendor/grit/lib/grit/lazy.rb
+vendor/grit/lib/grit/merge.rb
+vendor/grit/lib/grit/ref.rb
+vendor/grit/lib/grit/repo.rb
+vendor/grit/lib/grit/ruby1.9.rb
+vendor/grit/lib/grit/status.rb
+vendor/grit/lib/grit/submodule.rb
+vendor/grit/lib/grit/tag.rb
+vendor/grit/lib/grit/tree.rb
+vendor/grit/lib/grit.rb
 README.md
+HISTORY.md
 LICENSE.txt
