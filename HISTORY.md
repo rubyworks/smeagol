@@ -1,5 +1,19 @@
 # RELEASE HISTORY
 
+## v0.6.1 / 2013-08-01
+
+This release of Smeagol is a minor point release to update its dependencies.
+The Grit dependency in particular had become a problem when running under
+Ruby 2.0. To fix we had to vendor the `styx/grit` fork and bundle it with
+the gem. In the future we might migrate the backend to Rugged (volunteers
+welcome!)
+
+Changes:
+
+* Vendor styx/grit in place of grit gem.
+* Set default_options in Gollum::Wiki subclass.
+
+
 ## v0.6.0 / 2012-07-30
 
 Version 0.6 is a major refactoring of the code base. While most previous
