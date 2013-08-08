@@ -38,7 +38,8 @@ module Smeagol
 
 end
 
-require 'gollum'
+#require 'gollum'
+require 'gollum-lib'
 require 'rack/file'
 require 'mustache'
 require 'tmpdir'

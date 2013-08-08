@@ -50,7 +50,7 @@ module Smeagol
 
     # All other resources go through Gollum.
     get '/*' do
-      wiki  = Smeagol::Wiki.new(repository.path, {:base_path => mount_path})
+      wiki  = Smeagol::Wiki.new(repository.path, :base_path => mount_path)
       cache = Smeagol::Cache.new(wiki)
       ctrl  = Smeagol::Controller.new(wiki) # settings)
 

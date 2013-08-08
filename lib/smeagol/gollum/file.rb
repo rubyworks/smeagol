@@ -24,7 +24,7 @@ module Gollum
     attr_accessor :version
 
     # Recent addition to Gollum.
-    alias filename name unless method_defined?(:filename)
+    #alias filename name unless method_defined?(:filename)
 
     # Public: The title will be constructed from the
     # filename by stripping the extension and replacing any dashes with
