@@ -21,28 +21,29 @@ requirements:
 - version: 0.5+
   name: rubypython
 - groups:
-  - development
+  - compiled
+  version: 0.5+
+  development: true
+  name: githib-markdown
+- groups:
   - test
   development: true
   name: rubytest-cli
 - groups:
-  - development
   - test
   development: true
   name: citron
 - groups:
-  - develpoment
   - test
   development: true
   name: ae
 - groups:
-  - development
   - test
   development: true
   name: rack-test
 - groups:
-  - development
   - doc
+  - compiled
   development: true
   name: rdiscount
 conflicts: []
