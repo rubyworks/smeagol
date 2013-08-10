@@ -5,7 +5,7 @@ module Smeagol
   #
   # TODO: Can we use shell.rb for this?
   #
-  # TODO: This hsould not be necessary. 99% of the time it's just `git`.
+  # TODO: This should not be necessary. 99% of the time it's just `git`.
   #       For the rest if $GIT environment variable.
   #
   # Returns String path to git executable.
@@ -78,4 +78,7 @@ require 'smeagol/helpers/toc'
 
 require 'smeagol/cli'
 require 'smeagol/console'
+
+require 'smeagol/static_generator'
+require 'smeagol/static_server'
 

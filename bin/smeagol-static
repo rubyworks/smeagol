@@ -1,0 +1,4 @@
+#!/usr/bin/env ruby
+require 'smeagol'
+Smeagol::CLI.spin(ARGV)
+

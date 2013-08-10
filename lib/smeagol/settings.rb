@@ -15,6 +15,9 @@ module Smeagol
     # Default site stage directory.
     SITE_PATH = '_site'
 
+    # Default build-to directory for static builds.
+    STATIC_DIR = 'public'
+
     # Default sync command.
     SYNC_SCRIPT = "rsync -arv --del --exclude .git* '%s/' '%s/'"
 
@@ -55,7 +58,8 @@ module Smeagol
       @date_format   = "%B %d, %Y"
       @site_stage    = nil
       @site_sync     = SYNC_SCRIPT
-      #@static        = false
+      @static        = false
+      @static_sync   = SYNC_SCRIPT
       @mathjax       = true
       @future        = false
 
@@ -82,6 +86,10 @@ module Smeagol
     # Deprecated: Alias for #assign.
     alias update assign
 
+    # Site's URL. If someone wanted to visit your website, this
+    # is the link they would follow, e.g. `http://trans.github.com`
+    attr_accessor :url
+
     # Internal: Do not set this in _settings.yml!
     attr_accessor :wiki_dir
 
@@ -91,13 +99,6 @@ module Smeagol
 
     # The particular tag or reference id to serve. Default is 'master'.
     attr_accessor :wiki_ref
-
-    # Site's URL. If someone wanted to visit your website, this
-    # is the link they would follow, e.g. `http://trans.github.com`
-    attr_accessor :url
-
-    # If a site is intended for static deployment, `static` should be set to `true`.
-    #attr_accessor :static
 
     #
     def wiki
@@ -112,35 +113,6 @@ module Smeagol
         self.wiki_ref    = site['ref']
       else
         raise ArgumentError, 'wiki must be a mapping'
-      end
-    end
-
-    #
-    def site
-      {'stage'=>site_stage, 'origin'=>site_origin, 'branch'=>site_branch}
-    end
-
-    # If deployment of a site is done via git or via a staging directory,
-    # then `site` can be used to set these.
-    #
-    # Examples
-    #
-    #   site:
-    #     origin: git@github.com:trans/trans.github.com.git
-    #     branch: gh-pages
-    #     path: _site
-    #
-    def site=(entry)
-      case entry
-      when Hash
-        self.site_origin = site['origin']
-        self.site_branch = site['branch']
-        self.site_stage  = site['stage']
-        self.site_sync   = site['sync'] if site['sync']
-      else
-        raise ArgumentError, 'site must be a mapping'
-        # TODO: maybe make this smarter in future to guess if single entry is origin or stage.
-        #self.site_stage = entry
       end
     end
 
@@ -181,6 +153,63 @@ module Smeagol
     # If set to `~` (ie. `nil`) then the files will be copied directly
     # to the site_path directory without using rsync.
     attr_accessor :site_sync
+
+    #
+    def site
+      {'stage'=>site_stage, 'origin'=>site_origin, 'branch'=>site_branch}
+    end
+
+    # If deployment of a site is done via git or via a staging directory,
+    # then `site` can be used to set these.
+    #
+    # Examples
+    #
+    #   site:
+    #     origin: git@github.com:trans/trans.github.com.git
+    #     branch: gh-pages
+    #     path: _site
+    #
+    def site=(entry)
+      case entry
+      when Hash
+        self.site_origin = site['origin']
+        self.site_branch = site['branch']
+        self.site_stage  = site['stage']
+        self.site_sync   = site['sync'] if site['sync']
+      else
+        raise ArgumentError, 'site must be a mapping'
+        # TODO: maybe make this smarter in future to guess if single entry is origin or stage.
+        #self.site_stage = entry
+      end
+    end
+
+    # If a site is for static deployment, `static` should be set to the 
+    # build path. The typical value is `./public`, which is relative to
+    # the wiki's location. Be sure to add this to the wiki's `.gitignore`
+    # file if need be.
+    #
+    attr_accessor :static
+
+    #
+    def static=(path)
+      if path
+        @exclude << path.chomp('/') + '/'
+      end
+      @static = path
+    end
+
+    # Smeagol uses `rsync` to copy build files from temporary location to
+    # the final location given by `static`. By default this command is:
+    #
+    #   "rsync -arv --del --exclude .git* %s/ %s/"
+    #
+    # Where the first %s is the temporary location and the second is the location
+    # specified by the `static` setting. If this needs to be different it can
+    # be change here. Just be sure to honor the `%s` slots.
+    #
+    # If set to `~` (ie. `nil`) then the static files will be built-out directly
+    # the the static directory without using rsync.
+    attr_accessor :static_sync
 
     # Where to find template partials. This is the location that Mustache uses
     # when looking for partials. The default is `_partials`.

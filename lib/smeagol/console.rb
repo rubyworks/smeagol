@@ -8,9 +8,13 @@ module Smeagol
     extend self
 
     #
+    # Print to $stderr unless $QUIET.
+    #
     def report(msg)
       $stderr.puts msg unless $QUIET
     end
+
+    #  I N I T
 
     #
     # Initialize Gollum wiki for use with Smeagol.
@@ -167,10 +171,23 @@ module Smeagol
       IO.read(file)
     end
 
+    #  P R E V I E W
+
     #
-    # Preview current wiki (from working directory).
+    # Preview site.
     #
     def preview(options)
+      if options[:static]
+        static_preview(options)
+      else
+        dynamic_preview(options)
+      end
+    end
+
+    #
+    # Preview dynamiclly served site (from working directory).
+    #
+    def dynamic_preview(options)
       repository = {}
       repository[:path]   = Dir.pwd
       #repository[:cname] = options[:cname]  if options[:cname]
@@ -187,7 +204,23 @@ module Smeagol
     end
 
     #
+    # Preview a generated static site. This is useful to 
+    # ensure the static build went as expected.
+    #
+    # TODO: Would be happy to use thin if it supported fixed "static" adapter.
+    #
+    def static_preview(options={})
+      #build_dir = options[:build_dir] || settings.build_dir
+      #system "thin start -A file -c #{build_dir}"
+      StaticServer.run(options)
+    end
+
+    #  S E R V E
+
+    #
     # Serve up sites defined in smeagol config file.
+    #
+    # TODO: How to handle static sites here?
     #
     def serve(options)
       config_file = options[:config_file]
@@ -272,6 +305,8 @@ module Smeagol
       Smeagol::App.run!(:port => server_config.port)
     end
 
+    #  U P D A T E
+
     #
     # Update wiki repo(s).
     #
@@ -300,6 +335,50 @@ module Smeagol
       end
     end
 
+    ##
+    ## Update wiki.
+    ##
+    #def update(options={})
+    #  dir  = File.expand_path(wiki_dir)
+    #  repo = Smeagol::Repository.new(:path=>dir)
+    #  out  = repo.update
+    #  out  = out[1] if Array === out
+    #  report out
+    #end
+
+    #  S P I N
+
+    #
+    # Spin static site files and sync them to the site path.
+    #
+    def spin(options={})
+      site_path options[:dir]
+
+      if options[:update]
+        update options
+      end
+
+      generator = Generator.new(wiki)
+
+      remove_old_build
+
+      generator.build(build_path)
+
+      if settings.site_sync
+        cmd = settings.site_sync % [build_path, site_path]
+        $stderr.puts cmd
+        system cmd
+      end
+    end
+
+
+    #  D E P L O Y
+
+    # TODO
+    def deploy(options={})
+      
+    end
+
     #if settings.site
     #  if Dir.exist?(site_path)
     #    $stderr.puts "Pulling `#{repo.branch}' from `origin' in `#{repo.path}'..."
@@ -317,6 +396,15 @@ module Smeagol
     #
     def site_path
       settings.site_path
+    end
+
+    # Full path to site directory.
+    #
+    # Returns String of static path.
+    def site_path(dir=nil)
+      @site_path = dir if dir
+      dir = @site_path || settings.site_path
+      dir.chomp('/')
     end
 
     #
@@ -352,7 +440,7 @@ module Smeagol
     # Returns wiki settings. [Settings]
     #
     def settings
-      @settings ||= Settings.load(wiki_dir)
+      @settings ||= Smeagol::Settings.load(wiki_dir)
     end
 
     #
@@ -362,6 +450,36 @@ module Smeagol
     #
     def git
       Smeagol.git
+    end
+
+    # Full path to build directory.
+    #
+    # Returns String to build path.
+    def build_path
+      if settings.site_sync
+        tmpdir
+      else
+        site_path
+      end
+    end
+
+    # Remove static build directory.
+    #
+    def remove_old_build
+      if File.exist?(build_path)
+        FileUtils.rm_r(build_path)
+      end
+    end
+
+    # TODO: Maybe add a random number to be safe.
+    #
+    # Return String path to system temprorary directory.
+    def tmpdir(base=nil)
+      if base
+        ::File.join(Dir.tmpdir, 'shelob', base)
+      else
+        ::File.join(Dir.tmpdir, 'shelob', Time.now.year.to_s)
+      end
     end
 
   end
