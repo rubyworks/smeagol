@@ -1,16 +1,23 @@
 #!/usr/bin/env ruby
+require 'smeagol'
 
-cmd = []
+args = ARGV.dup
+cmd  = args.shift
 
-while (arg = ARGV.first)
-  break if arg.start_with?('-')
-  cmd << ARGV.shift
-end
-
-if cmd.empty?
-  puts "smeagol: no command given"
+case cmd
+when 'init', 'initialize'
+  Smeagol::CLI.init(args)
+when 'serve'
+  Smeagol::CLI.serve(args)
+when 'preview'
+  Smeagol::CLI.preview(args)
+when 'update'
+  Smeagol::CLI.update(args)
+when 'static'
+  Smeagol::CLI.spin(args)
+when 'deploy'
+  Smeagol::CLI.deploy(args)
 else
-  cmd = 'smeagol-' + cmd.join('-')
-  exec(cmd, *ARGV)
+  Smeagol::CLI.help(args)
 end
 
