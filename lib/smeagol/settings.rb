@@ -6,19 +6,15 @@ module Smeagol
   class Settings
 
     # The name of the settings file.
-    # TODO: Rename to `_smeagol.yml` ?
-    FILE = "_settings.yml"
+    FILE = "settings.yml"
 
-    # Default template includes directory.
-    PARTIALS = '_partials'
+    # Template includes directory.
+    PARTIALS = 'partials'
 
-    # Default site stage directory.
-    SITE_PATH = '_site'
+    # Default staging directory for deployment and/or static builds.
+    SITE_PATH = 'site'
 
-    # Default build-to directory for static builds.
-    STATIC_DIR = 'public'
-
-    # Default sync command.
+    # Sync command.
     SYNC_SCRIPT = "rsync -arv --del --exclude .git* '%s/' '%s/'"
 
     #
@@ -30,9 +26,8 @@ module Smeagol
     #
     def self.load(wiki_dir=nil)
       wiki_dir = Dir.pwd unless wiki_dir
-      file = File.join(wiki_dir, FILE)
-      file = File.expand_path(file)
-      if File.exist?(file)
+      file = Dir[File.join(wiki_dir, '{.,_}smeagol', FILE)].first
+      if file
         settings = YAML.load_file(file)
       else
         settings = {}
@@ -54,11 +49,12 @@ module Smeagol
       @rss           = true
       @exclude       = []
       @include       = []
-      @site          = nil
+      #@site          = nil
       @date_format   = "%B %d, %Y"
       @site_stage    = nil
       @site_sync     = SYNC_SCRIPT
       @static        = false
+      @static_stage  = nil
       @static_sync   = SYNC_SCRIPT
       @mathjax       = true
       @future        = false
@@ -67,6 +63,19 @@ module Smeagol
       @wiki_dir = settings[:wiki_dir]
 
       assign(settings)
+    end
+
+    #
+    def smeagol_dir
+      @smeagol_dir ||= (
+        option1 = File.join(wiki_dir, '.smeagol')
+        option2 = File.join(wiki_dir, '_smeagol')
+        if File.directory?(option2)
+          option2
+        else
+          option1
+        end
+      )
     end
 
     # Deprecated: Access settings like a Hash.
@@ -303,20 +312,29 @@ module Smeagol
 
     # Expanded site directory.
     #
-    # If `site_path` is an absolute path it will returned as given, 
+    # If `site_stage` is an absolute path it will returned as given, 
     # otherwise this will be relative to the location of the wiki.
     #
     # Returns String of site path.
-    def site_path
-      site_path = (TrueClass === site_stage ? SITE_PATH : site_stage || SITE_PATH)
+    def site_dir
+      path = (
+        if TrueClass === site_stage
+          SITE_PATH 
+        else
+          site_stage || SITE_PATH
+        end
+      )
 
-      path = relative?(site_path) ? ::File.join(wiki_dir, site_path) : site_path
-      path.chomp('/')  # ensure no trailing path separator
-      path
+      dir = (
+        if relative?(path)
+          ::File.join(smeagol_path, path)
+        else
+          path
+        end
+      )
+
+      dir.chomp('/')  # ensure no trailing path separator
     end
-
-    # Deprecated: Original name for #site_path.
-    alias :full_site_path :site_path
 
     #
     # Returns Repository object for git-based deployment site.

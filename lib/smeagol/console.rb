@@ -18,9 +18,10 @@ module Smeagol
 
     #
     # Initialize Gollum wiki for use with Smeagol.
-    # This will clone the wiki repo, if given and it
-    # doesn't already exist and create `_settings.yml`,
-    # `_layouts/` and `assets/smeagol/`.
+    #
+    # This will clone the wiki repo if given and it
+    # doesn't already exist, and it will create `settings.yml`,
+    # `layouts/` and `assets/` in `_smeagol` directory.
     #
     # TODO: Perhaps use a supporting "managed copy" gem in future?
     #
@@ -80,11 +81,11 @@ module Smeagol
     # partial templates to `_partials`.
     #
     def copy_layouts
-      dst_dir = File.join(wiki_dir, '_layouts')
+      dst_dir = File.join(wiki_dir, '_smeagol', 'layouts')
       src_dir = LIBDIR + '/templates/layouts'
       copy_dir(src_dir, dst_dir)
 
-      dst_dir = File.join(wiki_dir, '_partials')
+      dst_dir = File.join(wiki_dir, '_smeagol', '_partials')
       src_dir = LIBDIR + '/templates/partials'
       copy_dir(src_dir, dst_dir)
     end
@@ -93,7 +94,7 @@ module Smeagol
     # Copy assets to `assets` directory. 
     #
     def copy_assets
-      dst_dir = File.join(wiki_dir, 'assets')
+      dst_dir = File.join(wiki_dir, '_smeagol', 'assets')
       src_dir = LIBDIR + '/public/assets'
       copy_dir(src_dir, dst_dir)
     end
@@ -121,17 +122,17 @@ module Smeagol
     end
 
     #
-    # Create or append `_site` to .gitignore file.
+    # Create or append `_smeagol/site` to .gitignore file.
     #
     def save_gitignore
       file = File.join(wiki_dir, '.gitignore')
       if File.exist?(file)
         File.open(file, 'a') do |f|
-          f.write("_site")
+          f.write("_smeagol/site")
         end
       else
         File.open(file, 'w') do |f|
-          f.write("_site")
+          f.write("_smeagol/site")
         end
       end
     end
@@ -140,7 +141,7 @@ module Smeagol
     # Save settings.
     #
     def save_settings(options)
-      file = File.join(wiki_dir, "_settings.yml")
+      file = File.join(wiki_dir, '_smeagol', 'settings.yml')
       if File.exist?(file)
         $stderr.puts " skip: #{file}"
       else
@@ -195,7 +196,7 @@ module Smeagol
 
       options[:repositories] = [repository]
 
-      config = Smeagol::Config.new(options)
+      config = ServerConfig.new(options)
 
       catch_signals
       show_repository(config)
@@ -224,7 +225,7 @@ module Smeagol
     #
     def serve(options)
       config_file = options[:config_file]
-      config = Config.load(config_file)
+      config = ServerConfig.load(config_file)
       config.assign(options)
       abort "No repositories configured." if config.repositories.empty?
 
@@ -322,7 +323,7 @@ module Smeagol
         report out
       else
         file   = options[:config_file]
-        config = Config.load(file)
+        config = ServerConfig.load(file)
         abort "No repositories configured." if config.repositories.empty?
 
         config.secret = options[:secret]

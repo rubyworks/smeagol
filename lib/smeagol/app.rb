@@ -35,14 +35,19 @@ module Smeagol
       Mustache.render(view.layout, view)
     end
 
-    # Assets are alwasy served unversioned directly from the file system
-    # and not via the git repo.
+    # Assets are placed in the `.smeagol/assets` directory and are always
+    # served unversioned directly from the file system and not via the
+    # git repo.
     get '/assets/*' do
       name = params[:splat].first
-      file_path = "#{repository.path}/assets/#{name}"
-      content   = File.read(file_path)
-      content_type get_mime_type(name)
-      content
+      file_path = "#{settings.smeagol_dir}/assets/#{name}"
+      if File.exist?(file_path)
+        content = File.read(file_path)
+        content_type get_mime_type(name)
+        content
+      else
+        # TODO: 404
+      end
     end
 
     # TODO: Instead of using `/^v\d/` as a match of versioned pages,

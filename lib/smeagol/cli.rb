@@ -138,6 +138,21 @@ module Smeagol
     end
 
 
+    #  H E L P
+
+    def help(argv)
+      puts "Smeagol #{VERSION}"
+      puts ""
+      puts "Commands:"
+      puts "  init     - initialize Gollum wiki for use with smeagol"
+      puts "  serve    - serve configured smeagol sites"
+      puts "  preview  - preview site"
+      puts "  build    - generate a static site"
+      puts "  deploy   - deploy site to server (COMING SOON)"
+      puts "  help     - show this help message"
+      puts
+    end
+
   private
 
     #

@@ -17,8 +17,8 @@ module Smeagol
     # Access to Gollum::Wiki.
     attr :wiki
 
-    # Public: The Smeagol wiki settings. These can be found in the _settings.yml
-    # file at the root of the repository.
+    # Public: The Smeagol wiki settings. These can be found in the
+    # `.smeagol/settings.yml` file at the root of the repository.
     # This method caches the settings for all subsequent calls.
     #
     # TODO: Should settings be coming from current file or from repo version?

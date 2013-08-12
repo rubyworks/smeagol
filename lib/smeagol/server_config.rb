@@ -21,7 +21,7 @@ module Smeagol
   #       bare: false
   #       secret: 'pass123'
   #
-  class Config
+  class ServerConfig
 
     # Directory which contains user configuration.
     CONFIG_HOME = ENV['XDG_CONFIG_HOME'] || '~/.config'
