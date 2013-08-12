@@ -1,4 +1,0 @@
-#!/usr/bin/env ruby
-require 'smeagol'
-Smeagol::CLI.preview(ARGV)
-
