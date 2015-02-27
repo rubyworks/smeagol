@@ -1,0 +1,42 @@
+---
+name:
+  smeagol
+
+version:
+  0.7.0
+
+title:
+  Smeagol
+
+summary:
+  Dynamically serve a Gollum wiki as a read-only website.
+
+description:
+  Smeagol is a customizable read-only Gollum wiki server.
+  Smeagol makes it possible to maintain a standalone website,
+  but update it through the Gollum wiki interface, e.g. via GitHub.
+
+resources:
+  home: http://rubyworks.github.com/smeagol
+  code: http://github.com/rubyworks/smeagol
+  docs: http://rubydoc.info/gems/smeagol/frames
+
+authors:
+  - Ben Johnson <benbjohnson@yahoo.com>
+  - Thomas Sawyer <transfire@gmail.com>
+
+repositories:
+  upstream: git://github.com/rubyworks/smeagol.git
+
+created:
+  2010-08-16
+
+copyrights:
+  - (c) 2010 Ben Johnson
+  - (c) 2011 Rubyworks (BSD-2-Clause)
+
+paths:
+  lib:
+    - lib
+    - vendor/grit/lib
+

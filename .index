@@ -2,7 +2,8 @@
 revision: 2013
 type: ruby
 sources:
-- var
+- INDEX.yml
+- Gemfile
 authors:
 - name: Ben Johnson
   email: benbjohnson@yahoo.com
@@ -10,40 +11,40 @@ authors:
   email: transfire@gmail.com
 organizations: []
 requirements:
-- version: 1.5+
-  name: rack
-- version: 2.5+
+- version: '>= 2.5'
   name: gollum
-- version: 1.4+
-  name: sinatra
-- version: 0.5+
+- version: '>= 2.6'
+  name: gitlab-grit
+- version: '>= 0.5'
   name: rubypython
+- version: '>= 1.5'
+  name: rack
+- version: '>= 1.4'
+  name: sinatra
 - groups:
   - compiled
-  version: 0.5+
-  development: true
+  version: '>= 0.5'
   name: github-markdown
 - groups:
+  - compiled
+  version: '>= 0'
+  name: rdiscount
+- groups:
   - test
-  development: true
+  version: '>= 0'
   name: rubytest-cli
 - groups:
   - test
-  development: true
+  version: '>= 0'
   name: citron
 - groups:
   - test
-  development: true
+  version: '>= 0'
   name: ae
 - groups:
   - test
-  development: true
+  version: '>= 0'
   name: rack-test
-- groups:
-  - doc
-  - compiled
-  development: true
-  name: rdiscount
 conflicts: []
 alternatives: []
 resources:
@@ -56,9 +57,6 @@ resources:
 - type: docs
   uri: http://rubydoc.info/gems/smeagol/frames
   label: Documentation
-- type: mail
-  uri: http://groups.google.com/groups/rubyworks-mailinglist
-  label: Mailing List
 repositories:
 - name: upstream
   scm: git
@@ -74,13 +72,13 @@ customs: []
 paths:
   lib:
   - lib
+  - vendor/grit/lib
 name: smeagol
-title: Semagol
-summary: Wiki Cum Website
-created: '2010-08-16'
-description: |-
-  Smeagol is a customizable read-only Gollum wiki server.
-  Smeagol makes it possible to maintain a standalone website,
-  but update it through the Gollum wiki interface, e.g. via GitHub.
+title: Smeagol
 version: 0.7.0
-date: '2013-08-10'
+summary: Dynamically serve a Gollum wiki as a read-only website.
+description: Smeagol is a customizable read-only Gollum wiki server. Smeagol makes
+  it possible to maintain a standalone website, but update it through the Gollum wiki
+  interface, e.g. via GitHub.
+created: '2010-08-16'
+date: '2015-02-27'
