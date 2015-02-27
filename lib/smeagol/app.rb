@@ -40,7 +40,7 @@ module Smeagol
     # git repo.
     get '/assets/*' do
       name = params[:splat].first
-      file_path = "#{settings.smeagol_dir}/assets/#{name}"
+      file_path = "#{repository.path}/assets/#{name}"
       if File.exist?(file_path)
         content = File.read(file_path)
         content_type get_mime_type(name)
@@ -61,15 +61,21 @@ module Smeagol
 
       name, version, tag_name = parse_params(params)
 
+      # If name is empty then name is settings index or "Home".
       name = (ctrl.settings.index || "Home") if name == ""
+      # Remove any trailing slashes.
       name = name.gsub(/\/+$/, '')
+      # If post name, substitute `/` for '-'.
+      name = name.sub(/^(\d{4}\/\d{2}\/\d{2}\/)/){ |m| m.sub('/', '-') }
+
       name = sanitize_path(name)
+
       file_path = "#{repository.path}/#{name}"
 
       # First check the cache
       if settings.cache_enabled && cache.cache_hit?(name, version)
         cache.get_page(name, version)
-      # Then try to create the wiki page
+      # Then try a wiki page
       elsif page = wiki.page(name, version)
         if page.post?
           content = ctrl.render(page, version)
@@ -153,12 +159,10 @@ module Smeagol
     # Returns the mime type for a file. [String]
     #
     def get_mime_type(file)
-      unless file.nil?
-        extension = ::File.extname(file)
-        return Rack::Mime::MIME_TYPES[extension] || 'text/plain'
-      end
-      
-      return 'text/plain'
+      return 'text/plain' if file.nil?
+
+      ext = ::File.extname(file)
+      Rack::Mime.mime_type(ext, 'text/plain')
     end
 
     #

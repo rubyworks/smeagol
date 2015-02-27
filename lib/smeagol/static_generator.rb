@@ -144,8 +144,6 @@ module Smeagol
 =end
 
     # Copy smeagol's default public files to static site.
-    # These files are put in a separate `smeagol` directory
-    # to avoid name clashes with wiki files.
     def save_assets
       src = Smeagol::LIBDIR + '/public/assets'
       dst = File.join(@dir) #, 'assets')

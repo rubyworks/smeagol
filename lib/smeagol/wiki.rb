@@ -3,7 +3,7 @@ module Smeagol
   # Subclass of Gollum::Wiki.
   #
   # TODO: Techincailly this is probably not needed. Presently it only adds
-  #       one methods.
+  #       one method.
   #
   class Wiki < Gollum::Wiki
 
@@ -15,8 +15,9 @@ module Smeagol
     self.default_ws_subs = ['_','-']
     self.default_options = {}
 
-    # Public: The Smeagol wiki settings. These can be found in the _settings.yml
+    # Public: The Smeagol wiki settings. These can be found in the _config.yml
     # file at the root of the repository.
+    #
     # This method caches the settings for all subsequent calls.
     #
     # TODO: Should settings be coming from current file or from repo version?
@@ -27,9 +28,12 @@ module Smeagol
     # TODO: This might be better in Controller instead.
     #
     # Returns a Settings object.
-    def settings
-      @settings ||= Settings.load(path)
+    def config
+      @config ||= SiteConfig.load(path)
     end
+
+    # Deprecated
+    alias :settings :config
 
   end
 

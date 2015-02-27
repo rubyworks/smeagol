@@ -78,15 +78,15 @@ module Smeagol
 
     #
     # Copy layout templates to `_layouts` directory and 
-    # partial templates to `_partials`.
+    # partial templates to `_includes`.
     #
     def copy_layouts
-      dst_dir = File.join(wiki_dir, '_smeagol', 'layouts')
+      dst_dir = File.join(wiki_dir, '_layouts')
       src_dir = LIBDIR + '/templates/layouts'
       copy_dir(src_dir, dst_dir)
 
-      dst_dir = File.join(wiki_dir, '_smeagol', '_partials')
-      src_dir = LIBDIR + '/templates/partials'
+      dst_dir = File.join(wiki_dir, '_includes')
+      src_dir = LIBDIR + '/templates/includes'
       copy_dir(src_dir, dst_dir)
     end
 
@@ -94,7 +94,7 @@ module Smeagol
     # Copy assets to `assets` directory. 
     #
     def copy_assets
-      dst_dir = File.join(wiki_dir, '_smeagol', 'assets')
+      dst_dir = File.join(wiki_dir, '_assets')
       src_dir = LIBDIR + '/public/assets'
       copy_dir(src_dir, dst_dir)
     end
@@ -141,7 +141,7 @@ module Smeagol
     # Save settings.
     #
     def save_settings(options)
-      file = File.join(wiki_dir, '_smeagol', 'settings.yml')
+      file = File.join(wiki_dir, '_config.yml')
       if File.exist?(file)
         $stderr.puts " skip: #{file}"
       else
@@ -167,8 +167,8 @@ module Smeagol
     #
     # Read in the settings mustache template.
     #
-    def settings_template
-      file = LIBDIR + '/templates/settings.yml'
+    def config_template
+      file = LIBDIR + '/templates/config.yml'
       IO.read(file)
     end
 
@@ -313,15 +313,9 @@ module Smeagol
     #
     def update(*args)
       options  = (Hash === args.last ? args.pop : {})
-      wiki_dir = args.first
+      wiki_dir = args.first || Dir.pwd
 
-      if wiki_dir
-        dir  = File.expand_path(wiki_dir)
-        repo = Repository.new(:path=>dir)
-        out  = repo.update
-        out  = out[1] if Array === out
-        report out
-      else
+      if options[:all]
         file   = options[:config_file]
         config = ServerConfig.load(file)
         abort "No repositories configured." if config.repositories.empty?
@@ -333,6 +327,12 @@ module Smeagol
           out = out[1] if Array === out
           report out
         end
+      else
+        dir  = File.expand_path(wiki_dir)
+        repo = Repository.new(:path=>dir)
+        out  = repo.update
+        out  = out[1] if Array === out
+        report out     
       end
     end
 
@@ -353,20 +353,22 @@ module Smeagol
     # Spin static site files and sync them to the site path.
     #
     def spin(options={})
-      site_path options[:dir]
-
-      if options[:update]
-        update options
+      if dir = options[:dir]
+        self.site_dir = dir
       end
 
-      generator = Generator.new(wiki)
+      if options[:update]
+        update(options)
+      end
+
+      generator = StaticGenerator.new(wiki)
 
       remove_old_build
 
-      generator.build(build_path)
+      generator.build(build_dir)
 
       if settings.site_sync
-        cmd = settings.site_sync % [build_path, site_path]
+        cmd = settings.site_sync % [build_dir, site_dir]
         $stderr.puts cmd
         system cmd
       end
@@ -391,21 +393,19 @@ module Smeagol
     #end
 
     #
-    # Site directory path.
-    #
-    # Returns expanded site path. [String]
-    #
-    def site_path
-      settings.site_path
-    end
-
     # Full path to site directory.
     #
     # Returns String of static path.
-    def site_path(dir=nil)
-      @site_path = dir if dir
-      dir = @site_path || settings.site_path
-      dir.chomp('/')
+    #
+    def site_dir
+      settings.site_dir
+    end
+
+    #
+    # Change site directory.
+    #
+    def site_dir=(path)
+      settings.site_dir = dir
     end
 
     #
@@ -456,19 +456,19 @@ module Smeagol
     # Full path to build directory.
     #
     # Returns String to build path.
-    def build_path
+    def build_dir
       if settings.site_sync
         tmpdir
       else
-        site_path
+        site_dir
       end
     end
 
     # Remove static build directory.
     #
     def remove_old_build
-      if File.exist?(build_path)
-        FileUtils.rm_r(build_path)
+      if File.exist?(build_dir)
+        FileUtils.rm_r(build_dir)
       end
     end
 
@@ -476,11 +476,9 @@ module Smeagol
     #
     # Return String path to system temprorary directory.
     def tmpdir(base=nil)
-      if base
-        ::File.join(Dir.tmpdir, 'shelob', base)
-      else
-        ::File.join(Dir.tmpdir, 'shelob', Time.now.year.to_s)
-      end
+      base  = File.basename(wiki_dir) unless base
+      cache = File.expand_path("~/.cache/smeagol")
+      ::File.join(cache, base)
     end
 
   end

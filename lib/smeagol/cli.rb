@@ -13,7 +13,7 @@ module Smeagol
     # Initialize Gollum wiki directory for use with Smeagol.
     #
     def init(argv)
-      parser.banner = "usage: smeagol-init [OPTIONS] [WIKI-URI]\n"
+      parser.banner = "usage: smeagol init [OPTIONS] [WIKI-URI]\n"
 
       parser.on('-t', '--title [TITLE]') do |title|
         options[:title] = title
@@ -31,26 +31,49 @@ module Smeagol
 
     #  P R E V I E W
 
+    #
+    # Preview current Gollum wiki.
+    #
     def preview(argv)
-      if argv.include?('--static') || Console.settings.static
-        static_preview(argv)
-      else
-        dynamic_preview(argv)
+      parser.banner = "Usage: smeagol-preview [OPTIONS]\n"
+
+      parser.on('--port [PORT]', 'Bind port (default 4567).') do |port|
+        options[:port] = port.to_i
       end
+
+      parser.on('--[no-]cache', 'Enables page caching.') do |flag|
+        options[:cache] = flag
+      end
+
+      parser.on('--mount-path', 'Serve website from this base path.') do |path|
+        options[:mount_path] = path
+      end
+
+      #parser.on('--auto-update', 'Updates the repository on a daily basis.') do |flag|
+      #  options[:auto_update] = flag
+      #end
+
+      #parser.on('--secret [KEY]', 'Specifies the secret key used to update.') do |str|
+      #  options[:secret] = str
+      #end
+
+      $stderr.puts "Starting preview..."
+
+      Console.dynamic_preview(*parse(argv))
     end
 
 
     #  S E R V E
 
     #
-    # Serve all Gollum repositories as setup in the Deagol config file.
+    # Serve all Gollum repositories as setup in the Smeagol config file.
     # This can be used to serve sites in production. It makes use
     # of cnames to serve multiple sites via a single service.
     #
     def serve(argv)
       config_file = nil
 
-      parser.banner = "usage: smeagol-serve [OPTIONS]\n"
+      parser.banner = "usage: smeagol serve [OPTIONS]\n"
 
       parser.on('-c', '--config [PATH]', 'Load config file instead of default.') do |path|
         options[:config_file] = path
@@ -87,7 +110,11 @@ module Smeagol
     # in settings.
     #
     def update(argv)
-      parser.banner = "Usage: smeagol-update [OPTIONS] [WIKI-DIR]\n"
+      parser.banner = "Usage: smeagol update [OPTIONS] [WIKI-DIR]\n"
+
+      parser.on('-a', '--all', 'Update all configured sites.') do
+        options[:all] = true
+      end
 
       #parser.on('-s', '--site', 'Also update site directories, if applicable.') do
       #  options[:site] = true
@@ -96,7 +123,7 @@ module Smeagol
       Console.update(*parse(argv))
     end
 
-
+=begin
     #  S P I N
 
     # Convert to static site.
@@ -126,7 +153,7 @@ module Smeagol
 
       Console.spin(*parse(argv))
     end
-
+=end
 
     #  D E P L O Y
 
@@ -140,21 +167,24 @@ module Smeagol
 
     #  H E L P
 
+    #
+    # Display help.
+    #
     def help(argv)
       puts "Smeagol #{VERSION}"
       puts ""
       puts "Commands:"
       puts "  init     - initialize Gollum wiki for use with smeagol"
-      puts "  serve    - serve configured smeagol sites"
-      puts "  preview  - preview site"
-      puts "  build    - generate a static site"
-      puts "  deploy   - deploy site to server (COMING SOON)"
+      puts "  preview  - preview a single site"
+      puts "  serve    - serve all configured smeagol sites"
+      #puts "  deploy   - deploy site to server (COMING SOON)"
       puts "  help     - show this help message"
       puts
     end
 
   private
 
+=begin
     #
     # Preview website.
     #
@@ -238,37 +268,7 @@ module Smeagol
 
       Console.static_preview(*parse(argv))
     end
-
-    #
-    # Preview current Gollum wiki.
-    #
-    def dynamic_preview(argv)
-      parser.banner = "Usage: smeagol-preview [OPTIONS]\n"
-
-      parser.on('--port [PORT]', 'Bind port (default 4567).') do |port|
-        options[:port] = port.to_i
-      end
-
-      parser.on('--[no-]cache', 'Enables page caching.') do |flag|
-        options[:cache] = flag
-      end
-
-      parser.on('--mount-path', 'Serve website from this base path.') do |path|
-        options[:mount_path] = path
-      end
-
-      #parser.on('--auto-update', 'Updates the repository on a daily basis.') do |flag|
-      #  options[:auto_update] = flag
-      #end
-
-      #parser.on('--secret [KEY]', 'Specifies the secret key used to update.') do |str|
-      #  options[:secret] = str
-      #end
-
-      $stderr.puts "Starting preview..."
-
-      Console.dynamic_preview(*parse(argv))
-    end
+=end
 
     #
     # Command line options.

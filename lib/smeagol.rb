@@ -38,6 +38,9 @@ module Smeagol
 
 end
 
+# force the use of gitlab-grit gem
+gem 'gitlab-grit'
+
 #require 'gollum'
 require 'gollum-lib'
 require 'rack/file'
@@ -62,8 +65,8 @@ require 'smeagol/wiki'
 require 'smeagol/app'
 require 'smeagol/cache'
 require 'smeagol/server_config'
+require 'smeagol/site_config'
 require 'smeagol/repository'
-require 'smeagol/settings'
 require 'smeagol/controller'
 
 require 'smeagol/views/base'
@@ -79,6 +82,7 @@ require 'smeagol/helpers/toc'
 require 'smeagol/cli'
 require 'smeagol/console'
 
-require 'smeagol/static_generator'
-require 'smeagol/static_server'
+# Deprecated
+#require 'smeagol/static_generator'
+#require 'smeagol/static_server'
 

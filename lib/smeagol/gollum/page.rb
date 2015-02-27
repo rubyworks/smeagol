@@ -10,11 +10,11 @@ module Gollum
 
     # Attempt to process the tag as a page link tag.
     #
-    # tag       - The String tag contents (the stuff inside the double
-    #             brackets).
+    # tag - The String tag contents (the stuff inside the double
+    #       brackets).
     #
-    # Returns the String HTML if the tag is a valid page link tag or nil
-    #   if it is not.
+    # Returns the String HTML if the tag is a valid page
+    # link tag or nil if it is not.
     def process_page_link_tag(tag)
       parts = tag.split('|')
       parts.reverse! if @format == :mediawiki
@@ -34,9 +34,8 @@ module Gollum
         end
         link = ::File.join(@wiki.base_path, CGI.escape(link_name))
 
-        # TODO: This is a temporary hack for posts until actual subdirs are supported.
-        #       Also, this needs to be improved so /\d-/ does match if part of actual title.
-        link = link.gsub(/(\d)-/, '\1/')
+        # TODO: This should be customizable.
+        link = link.sub(/^(\d{4}-\d{2}-\d{2}-)/){ |m| m.gsub('-', '/') }
 
         %{<a class="internal #{presence}" href="#{link}#{extra}">#{name}</a>}
       end

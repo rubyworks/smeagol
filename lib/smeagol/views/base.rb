@@ -23,7 +23,8 @@ module Smeagol
         @wiki    = file.wiki
         @version = version || 'master'
 
-        setup_template_path
+        self.template      = lookup_layout
+        self.template_path = lookup_partials_path
       end
 
       # The Gollum::Wiki that this view represents.
@@ -31,17 +32,6 @@ module Smeagol
       
       # The tagged version that is being viewed.
       attr_reader :version
-
-      #
-      def setup_template_path
-        # See FAQ for Views::Base class
-        dir = ::File.join(wiki.path, settings.partials)
-        if ::File.directory?(dir)
-          self.class.template_path = dir
-        else
-          self.class.template_path = ::File.join(LIBDIR, 'templates', 'partials')
-        end
-      end
 
       # The Gollum::Page or Gollum::File that this view represents.
       attr_reader :file
@@ -123,6 +113,13 @@ module Smeagol
         #)
       end
 
+      #
+      # Most recent 25 posts.
+      #
+      def recent_posts
+        posts.reverse[0,25]
+      end
+
 =begin
       #
       def filter(paths, &selection)
@@ -141,10 +138,16 @@ module Smeagol
       end
 =end
 
-      # Generates the correct ribbon url
+      HEXCOLORS = {
+        'red' => 'aa0000', 'green' => '007200', 'darkblue' => '121621',
+        'orange' => 'ff7600', 'gray' => '6d6d6d', 'white' => 'ffffff' 
+      }
+
+      #
+      # Generates a github ribbon url.
+      #
       def ribbon_url(name, pos)
-        hexcolors = {'red' => 'aa0000', 'green' => '007200', 'darkblue' => '121621', 'orange' => 'ff7600', 'gray' => '6d6d6d', 'white' => 'ffffff'}
-        if hexcolor = hexcolors[name]
+        if hexcolor = HEXCOLORS[name]
           "http://s3.amazonaws.com/github/ribbons/forkme_#{pos}_#{name}_#{hexcolor}.png"
         else
           name
@@ -164,59 +167,6 @@ module Smeagol
       #  end
       #  slug
       #end
-
-      # Get the layout template for the view.
-      def layout
-        return nil if custom_layout? && !custom_layout
-        custom_layout || standard_layout || default_layout
-      end
-
-      # Does the metadata specify a custom layout?
-      def custom_layout?
-        metadata.key?('layout')
-      end
-
-      # Value of layout metadata setting.
-      def custom_layout
-        metadata['layout']
-      end
-
-      # The Mustache template to use for rendering.
-      #
-      # Returns the content of the specified template file in the
-      # wiki repository if it exists. Otherwise, it returns `nil`.
-      def standard_layout
-        name   = metadata['layout'] || 'page.mustache'
-        dir    = ::File.expand_path(::File.join(wiki.path, ::File.dirname(file.path)))
-        root   = ::File.expand_path(wiki.path)
-        home   = ::File.expand_path('~')
-        layout = nil
-        loop do
-          f = ::File.join(dir, '_layouts', name)
-          break (layout = IO.read(f)) if ::File.exist?(f)
-          break nil if dir == root
-          break nil if dir == home  # just in case
-          break nil if dir == '/'
-          dir = ::File.dirname(dir)
-        end
-        return layout
-        #names.each do |name|
-        #  file = "#{@wiki.path}/#{settings.layout_dir}/#{name}.mustache"
-        #  if ::File.exists?(file)
-        #    return IO.read(file)
-        #  end
-        #end
-        #nil
-      end
-
-      # Default template.
-      #
-      # Returns [String] The template included with the Smeagol package.
-      def default_layout
-        @default_layout ||= (
-          IO.read(LIBDIR + "/templates/layouts/page.mustache")
-        )
-      end
 
       #
       def post?
@@ -246,6 +196,114 @@ module Smeagol
             {}
           end
         )
+      end
+
+      # Get the layout template for the view.
+      #def lookup_layout
+      #  return nil if custom_layout? && !custom_layout
+      #  custom_layout || standard_layout || default_layout
+      #end
+
+      ## Does the metadata specify a custom layout?
+      #def custom_layout?
+      #  metadata.key?('layout')        
+      #end
+
+      ## Value of layout metadata setting.
+      #def custom_layout
+      #  metadata['layout']
+      #end
+
+      #
+      #
+      #
+      def layout
+        lookup_layout
+      end
+
+      #
+      # The Mustache template to use for rendering.
+      #
+      # Returns the content of the specified template file in the
+      # wiki repository if it exists. Otherwise, it returns `nil`.
+      #
+      def lookup_layout
+        return "{{{content}}}" if metadata.key?('layout') && !metadata['layout']
+
+        name = metadata['layout'] || 'page'
+        name = name + '.mustache' unless name.end_with?('.mustache')
+
+        path = ::File.join('_layouts', name)
+        dir  = ::File.join(wiki.path, ::File.dirname(file.path))
+
+        layout_file = lookup_path(path, dir)
+
+        if layout_file
+          IO.read(layout_file)
+        else
+          default_layout
+        end
+      end
+
+      #
+      # Default template.
+      #
+      # Returns [String] The layout template included with the Smeagol package.
+      #
+      def default_layout
+        @default_layout ||= (
+          IO.read(LIBDIR + "/templates/layouts/page.mustache")
+        )
+      end
+
+      #
+      # Lookup the partials path. This starts in the directory
+      # where the page is found, looking for `_includes` (by default),
+      # and serches upwards for the same until it reaches the 
+      # wiki's root directory. If not found it uses a fallback location
+      # provided with the Smeagol package.
+      #
+      # Returns the directory of partials. [String]
+      #
+      def lookup_partials_path
+        # See FAQ for Views::Base class
+        dir  = ::File.join(wiki.path, ::File.dirname(file.path))
+        path = ::File.join('_includes')
+
+        partials_dir = lookup_path(path, dir)
+
+        if partials_dir && ::File.directory?(partials_dir)
+          partials_dir
+        else
+          ::File.join(LIBDIR, 'templates', 'includes')
+        end
+      end
+
+      #
+      def template_path=(path)
+        self.class.template_path = path
+      end
+
+      #
+      # Traverse upward in the directory tree looking for a
+      # mathcing path. 
+      #
+      # path - Path to lookup.
+      # dir  - Directory from which to start search.
+      #
+      def lookup_path(path, dir)
+        dir  = ::File.expand_path(dir)
+        top  = ::File.expand_path(wiki.path)
+        home = ::File.expand_path('~')
+
+        loop do
+          found = Dir[::File.join(dir, path)].first
+          return found if found
+          return nil if dir == top
+          return nil if dir == home  # just in case
+          return nil if dir == '/'   # doubly so
+          dir = ::File.dirname(dir)
+        end
       end
 
     end

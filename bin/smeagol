@@ -11,9 +11,9 @@ when 'serve'
   Smeagol::CLI.serve(args)
 when 'preview'
   Smeagol::CLI.preview(args)
-when 'update'
+when 'update', 'up'
   Smeagol::CLI.update(args)
-when 'static'
+when 'static', 'build'
   Smeagol::CLI.spin(args)
 when 'deploy'
   Smeagol::CLI.deploy(args)

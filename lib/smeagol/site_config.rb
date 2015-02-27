@@ -1,32 +1,30 @@
 module Smeagol
 
-  # Wiki settings.
+  ##
+  # Site configuration settings.
   #
-  # TODO: Would it be possible/prudent to move all this into controller?
-  class Settings
+  class SiteConfig
 
     # The name of the settings file.
-    FILE = "settings.yml"
+    FILE = "_config.yml"
 
     # Template includes directory.
-    PARTIALS = 'partials'
+    #INCLUDES = '_includes'
 
-    # Default staging directory for deployment and/or static builds.
-    SITE_PATH = 'site'
+    # Default site directory for deployment and/or static builds.
+    SITE_FOLDER = 'site'
 
     # Sync command.
     SYNC_SCRIPT = "rsync -arv --del --exclude .git* '%s/' '%s/'"
 
-    #
-    # Load settings.
+    # Load configuratin settings from `{wiki_dir}/_config.yml`.
     #
     # wiki_dir - Local file system location of wiki repo. [String]
     #
-    # Returns settings instance. [Settings]
-    #
+    # Returns configuration object. [SiteConfig]
     def self.load(wiki_dir=nil)
       wiki_dir = Dir.pwd unless wiki_dir
-      file = Dir[File.join(wiki_dir, '{.,_}smeagol', FILE)].first
+      file = Dir[File.join(wiki_dir, FILE)].first
       if file
         settings = YAML.load_file(file)
       else
@@ -44,39 +42,39 @@ module Smeagol
     # settings - Settings hash. [Hash]
     #
     def initialize(settings={})
-      @partials      = PARTIALS
+      # TODO: Raise error if no wiki_dir ?
+      @wiki_dir = settings[:wiki_dir]
+
+      #@partials     = INCLUDES
       @index         = 'Home'
       @rss           = true
       @exclude       = []
       @include       = []
       #@site          = nil
       @date_format   = "%B %d, %Y"
-      @site_stage    = nil
+      @site_folder   = nil
       @site_sync     = SYNC_SCRIPT
+      @site_origin   = nil
+      @site_branch   = nil
       @static        = false
-      @static_stage  = nil
-      @static_sync   = SYNC_SCRIPT
       @mathjax       = true
       @future        = false
-
-      # TODO: Raise error if no wiki_dir ?
-      @wiki_dir = settings[:wiki_dir]
 
       assign(settings)
     end
 
     #
-    def smeagol_dir
-      @smeagol_dir ||= (
-        option1 = File.join(wiki_dir, '.smeagol')
-        option2 = File.join(wiki_dir, '_smeagol')
-        if File.directory?(option2)
-          option2
-        else
-          option1
-        end
-      )
-    end
+    #def smeagol_dir
+    #  @smeagol_dir ||= (
+    #    option1 = File.join(wiki_dir, '.smeagol')
+    #    option2 = File.join(wiki_dir, '_smeagol')
+    #    if File.directory?(option2)
+    #      option2
+    #    else
+    #      option1
+    #    end
+    #  )
+    #end
 
     # Deprecated: Access settings like a Hash.
     def [](key)
@@ -137,7 +135,7 @@ module Smeagol
     # Special branch if using silly branch style, e.g. `gh-pages`.
     attr_accessor :site_branch
 
-    # Set `site_stage` if the site needs to be staged for deployment.
+    # Set `site_folder` if the site needs to be staged for deployment.
     # In other words, if the servable files in the wiki need to be
     # copied into a separate directory. This can be set to `true`
     # in which case the default `_site` path will be used, otherwise
@@ -145,9 +143,9 @@ module Smeagol
     #
     # Non-absolute paths are relative to the wiki's location.
     # Be sure to add this to the wiki's .gitignore file, if it is, and
-    # if not prefixed by and underscore, be sure to add it to `exclude`
+    # if not prefixed by an underscore, be sure to add it to `exclude`
     # setting as well.
-    attr_accessor :site_stage
+    attr_accessor :site_folder
 
     # Smeagol uses `rsync` to copy files from the repository to
     # the staging location if given by `site_path`. By default this
@@ -165,26 +163,35 @@ module Smeagol
 
     #
     def site
-      {'stage'=>site_stage, 'origin'=>site_origin, 'branch'=>site_branch}
+      {'folder' => site_folder,
+       'origin' => site_origin,
+       'branch' => site_branch,
+       'sync'   => site_sync
+      }
     end
 
-    # If deployment of a site is done via git or via a staging directory,
-    # then `site` can be used to set these.
+    # If a site is for static deployment, `site` is used to set the 
+    # sync path. The path is relative to the wiki's directory. Be sure
+    # to add this to the wiki's `.gitignore` file if need be.
+    #
+    # For dynamic sites, this is used if a staged deployment is needed.
+    # If you do not require staged deployments then simple set `site_folder`
+    # to nil.
     #
     # Examples
     #
     #   site:
+    #     folder: _site
     #     origin: git@github.com:trans/trans.github.com.git
     #     branch: gh-pages
-    #     path: _site
     #
     def site=(entry)
       case entry
       when Hash
-        self.site_origin = site['origin']
-        self.site_branch = site['branch']
-        self.site_stage  = site['stage']
-        self.site_sync   = site['sync'] if site['sync']
+        self.site_origin = site['origin'] if site.key?('origin')
+        self.site_branch = site['branch'] if site.key?('branch')
+        self.site_folder = site['folder'] if site.key?('stage')
+        self.site_sync   = site['sync']   if site.key?('sync')
       else
         raise ArgumentError, 'site must be a mapping'
         # TODO: maybe make this smarter in future to guess if single entry is origin or stage.
@@ -200,29 +207,13 @@ module Smeagol
     attr_accessor :static
 
     #
-    def static=(path)
-      if path
-        @exclude << path.chomp('/') + '/'
-      end
-      @static = path
+    def static=(boolean)
+      @static = !!boolean
     end
 
-    # Smeagol uses `rsync` to copy build files from temporary location to
-    # the final location given by `static`. By default this command is:
-    #
-    #   "rsync -arv --del --exclude .git* %s/ %s/"
-    #
-    # Where the first %s is the temporary location and the second is the location
-    # specified by the `static` setting. If this needs to be different it can
-    # be change here. Just be sure to honor the `%s` slots.
-    #
-    # If set to `~` (ie. `nil`) then the static files will be built-out directly
-    # the the static directory without using rsync.
-    attr_accessor :static_sync
-
     # Where to find template partials. This is the location that Mustache uses
-    # when looking for partials. The default is `_partials`.
-    attr_accessor :partials
+    # when looking for partials. The default is `_includes`.
+    #attr_accessor :partials
 
     # Page to use as site index. The default is `Home`. A non-wiki
     # page can be used as well, such as `index.html` (well, duh!).
@@ -283,18 +274,16 @@ module Smeagol
     #
     attr_accessor :menu
 
-    # Google analytics tracking id. Could be used for other such
-    # services if custom template is used.
+    # Deprecated: Google analytics tracking id. Could be used
+    # for other such services if custom template is used.
     #
-    # Note this will probably be deprecates because you can add
+    # Note this will probably be deprecated because you can add
     # the code snippet easily enough to your custom page template.
     attr_accessor :tracking_id
 
-    # Include a GitHub "Fork Me" ribbon in corner of page. Entry 
-    # should give color and position separated by a space.
+    # Deprecated: Include a GitHub "Fork Me" ribbon in corner of page.
+    # Entry should give color and position separated by a space.
     # The resulting ribbon will have a link to `source_url`.
-    #
-    # TODO: Rename this `github_forkme` or something like that.
     #
     # Examples
     #
@@ -307,33 +296,40 @@ module Smeagol
     # Project's development site, if applicable.
     # e.g. `http://github.com/trans`
     #
-    # TODO: Rename this field.
+    # TODO: Rename this field ?
     attr_accessor :source_url
 
     # Expanded site directory.
     #
-    # If `site_stage` is an absolute path it will returned as given, 
+    # If `site_folder` is an absolute path it will returned as given, 
     # otherwise this will be relative to the location of the wiki.
     #
     # Returns String of site path.
     def site_dir
-      path = (
-        if TrueClass === site_stage
-          SITE_PATH 
-        else
-          site_stage || SITE_PATH
-        end
+      @site_dir ||= (
+        dir = (
+          if TrueClass === site_folder
+            SITE_FOLDER
+          else
+            site_folder || SITE_FOLDER
+          end
+        )
+        dir = (
+          if relative?(dir)
+            ::File.join(smeagol_dir, dir)
+          else
+            dir
+          end
+        )
+        dir.chomp('/')  # ensure no trailing path separator
       )
+    end
 
-      dir = (
-        if relative?(path)
-          ::File.join(smeagol_path, path)
-        else
-          path
-        end
-      )
-
-      dir.chomp('/')  # ensure no trailing path separator
+    # Manually set the site directory.
+    #
+    # Returns String of site path.
+    def site_dir=(path)
+      @site_dir = path
     end
 
     #

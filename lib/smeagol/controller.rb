@@ -27,15 +27,20 @@ module Smeagol
     #       One that comes from version and one that is current.
     #
     # Returns a Settings object.
-    def settings
-      @settings ||= Settings.load(wiki.path)
+    def config
+      @config ||= SiteConfig.load(wiki.path)
     end
+
+    # Deprecated
+    alias :settings :config
 
     #def view(wiki_file, version='master')
     #  @views[version][wiki_file] ||= create_view(wiki_file, version)
     #end
 
+    #
     # Lookup view by wiki file and version.
+    #
     def view(wiki_file, version='master')
       case wiki_file
       when Gollum::Page
@@ -45,7 +50,7 @@ module Smeagol
           Views::Page.new(self, wiki_file, version)
         end
       when Gollum::File
-        # TODO: Support for other markup formats.
+        # TODO: Support for other template formats?
         if wiki_file.extname == '.mustache'
           Views::Form.new(self, wiki_file, version)
         else
@@ -54,12 +59,16 @@ module Smeagol
       end
     end
 
+    #
     # Returns a list of filtered wiki files.
+    #
     def wiki_files
       filter(wiki.files + wiki.pages)
     end
 
+    #
     # Collect a list of all views.
+    #
     def views(version='master')
       list = []
       wiki_files.each do |file|
@@ -69,7 +78,9 @@ module Smeagol
       list
     end
 
+    #
     # Collect a list of all posts.
+    #
     def posts(version='master')
       list = []
       wiki_files.each do |file|
@@ -92,12 +103,12 @@ module Smeagol
     #  @media[version].values
     #end
 
-    # Collect a list of all files in assets directory.
-    # These files are never versioned.
-    def assets
-      files = collect_files(wiki.path, 'assets')
-      filter(files)
-    end
+#    # Collect a list of all files in assets directory.
+#    # These files are never versioned.
+#    def assets
+#      files = collect_files(wiki.path, 'assets')
+#      filter(files)
+#    end
 
 =begin
     #
@@ -129,6 +140,8 @@ module Smeagol
     #  @filtered_pages ||= filter(wiki.pages)
     #end
 
+    #
+    #
     #
     def collect_files(base, offset)
       list = []
@@ -163,10 +176,8 @@ module Smeagol
           #       not need to filter out settings, partials and static locations.
           # exclude settings file
           next if path == Settings::FILE
-#          # exlcude assets
-#          next if path.index('assets') == 0
-          # exclude template directory (TODO: future version may allow this)
-          next if path.index(settings.partials) == 0
+          # exclude assets directory (TODO: future version should allow?)
+          next if path.index('assets/') == 0
           # exclude any files starting with `.` or `_`
           next if path.split('/').any? do |x|
             x.start_with?('_') or x.start_with?('.')
@@ -201,12 +212,10 @@ module Smeagol
     # Returns [String].
     def render_view(view)
       if view.layout
-        content = Mustache.render(view.layout, view)
+        Mustache.render(view.layout, view)
       else
-        content = view.content
+        view.content
       end
-
-      return content
     end
 
     ## For static sites we cannot depend on the web server to default a link

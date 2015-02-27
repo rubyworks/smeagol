@@ -80,6 +80,10 @@ module Smeagol
       git.clone({:quiet=>false, :verbose=>true, :progress=>true, :branch=>branch}, origin, path)
     end
 
+    #
+    def smeagol_dir
+      @smeagol_dir ||= Dir[File.join(path, '{.,_}smeagol')].first
+    end
   end
 
 end
