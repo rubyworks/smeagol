@@ -72,7 +72,6 @@ customs: []
 paths:
   lib:
   - lib
-  - vendor/grit/lib
 name: smeagol
 title: Smeagol
 version: 0.7.0
