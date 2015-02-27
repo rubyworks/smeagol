@@ -15,10 +15,6 @@ Smeagol is a server that can run a read-only version of a
 want to maintain a standalone website, but you want to update it through
 the Gollum wiki interface, e.g. via GitHub.
 
-Smeagol also includes a static site generator that can convert
-a Gollum wiki into a static website to be served by any hosting
-service. 
-
 Smeagol follows the rules of [Semantic Versioning](http://semver.org/) and uses
 [TomDoc](http://tomdoc.org/) for inline documentation.
 
@@ -161,7 +157,8 @@ other tools, particularly Jekyll, with only a modicum of extra work. In that
 light, we are currently updating Smeagol's configuration defaults to be as
 similar to Jekyll's as possible. This will facilitate the transition to static
 should that ever be required and more generally reduce the cognative load on
-developers.
+developers. This also means the Liquid templating engine will likely be supported
+in the future, as an alterntive to the current Mustache engine.
 
 
 ## CONTRIBUTING
