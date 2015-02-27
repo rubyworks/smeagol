@@ -10,10 +10,9 @@ Smeagol - A Read-Only Gollum Server
 ## DESCRIPTION
 
 Smeagol is a server that can run a read-only version of a
-[Gollum](http://github.com/github/gollum) wiki.
-This can be useful when you want to maintain a standalone website,
-but you want to update it through the Gollum wiki interface,
-e.g. via GitHub.
+[Gollum](http://github.com/github/gollum) wiki. This can be useful when you
+want to maintain a standalone website, but you want to update it through
+the Gollum wiki interface, e.g. via GitHub.
 
 Smeagol also includes a static site generator that can convert
 a Gollum wiki into a static website to be served by any hosting
@@ -27,12 +26,11 @@ Smeagol follows the rules of [Semantic Versioning](http://semver.org/) and uses
 
 [![Build Status](https://secure.travis-ci.org/rubyworks/smeagol.png)](http://travis-ci.org/rubyworks/smeagol)
 
-As of v0.6.0 Smeagol is in fairly good shape. It has a number of tests and they
-are all green. However the tests are far from comprehensive. So there is a some
-QA waterfalling going on here too. Probably it is best to consider the v0.6.x
-series an advanced beta set. So if you run into any issues, or see any clear ways
-to improve the project, let us know via the issues tracker to help us move
-toward a rock-solid 0.7. 
+**Smeagol is up for adoption if anyone finds it useful and would like to take over
+it's development. Please get in touch either via email or posting an issue.**
+
+Currently Smeagol's core functionaily works, but it needs some love to clean up
+some rough spots.
 
 
 ## INSTALLATION
@@ -51,7 +49,9 @@ Of course, the first thing you need to do is clone your Gollum wiki repo.
     $ git clone git@github.com:user/user.github.com.git
 
 
-## PREVIEWING
+## USAGE
+
+### PREVIEWING
 
 To preview your site via smeagol, simply change directories to your Gollum repository
 and run `smeagol preview` from the command line:
@@ -62,8 +62,7 @@ and run `smeagol preview` from the command line:
 This will run a web server at `http://localhost:4567`. You can change the port
 by setting the `--port` or `-p` option on the command line.
 
-
-## CUSTOMIZING
+### CUSTOMIZING
 
 Of course, you want to customize your site to suit your style. To do this you
 need to add some Smeagol support files. Use the `init` command to have Smeagol
@@ -72,8 +71,8 @@ put the default files in place.
     $ cd path/to/wiki
     $ smeagol init
 
-In your wiki this will add a few files. One of these is `_settings.yml` which you
-use to configure smeagol for your site. See SETTINGS below.
+In your wiki this will add a few files. One of these is `_config.yml` which you
+use to configure Smeagol for your site. See CONFIGURATION below.
 
 There will also be a file called `_layouts/page.mustache`. Using Mustache templating
 use this file to create a custom page layout for your site. To learn more
@@ -84,16 +83,22 @@ Be sure to add these files to your repo and commit them. (You can just check
 these files in and push to the server. It will not effect you Gollum
 wiki in any way.)
 
+### CONFIGURATION
 
-## SETTINGS
+If you are familiar with Jekyll, the static site generator, you will notice 
+that Smeagol follows the same convensions fairly closely. This has been done
+to reduce congnative load for those of us who use both tools, and to simplify
+transition to a static site should that ever needed.
 
-The `_settings.yml` file allows you to configure certain behaviors of Smeagol.
-An example `_settings.yml` file:
+The `_config.yml` file allows you to configure certain behaviors of Smeagol.
+An example `_config.yml` file:
 
     ---
-    static: public
-    url: http://trans.github.com
-    source_url: http://github.com/trans
+    port: 4000
+    host: 127.0.0.1
+    baseurl: "" # does not include hostname
+    sourceurl: http://github.com/trans
+
     title: 7R4N5.C0D3
     author: trans
     description:
@@ -109,8 +114,10 @@ An example `_settings.yml` file:
 
 See the API documentation for more details about each field.
 
+**NOTE** The `menu` entry will be probably be deprecated in favor of just
+editing templates.
 
-## SERVING 
+### SERVING 
 
 Smeagol can serve multiple Gollum repos simulataneously. To do this
 create a configuration file at `~/.smeagol/config.yml`. An example file
@@ -132,8 +139,7 @@ Then to serve the listed repositories use:
 
     $ smeagol serve
 
-
-## UPDATING
+### UPDATING
 
 There are two ways to handle updates of the repository through Smeagol: 
 *automatic updating* and *manual updating*.
@@ -148,16 +154,29 @@ and Smeagol will perform a git pull. Of course, change the URL appropriately
 for your hostname and port.
 
 
-## CONTRIBUTE
+## ROADMAP
+
+The most recent versions of Smeagol had focused on adding static site generation
+to the project. This goal has now been dropped. Static site generation, it turns 
+out, is not an important goal for Smeagol becuase that can accomplished using
+other tools, particularly Jekyll, with only a modicum of extra work. In that
+light, we are currently updating Smeagol's configuration defaults to be as
+similar to Jekyll's as possible. This will facilitate the transition to static
+should that ever be required and more generally reduce the cognative load on
+developers.
+
+
+## CONTRIBUTING
 
 Have a great idea for Smeagol? Awesome. Fork the repository and add a feature
-or fix a bug. There are a couple things I ask:
+or fix a bug. There are a couple things we ask:
 
 * Create an appropriately named topic branch that contains your change.
 * Please try to provide tests for all code you check in.
+* Use an apprpriate commit tag, such as `:doc:`, `:test:`, etc.
 
-Note that Smeagol uses Citron and AE for testing. And admittedly the project
-is water-falling too much at present. So if you would like to contribute, but
+Note that Smeagol uses Citron and AE for testing. And admittedly this project
+is waterfalling too much at present. So if you would like to contribute, but
 don't have any specific request, writing a few tests would be a great help.
 
 
@@ -165,7 +184,7 @@ don't have any specific request, writing a few tests would be a great help.
 
 Smeagol is distributed under the terms of the **BSD-2-Clause** license.
 
-* Copyright 2012 Trans, Rubyworks
+* Copyright 2012 Rubyworks
 * Copyright 2009 Ben Johnson
 
 Please see LICENSE.txt file for details.
