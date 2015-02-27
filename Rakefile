@@ -1,4 +1,4 @@
-#/usr/bibn/env ruby
+#/usr/bin/env ruby
 
 desc 'clone wiki'
 task 'wiki' do

@@ -1,13 +1,14 @@
 Smeagol - A Read-Only Gollum Server
 ===================================
 
-[Website](http://rubyworks.github.com/smeagol) /
-[Documentation](http://rubydoc.info/rubyworks/smeagol) /
-[Source Code](http://github.com/rubyworks/smeagol) /
+[Website](http://rubyworks.github.com/smeagol) |
+[Documentation](http://rubydoc.info/rubyworks/smeagol) |
+[Source Code](http://github.com/rubyworks/smeagol) |
 [Report Issue](http://github.com/rubyworks/smeagol/issues)
 
 
-## DESCRIPTION
+**Smeagol is up for adoption if anyone finds it useful and would like to take over
+it's development. Please get in touch either via email or posting an issue.**
 
 Smeagol is a server that can run a read-only version of a
 [Gollum](http://github.com/github/gollum) wiki. This can be useful when you
@@ -25,9 +26,6 @@ Smeagol follows the rules of [Semantic Versioning](http://semver.org/) and uses
 ## STATUS
 
 [![Build Status](https://secure.travis-ci.org/rubyworks/smeagol.png)](http://travis-ci.org/rubyworks/smeagol)
-
-**Smeagol is up for adoption if anyone finds it useful and would like to take over
-it's development. Please get in touch either via email or posting an issue.**
 
 Currently Smeagol's core functionaily works, but it needs some love to clean up
 some rough spots.
@@ -51,7 +49,7 @@ Of course, the first thing you need to do is clone your Gollum wiki repo.
 
 ## USAGE
 
-### PREVIEWING
+### Previewing
 
 To preview your site via smeagol, simply change directories to your Gollum repository
 and run `smeagol preview` from the command line:
@@ -62,7 +60,7 @@ and run `smeagol preview` from the command line:
 This will run a web server at `http://localhost:4567`. You can change the port
 by setting the `--port` or `-p` option on the command line.
 
-### CUSTOMIZING
+### Customizing
 
 Of course, you want to customize your site to suit your style. To do this you
 need to add some Smeagol support files. Use the `init` command to have Smeagol
@@ -83,7 +81,7 @@ Be sure to add these files to your repo and commit them. (You can just check
 these files in and push to the server. It will not effect you Gollum
 wiki in any way.)
 
-### CONFIGURATION
+### Configuration
 
 If you are familiar with Jekyll, the static site generator, you will notice 
 that Smeagol follows the same convensions fairly closely. This has been done
@@ -117,7 +115,7 @@ See the API documentation for more details about each field.
 **NOTE** The `menu` entry will be probably be deprecated in favor of just
 editing templates.
 
-### SERVING 
+### Serving
 
 Smeagol can serve multiple Gollum repos simulataneously. To do this
 create a configuration file at `~/.smeagol/config.yml`. An example file
@@ -139,7 +137,7 @@ Then to serve the listed repositories use:
 
     $ smeagol serve
 
-### UPDATING
+### Updating
 
 There are two ways to handle updates of the repository through Smeagol: 
 *automatic updating* and *manual updating*.
